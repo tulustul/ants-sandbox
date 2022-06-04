@@ -6,7 +6,8 @@
   import Draw from './Draw.vue';
   import Scenarios from './Scenarios.vue';
   import Visuals from './Visuals.vue';
-import Nests from './Nests.vue';
+  import Nests from './Nests.vue';
+  import Garden from './Garden.vue';
 </script>
 
 <template>
@@ -25,7 +26,7 @@ import Nests from './Nests.vue';
         <Simulation/>
       </Tab>
       <Tab label="Garden">
-        TODO
+        <Garden/>
       </Tab>
       <Tab label="Nests">
         <Nests/>

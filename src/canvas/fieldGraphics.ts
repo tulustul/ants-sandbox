@@ -1,4 +1,5 @@
-import type { Field } from "@/life/field";
+import type { Garden } from "@/life/garden";
+import { visualSettings } from "@/life/settings";
 import { Texture, Sprite, FORMATS, TYPES, Filter } from "pixi.js";
 
 const fShaderSrc = `
@@ -28,14 +29,11 @@ export class FieldGraphics {
   sprite: Sprite;
   filter: Filter;
 
-  constructor(field: Field, tint: [number, number, number]) {
-    this.texture = Texture.fromBuffer(field.data, field.width, field.height, {
-      format: FORMATS.RED,
-      type: TYPES.FLOAT,
-    });
+  constructor(public garden: Garden, tint: [number, number, number]) {
+    this.texture = Texture.EMPTY;
     this.sprite = new Sprite(this.texture);
-    this.sprite.scale.x = field.garden.fieldCellSize;
-    this.sprite.scale.y = field.garden.fieldCellSize;
+    this.sprite.scale.x = garden.fieldCellSize;
+    this.sprite.scale.y = garden.fieldCellSize;
 
     const arr = new Float32Array(3);
     arr[0] = tint[0] / 255;
@@ -43,12 +41,25 @@ export class FieldGraphics {
     arr[2] = tint[2] / 255;
     this.filter = new Filter(undefined, fShaderSrc, {
       tint: arr,
-      exposure: 1,
-      contrast: 1,
+      exposure: visualSettings.shaders.pheromoneExposure,
+      contrast: visualSettings.shaders.pheromoneContrast,
     });
     this.sprite.filters = [this.filter];
 
-    field.garden.canvas.app.stage.addChild(this.sprite);
+    garden.canvas.app.stage.addChild(this.sprite);
+  }
+
+  bindData(data: Float32Array) {
+    this.texture = Texture.fromBuffer(
+      data,
+      this.garden.fieldWidth,
+      this.garden.fieldHeight,
+      {
+        format: FORMATS.RED,
+        type: TYPES.FLOAT,
+      }
+    );
+    this.sprite.texture = this.texture;
   }
 
   destroy() {

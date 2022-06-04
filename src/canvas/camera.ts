@@ -8,7 +8,7 @@ export interface Transform {
 }
 
 export class Camera {
-  MAX_ZOOM = 5;
+  MAX_ZOOM = 3;
   MIN_ZOOM = 0.05;
 
   transform = { x: 0, y: 0, scale: 1 };

@@ -9,6 +9,7 @@ export class Canvas {
     this.app = new Application({
       view,
       resizeTo: window,
+      backgroundColor: 0x111111,
     });
     this.camera = new Camera(this);
   }

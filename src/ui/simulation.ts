@@ -1,41 +1,60 @@
 import type { Canvas } from "@/canvas";
 import { Garden } from "@/life/garden";
+import { fillGarden } from "@/life/gardenGenerator";
 import { Nest } from "@/life/nest";
-import { simulationSettings } from "@/life/simulation";
+import { processRock } from "@/life/rock";
+import { simulationSettings } from "@/life/settings";
 import { simulationStats } from "@/life/stats";
 import type { DumpedSimulation } from "@/types";
 import {
   compressFloat32Array,
   decompressFloat32Array,
 } from "@/utils/compression";
+import { state } from "./state";
 
 export class Simulation {
   garden!: Garden;
 
   tickAccumulator = 0;
 
-  constructor(public canvas: Canvas) {
+  constructor(public canvas: Canvas) {}
+
+  start() {
     this.randomizeGarden();
   }
 
   restart() {
     this.garden.destroy();
-    this.randomizeGarden();
+    this.start();
   }
 
   randomizeGarden() {
-    this.garden = new Garden(this.canvas, 10000, 10000);
-    const nest = new Nest(
-      this.garden.width / 2,
-      this.garden.height / 2,
-      this.garden,
-      this.garden.canvas.app
+    const gardenSettings = state.gardenSettings;
+    this.garden = new Garden(
+      this.canvas,
+      gardenSettings.width,
+      gardenSettings.height
     );
-    this.garden.nests.push(nest);
-    nest.releaseAnts();
 
-    for (let i = 0; i < 50; i++) {
-      this.garden.foodField.placeRandomFood();
+    fillGarden({
+      garden: this.garden,
+
+      foodEnabled: gardenSettings.foodEnabled,
+      foodScale: gardenSettings.foodScale,
+      foodSize: gardenSettings.foodSize,
+      foodRichness: gardenSettings.foodRichness,
+
+      rockEnabled: gardenSettings.rockEnabled,
+      rockScale: gardenSettings.rockScale,
+      rockSize: gardenSettings.rockSize,
+    });
+
+    for (let i = 0; i < gardenSettings.numberOfNests; i++) {
+      this.garden.placeRandomNest(gardenSettings.startingAnts);
+    }
+
+    if (this.garden.nests.length) {
+      state.trackedNest = this.garden.nests[0].id;
     }
   }
 
@@ -89,6 +108,8 @@ export class Simulation {
     decompressFloat32Array(data.garden.foodField, this.garden.foodField.data);
     decompressFloat32Array(data.garden.rockField, this.garden.rockField.data);
 
+    processRock(this.garden.rockField);
+
     for (const nestData of data.nests) {
       const nest = new Nest(
         nestData.x,
@@ -99,7 +120,8 @@ export class Simulation {
       nest.startingsAnts = nestData.startingAnts;
       nest.antsLimit = nestData.antsLimit;
       this.garden.nests.push(nest);
-      nest.releaseAnts();
     }
+
+    state.trackedNest = this.garden.nests[0].id;
   }
 }

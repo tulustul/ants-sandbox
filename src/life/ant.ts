@@ -1,48 +1,15 @@
 import { getDistanceBetween } from "@/utils/distance";
 import { Vec } from "@/utils/vector";
 import { Sprite } from "pixi.js";
-import type { Field } from "./field";
 import type { Nest } from "./nest";
 import type { PheromoneField } from "./pheromone";
-import { simulationSettings } from "./simulation";
-import antUrl from "@/assets/ant.png";
+import { simulationSettings, type FieldSampler } from "./settings";
+import { resources } from "@/canvas/resources";
 
 export enum AntMode {
   toFood,
   toHome,
   smellsFood,
-}
-
-const followStrength = 0.02;
-const repelStrength = 0.04;
-
-const fastSampleAngle = Math.PI / 4;
-const fastAngleSamplesCount = 5;
-const fastDistaceSamples = 3;
-const fastAngleSamples = getAngleSamples(
-  fastSampleAngle,
-  fastAngleSamplesCount
-);
-
-const slowSampleAngle = Math.PI * 2;
-const slowAngleSamplesCount = 20;
-const slowDistaceSamples = 5;
-const slowAngleSamples = getAngleSamples(
-  slowSampleAngle,
-  slowAngleSamplesCount
-);
-
-function getAngleSamples(angle: number, samplesCount: number) {
-  const angleStep = angle / (samplesCount - 1);
-  const samples: number[] = [];
-  for (
-    let curAngle = -angle / 2;
-    curAngle <= angle / 2;
-    curAngle += angleStep
-  ) {
-    samples.push(curAngle);
-  }
-  return samples;
 }
 
 export class Ant {
@@ -55,6 +22,8 @@ export class Ant {
   followPoint: Vec | null = null;
 
   lastCellIndex = 0;
+  lastAntCellIndex = 0;
+  updatedLastAntCell = false;
 
   food = 0;
 
@@ -63,7 +32,8 @@ export class Ant {
   isStopped = false;
 
   repelTicks = 0;
-  maxRepelTicks = 5000;
+  maxRepelTicks = 4000;
+  repelTimeout = 200;
 
   pheromoneToFollow: PheromoneField;
   pheromoneToDrop: PheromoneField;
@@ -71,7 +41,7 @@ export class Ant {
   pheromoneStrength = this.maxPheromoneStrength;
 
   constructor(x: number, y: number, public nest: Nest) {
-    this.sprite = Sprite.from(antUrl);
+    this.sprite = new Sprite(resources.atlas!.textures["ant.png"]);
 
     this.sprite.anchor.set(0.5);
 
@@ -80,7 +50,7 @@ export class Ant {
 
     this.sprite.tint = nest.color;
 
-    nest.app.stage.addChild(this.sprite);
+    nest.garden.antsContainer.addChild(this.sprite);
 
     this.velocity.rotate(Math.random() * Math.PI * 2);
 
@@ -99,8 +69,13 @@ export class Ant {
     this.energy -= 0.00004;
     this.pheromoneStrength /= 1.0006;
 
+    const antsField = this.nest.garden.antsField;
+
     if (this.energy <= 0) {
       this.die();
+      if (this.updatedLastAntCell) {
+        antsField.data[this.lastAntCellIndex] /= this.nest.primeId;
+      }
       return false;
     }
 
@@ -124,12 +99,6 @@ export class Ant {
       }
     }
 
-    this.dropPheromone(this.pheromoneToDrop, this.pheromoneStrength);
-
-    if (this.noFood) {
-      this.dropPheromone(this.nest.toFoodField, -this.pheromoneStrength, true);
-    }
-
     if (this.sprite.x < 1) {
       this.sprite.x = 1;
       this.turnRandomly();
@@ -147,14 +116,52 @@ export class Ant {
       this.turnRandomly();
     }
 
+    const x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
+    const y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
+
+    const antsFieldindex = antsField.getIndex(x, y);
+    if (antsFieldindex !== this.lastAntCellIndex) {
+      if (this.updatedLastAntCell) {
+        antsField.data[this.lastAntCellIndex] /= this.nest.primeId;
+      }
+
+      if (antsField.data[antsFieldindex] % this.nest.primeId !== 0) {
+        antsField.data[antsFieldindex] *= this.nest.primeId;
+        this.updatedLastAntCell = true;
+      } else {
+        this.updatedLastAntCell = false;
+      }
+
+      if (antsField.data[antsFieldindex] !== this.nest.primeId) {
+        this.enterToHomeSeeEnemy();
+      }
+      this.lastAntCellIndex = antsFieldindex;
+    }
+
+    const fieldindex = this.nest.garden.foodField.getIndex(x, y);
+    if (fieldindex !== this.lastCellIndex) {
+      this.dropPheromone(
+        fieldindex,
+        this.pheromoneToDrop,
+        this.pheromoneStrength
+      );
+      if (this.noFood && this.repelTicks > this.repelTimeout) {
+        this.dropPheromone(
+          fieldindex,
+          this.nest.toFoodField,
+          -this.pheromoneStrength
+        );
+      }
+      this.lastCellIndex = fieldindex;
+    }
+
     return true;
   }
 
   slowTick() {
     this.followField(
       this.pheromoneToFollow,
-      fastAngleSamples,
-      fastDistaceSamples,
+      simulationSettings.performance.fastFieldSampler,
       false
     );
     this.brainTick();
@@ -163,8 +170,7 @@ export class Ant {
   preciseTick() {
     this.followField(
       this.pheromoneToFollow,
-      slowAngleSamples,
-      slowDistaceSamples,
+      simulationSettings.performance.preciseFieldSampler,
       true
     );
     this.brainTick();
@@ -184,9 +190,21 @@ export class Ant {
     this.resetRepel();
     this.pheromoneToFollow = this.nest.toHomeField;
     if (this.food > 0) {
-      this.sprite.tint = 0x55ff55;
+      this.sprite.texture = resources.atlas!.textures["ant-with-food.png"];
       this.pheromoneToDrop = this.nest.toFoodField;
+    } else {
+      this.noFood = true;
     }
+  }
+
+  enterToHomeSeeEnemy() {
+    if (this.mode !== AntMode.toHome) {
+      this.mode = AntMode.toHome;
+      this.turnAround();
+    }
+    this.resetRepel();
+    this.pheromoneToFollow = this.nest.toHomeField;
+    this.pheromoneToDrop = this.nest.toEnemyField;
   }
 
   enterToFood() {
@@ -195,7 +213,7 @@ export class Ant {
     this.resetRepel();
     this.pheromoneToFollow = this.nest.toFoodField;
     this.pheromoneToDrop = this.nest.toHomeField;
-    this.sprite.tint = this.nest.color;
+    this.sprite.texture = resources.atlas!.textures["ant.png"];
   }
 
   resetRepel() {
@@ -205,16 +223,15 @@ export class Ant {
 
   followField(
     field: PheromoneField,
-    angleSamples: number[],
-    distanceSamples: number,
+    sampler: FieldSampler,
     chooseBest: boolean
   ) {
     let sumOfValues = 0;
     const values: number[] = [];
 
-    for (const angle of angleSamples) {
+    for (const angle of sampler.angleSamples) {
       let total = 0;
-      for (let i = 1; i <= distanceSamples; i++) {
+      for (let i = 1; i <= sampler.distanceSamplesCount; i++) {
         const vec = new Vec(0, this.nest.garden.fieldCellSize * i);
         vec.rotateTo(this.velocity.rotation() + angle);
         const x = this.sprite.x + vec.x;
@@ -235,10 +252,9 @@ export class Ant {
           break;
         }
 
-        // value = Math.max(0, Math.pow(field.data[index], 1 / this.nest.freedom));
-        // value = field.data[index] * Math.pow(field.maxValues.data[index], 3);
+        // value = field.data[index];
         value = field.maxValues.data[index];
-        if (value > 0.00001) {
+        if (value > 0.001) {
           value = Math.pow(value, 1 / this.nest.freedom);
           value = Math.max(0, value);
         } else {
@@ -252,11 +268,11 @@ export class Ant {
     }
 
     if (sumOfValues === 0) {
-      if (this.food) {
-        this.turnRandomly();
-      } else {
-        this.turnSlightly();
-      }
+      // if (this.food) {
+      // this.turnRandomly();
+      // } else {
+      this.turnSlightly();
+      // }
       return false;
     }
 
@@ -271,7 +287,7 @@ export class Ant {
       }
 
       if (bestIndex) {
-        this.velocity.rotate(angleSamples[bestIndex]);
+        this.velocity.rotate(sampler.angleSamples[bestIndex]);
       }
     } else {
       let currentValue = 0;
@@ -279,7 +295,7 @@ export class Ant {
       for (let i = 0; i < values.length; i++) {
         currentValue += values[i];
         if (r <= currentValue) {
-          this.velocity.rotate(angleSamples[i]);
+          this.velocity.rotate(sampler.angleSamples[i]);
           return true;
         }
       }
@@ -300,7 +316,7 @@ export class Ant {
     const food = foodField.data[index];
     if (food > 0) {
       foodField.data[index]--;
-      this.nest.foodHereField.data[index] = 10;
+      this.nest.foodHereField.data[index] = 100;
       this.food = 1;
       this.enterToHome();
     } else if (this.nest.foodHereField.data[index] > 0) {
@@ -323,7 +339,10 @@ export class Ant {
 
   visitNest() {
     this.pheromoneStrength = this.maxPheromoneStrength;
-    this.nest.addFood(3);
+    if (this.food) {
+      this.nest.addFood(3);
+      this.food = 0;
+    }
     this.nest.feedAnt(this);
     if (this.energy < this.maxEnergy) {
       return;
@@ -331,13 +350,9 @@ export class Ant {
     this.enterToFood();
   }
 
-  dropPheromone(pheromone: PheromoneField, value: number, force = false) {
-    const index = pheromone.getIndex(this.sprite.x, this.sprite.y);
-    if (force || index !== this.lastCellIndex) {
-      const max = this.pheromoneStrength / this.maxPheromoneStrength;
-      pheromone.dropPheromone(index, value, max);
-      this.lastCellIndex = index;
-    }
+  dropPheromone(index: number, pheromone: PheromoneField, value: number) {
+    const max = this.pheromoneStrength / this.maxPheromoneStrength;
+    pheromone.dropPheromone(index, value, max);
   }
 
   turnAround() {
@@ -368,6 +383,7 @@ export class Ant {
       this.sprite.y
     );
     this.nest.garden.foodField.data[index] += 20;
+    this.nest.deadAnts++;
     this.destroy();
   }
 }

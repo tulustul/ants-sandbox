@@ -1,24 +1,27 @@
 import { Field } from "./field";
-import { simulationSettings } from "./simulation";
+import { simulationSettings } from "./settings";
 
 export class PheromoneField extends Field {
   degradationTime = 60; // in ticks
   degradationPhase = 0;
 
-  maxValues = new Field(this.garden, [0, 0, 0]);
+  maxValues = new Field(this.garden);
 
   dropPheromone(index: number, value: number, max: number) {
     if (value > 0) {
       this.maxValues.data[index] = Math.max(max, this.maxValues.data[index]);
     } else {
-      this.maxValues.data[index] = Math.min(max, this.maxValues.data[index]);
+      this.maxValues.data[index] = this.maxValues.data[index] / 1.1;
+      this.data[index] = this.data[index] / 1.1;
+      return;
     }
     if (this.data[index] > max) {
       return;
     }
     // this.data[index] = Math.max(0, this.data[index] + value);
     this.data[index] = Math.max(0, this.data[index] + value);
-    this.spreadPheromone(index, value);
+    // this.spreadPheromone(index, value);
+    // this.data[index] = this.maxValues.data[index];
   }
 
   spreadPheromone(index: number, value: number) {
@@ -61,7 +64,5 @@ export class PheromoneField extends Field {
     if (this.degradationPhase === 60) {
       this.degradationPhase = 0;
     }
-
-    this.graphics.texture.update();
   }
 }

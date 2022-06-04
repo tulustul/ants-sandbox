@@ -26,13 +26,13 @@
     <span class="label">{{label}}</span>
     <div class="row">
       <input class="grow" type="range" :value="modelValue" :min="min" :max="max" :step="step" :oninput="onChange">
-      <input class="short" type="number" :value="modelValue" :onchange="onChange">
+      <input class="short" type="number" :step="step" :value="modelValue" :onchange="onChange">
       <button v-if="props.default !== undefined" class="reset-btn" :onclick="onDefault">R</button>
     </div>
   </label>
 </template>
 
-<style>
+<style scoped>
   label {
     background-color: rgb(80,80,80);
     padding: 7px;

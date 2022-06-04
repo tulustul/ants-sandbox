@@ -2,8 +2,17 @@ import type { Garden } from "@/life/garden";
 import type { Simulation } from "@/ui/simulation";
 
 const COLORS = [
-  0xdc143c, 0xff83fa, 0x8470ff, 0x1c86ee, 0x00f5ff, 0x00ee76, 0xc0ff3e,
-  0xffd700, 0x8b5a00, 0xff8000, 0xee3b3b,
+  0xbd7836, // brown
+  0x24ff45, // green
+  0x24fffb, // cyan
+  0xffe024, // yellow
+  0xff5458, // red
+  0x98c1fb, // light blue
+  0xaaaaaa, // dark grey
+  0xfbdb98, // pastel orange
+  0xb898fb, // light purple
+  0xcccccc, // grey
+  0xcd55aa, // pink
 ];
 
 export function getNextColor(garden: Garden): number {
