@@ -4,7 +4,7 @@
   import Simulation from './Simulation.vue';
   import Stats from './Stats.vue';
   import Draw from './Draw.vue';
-  import Scenarios from './Scenarios.vue';
+  import Maps from './Maps.vue';
   import Visuals from './Visuals.vue';
   import Nests from './Nests.vue';
   import Garden from './Garden.vue';
@@ -16,8 +16,8 @@
       <Tab label="Draw">
         <Draw/>
       </Tab>
-        <Tab label="Scenarios">
-          <Scenarios/>
+        <Tab label="Maps">
+          <Maps/>
         </Tab>
       <Tab label="Stats">
         <Stats/>
@@ -41,5 +41,6 @@
 <style>
   .menu {
     background-color: rgba(50,50,50,0.9);
+    max-width: 100vw;
   }
 </style>

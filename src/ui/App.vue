@@ -5,18 +5,20 @@ import { Canvas } from '@/canvas';
 
 import Ui from './Ui.vue'
 import { Simulation } from './simulation';
-import { state } from './state';
-import type { Field } from '@/life/field';
 import { loadResources } from '@/canvas/resources';
+import { Controls } from './controls';
 
 const canvasRef = ref();
+const ready = ref(false);
 
 let canvas: Canvas;
 let simulation:Simulation
+let controls=new Controls()
 
 onMounted(async () => {
   canvas = new Canvas(canvasRef.value);
   simulation = new Simulation(canvas);
+  controls.simulation = simulation;
   provide('simulation', simulation);
 
   window.addEventListener('contextmenu', e => {
@@ -36,46 +38,29 @@ async function onReady() {
     simulation.garden.fieldsLayer.tick();
     canvas.camera.update()
   })
-}
 
-function onMouseMove(event: MouseEvent) {
-  if (event.buttons === 1) {
-    canvas.camera.moveBy(event.movementX, event.movementY)
+  const nest = simulation.garden.nests[0];
+  if (nest) {
+    canvas.camera.centerAt(nest.sprite.x, nest.sprite.y)
   }
-  if (state.drawing && event.buttons === 2) {
-    const [x, y] = canvas.camera.screenToCanvas(event.clientX, event.clientY);
 
-    let field: Field|null=null;
-    if (state.drawing.type === 'food') {
-      field = simulation.garden.foodField
-    } else if (state.drawing.type === 'rock'){
-      field = simulation.garden.rockField
-    }
-    if (field) {
-      field.draw(x, y, state.drawing.radius, state.drawing.intensity);
-      simulation.garden.foodGraphics.texture.update();
-      simulation.garden.rockGraphics.texture.update();
-    }
-  }
-  if (event.ctrlKey) {
-    const [x, y] = canvas.camera.screenToCanvas(event.clientX, event.clientY);
-    const toFood= simulation.garden.nests[0].toFoodField
-    const index = toFood.getIndex(x,y);
-    const foodVal = toFood.data[index]
-    const foodMaxVal = toFood.maxValues.data[index]
-    console.log({foodVal,foodMaxVal})
-  }
-}
-
-function onWheel(event: WheelEvent) {
-  const scale = event.deltaY > 0 ? 0.8: 1.2;
-  canvas.camera.scaleByWithEasing(scale, event.clientX, event.clientY)
+  ready.value = true
 }
 </script>
 
 <template>
-<canvas ref="canvasRef" :onmousemove="onMouseMove" :onwheel="onWheel"></canvas>
-<Ui/>
+<canvas
+  ref="canvasRef"
+  :onwheel="(event: WheelEvent) => controls.onWheel(event)"
+  :onscroll="(event: WheelEvent) => controls.onScroll(event)"
+  :onpointerdown="(event:PointerEvent) => controls.onPointerDown(event)"
+  :onpointerup="(event:PointerEvent) => controls.onPointerUp(event)"
+  :onpointermove="(event:PointerEvent) => controls.onPointerMove(event)"
+  :onpointercancel="(event:PointerEvent) => controls.onPointerCancel(event)"
+  :onpointerout="(event:PointerEvent) => controls.onPointerOut(event)"
+  :onpointerleave="(event:PointerEvent) => controls.onPointerLeave(event)"
+></canvas>
+<Ui v-if="ready"/>
 </template>
 
 <style>

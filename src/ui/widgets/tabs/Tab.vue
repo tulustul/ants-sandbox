@@ -13,9 +13,6 @@ const isVisible = computed(()=>tabsProvider.selectedTab===props.label);
 
 onBeforeMount(() => {
   tabsProvider.tabs.push(props.label!)
-  if (!tabsProvider.selectedTab) {
-    tabsProvider.selectedTab=props.label!
-  }
 })
 </script>
 
@@ -31,6 +28,9 @@ onBeforeMount(() => {
   flex-direction: column;
   padding: 10px;
   width:350px;
+  max-width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
   gap: 10px
 }
 </style>
