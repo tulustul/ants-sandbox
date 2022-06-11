@@ -12,17 +12,17 @@ function toggleDraw(type: DrawingType) {
 </script>
 
 <template>
-<div>
+<div class="row">
   <button
-    class="btn"
-    :class="{enabled: state.drawing.type === 'food'}"
+    class="btn grow"
+    :class="{'btn-primary': state.drawing.type === 'food'}"
     :onclick="()=>toggleDraw('food')"
   >
     Draw food
   </button>
   <button
-    class="btn"
-    :class="{enabled: state.drawing.type === 'rock'}"
+    class="btn grow"
+    :class="{'btn-primary': state.drawing.type === 'rock'}"
     :onclick="()=>toggleDraw('rock')"
   >
     Draw rock
@@ -32,7 +32,7 @@ function toggleDraw(type: DrawingType) {
 <Slider
   label="Radius"
   v-model="state.drawing.radius"
-  :min="0"
+  :min="1"
   :max="30"
   :step="1"
 />
@@ -48,7 +48,4 @@ function toggleDraw(type: DrawingType) {
 </template>
 
 <style>
-button.enabled {
-  background-color: darkgreen;
-}
 </style>

@@ -112,8 +112,8 @@ export class Garden {
   destroy() {
     this.background.destroy();
 
-    for (const nest of this.nests) {
-      nest.destroy();
+    while (this.nests.length) {
+      this.nests[0].destroy();
     }
 
     this.foodGraphics.destroy();
@@ -124,7 +124,7 @@ export class Garden {
 
   placeRandomNest(numberOfAnts: number) {
     const minimalDistanceFromOtherNest =
-      Math.min(this.width, this.height) / this.nests.length / 1.5;
+      Math.min(this.width, this.height) / this.nests.length / 2;
 
     let tries = 0;
     while (tries++ < 50) {

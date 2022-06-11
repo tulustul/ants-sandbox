@@ -14,10 +14,6 @@ function makeNewGarden() {
   simulation.restart()
 }
 
-// watch(state.gardenSettings, () => {
-//   simulation.restart()
-// })
-
 function reset() {
   transferFields(state.gardenSettings, defaultGardenSettings);
 }
@@ -25,7 +21,7 @@ function reset() {
 </script>
 
 <template>
-  <button class="btn" :onclick="makeNewGarden">New garden</button>
+  <button class="btn btn-primary" :onclick="makeNewGarden">New garden</button>
 
   <FieldGroup>
     <Slider
@@ -65,6 +61,15 @@ function reset() {
       :max="2000"
       :step="20"
     />
+
+    <Slider
+      label="Colony size limit"
+      v-model="state.gardenSettings.colonySizeLimit"
+      :default="defaultGardenSettings.colonySizeLimit"
+      :min="100"
+      :max="2000"
+      :step="50"
+    />
   </FieldGroup>
 
   <FieldGroup>
@@ -74,17 +79,17 @@ function reset() {
       label="Food scale"
       v-model="state.gardenSettings.foodScale"
       :default="defaultGardenSettings.foodScale"
-      :min="0.1"
-      :max="5"
-      :step="0.1"
+      :min="0.01"
+      :max="1"
+      :step="0.01"
     />
 
     <Slider
       label="Food size"
       v-model="state.gardenSettings.foodSize"
       :default="defaultGardenSettings.foodSize"
-      :min="0"
-      :max="1"
+      :min="0.3"
+      :max="0.7"
       :step="0.01"
     />
 
@@ -106,7 +111,7 @@ function reset() {
       v-model="state.gardenSettings.rockScale"
       :default="defaultGardenSettings.rockScale"
       :min="0.1"
-      :max="5"
+      :max="2"
       :step="0.1"
     />
 
@@ -115,7 +120,7 @@ function reset() {
       v-model="state.gardenSettings.rockSize"
       :default="defaultGardenSettings.rockSize"
       :min="0"
-      :max="1"
+      :max="0.5"
       :step="0.01"
     />
   </FieldGroup>

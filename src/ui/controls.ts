@@ -57,12 +57,14 @@ export class Controls {
     }
 
     if (this.pointers.size === 2) {
+      // Pinch.
       const oldDistance = this.getPointersDistance();
       this.pointers.set(event.pointerId, [event.clientX, event.clientY]);
       const newDistance = this.getPointersDistance();
       const distanceChange = newDistance / oldDistance;
       const [centerX, centerY] = this.getPointersCenter();
       this.camera.scaleBy(distanceChange, centerX, centerY);
+      this.camera.targetScale = this.camera.transform.scale;
     }
   }
 

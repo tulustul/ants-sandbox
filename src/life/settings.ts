@@ -21,20 +21,21 @@ export const defaultSimulationSettings = {
 };
 
 export const defaultGardenSettings = {
-  width: 10_000,
-  height: 10_000,
+  width: 5_000,
+  height: 5_000,
 
-  numberOfNests: 1,
+  numberOfNests: 3,
   startingAnts: 100,
+  colonySizeLimit: 500,
 
   foodEnabled: true,
-  foodScale: 0.6,
-  foodSize: 0.45,
-  foodRichness: 10,
+  foodScale: 0.2,
+  foodSize: 0.48,
+  foodRichness: 20,
 
   rockEnabled: true,
-  rockScale: 1.7,
-  rockSize: 0.4,
+  rockScale: 0.6,
+  rockSize: 0.43,
 };
 
 export const defaultVisualSettings = {
@@ -44,10 +45,10 @@ export const defaultVisualSettings = {
   toHomeMaxEnabled: true,
   toEnemyEnabled: true,
   toEnemyMaxEnabled: true,
-  maxOpacity: 0.05,
+  maxOpacity: 0.15,
   antsEnabled: true,
   shaders: {
-    pheromoneExposure: 1.6,
+    pheromoneExposure: 1,
     pheromoneContrast: 1,
   },
 };

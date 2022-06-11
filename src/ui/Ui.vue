@@ -25,13 +25,13 @@
   }
   .bottom-left {
     position: fixed;
-    left: 0;
-    bottom: 0;
+    left: 5px;
+    bottom: 5px;
   }
   .bottom-right {
     position: fixed;
-    right: 0;
-    bottom: 0;
+    right: 5px;
+    bottom: 5px;
   }
 </style>
 

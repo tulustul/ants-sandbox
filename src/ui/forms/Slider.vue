@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { defineProps } from 'vue';
 
+  import { RefreshIcon } from '@heroicons/vue/solid'
+
   const props= defineProps({
     label:String,
     modelValue:Number,
@@ -27,29 +29,30 @@
     <div class="row">
       <input class="grow" type="range" :value="modelValue" :min="min" :max="max" :step="step" :oninput="onChange">
       <input class="short" type="number" :step="step" :value="modelValue" :onchange="onChange">
-      <button v-if="props.default !== undefined" class="reset-btn" :onclick="onDefault">R</button>
+      <button v-if="props.default !== undefined" class="btn btn-icon" :onclick="onDefault">
+        <RefreshIcon/>
+      </button>
     </div>
   </label>
 </template>
 
 <style scoped>
   label {
-    background-color: rgb(80,80,80);
+    background-color: var(--field-color);
     padding: 7px;
     margin-top: 10px;
     border-radius: 50px;
-    border: 2px solid rgb(40,40,40);;
     position: relative;
   }
   .label {
     position: absolute;
     top: -35%;
-    background-color: steelblue;
+    background-color: var(--label-color);
     font-size: 12px;
     border-radius: 10px;
     padding: 0 10px;
   }
-  .reset-btn {
-    border-radius: 50%;
+  .btn-icon {
+    background-color: rgba(0,0,0,0.2);
   }
 </style>

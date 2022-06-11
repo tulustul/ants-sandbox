@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { inject } from 'vue';
-import type { Simulation } from './simulation';
 import Slider from './forms/Slider.vue';
 import {state} from './state';
 import {defaultSimulationSettings} from '@/life/settings';
 import { transferFields } from '@/utils/object';
 import FieldGroup from './forms/FieldGroup.vue';
 
-const simulation = inject<Simulation>('simulation')!;
-
-function restartSimulation() {
-  simulation.restart()
-}
 
 function reset() {
   transferFields(state.simulationSettings, defaultSimulationSettings);
@@ -19,8 +12,6 @@ function reset() {
 </script>
 
 <template>
-  <button class="btn" :onclick="restartSimulation">Restart</button>
-
   <Slider
     label="Pheromone dissipation"
     v-model="state.simulationSettings.pheromoneDissipation"

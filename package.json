@@ -9,6 +9,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@heroicons/vue": "^1.0.6",
+    "@vueuse/core": "^8.6.0",
     "pixi.js": "^6.3.2",
     "simplex-noise": "^3.0.1",
     "victor": "^1.1.0",

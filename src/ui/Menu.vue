@@ -13,23 +13,23 @@
 <template>
   <div class="menu">
     <Tabs>
-      <Tab label="Draw">
-        <Draw/>
-      </Tab>
-        <Tab label="Maps">
-          <Maps/>
-        </Tab>
-      <Tab label="Stats">
-        <Stats/>
-      </Tab>
-      <Tab label="Sim">
-        <Simulation/>
-      </Tab>
       <Tab label="Garden">
         <Garden/>
       </Tab>
+      <Tab label="Maps">
+        <Maps/>
+      </Tab>
+      <Tab label="Draw">
+        <Draw/>
+      </Tab>
       <Tab label="Nests">
         <Nests/>
+      </Tab>
+      <!-- <Tab label="Stats">
+        <Stats/>
+      </Tab> -->
+      <Tab label="Sim">
+        <Simulation/>
       </Tab>
       <Tab label="Visuals">
         <Visuals/>
@@ -40,7 +40,6 @@
 
 <style>
   .menu {
-    background-color: rgba(50,50,50,0.9);
     max-width: 100vw;
   }
 </style>

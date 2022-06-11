@@ -4,6 +4,8 @@ import type { Simulation } from './simulation';
   import { state } from './state';
 import Slider from './forms/Slider.vue';
 import Checkbox from './forms/Checkbox.vue';
+import { transferFields } from '@/utils/object';
+import { defaultVisualSettings } from '@/life/settings';
 
   const simulation = inject<Simulation>('simulation')!;
 
@@ -15,13 +17,17 @@ import Checkbox from './forms/Checkbox.vue';
     }
   })
 
+function reset() {
+  transferFields(state.visualSettings, defaultVisualSettings);
+}
+
 </script>
 
 <template>
   <Slider
     label="Pheromone exposure"
     v-model="state.visualSettings.shaders.pheromoneExposure"
-    :default="1"
+    :default="defaultVisualSettings.shaders.pheromoneExposure"
     :min="0.2"
     :max="5"
     :step="0.2"
@@ -29,7 +35,7 @@ import Checkbox from './forms/Checkbox.vue';
   <Slider
     label="Pheromone contrast"
     v-model="state.visualSettings.shaders.pheromoneContrast"
-    :default="1"
+    :default="defaultVisualSettings.shaders.pheromoneContrast"
     :min="0.4"
     :max="2"
     :step="0.1"
@@ -37,7 +43,7 @@ import Checkbox from './forms/Checkbox.vue';
   <Slider
     label="Max opacity"
     v-model="state.visualSettings.maxOpacity"
-    :default="0.15"
+    :default="defaultVisualSettings.maxOpacity"
     :min="0.0"
     :max="1"
     :step="0.01"
@@ -49,8 +55,9 @@ import Checkbox from './forms/Checkbox.vue';
   <Checkbox label="To home max layer enabled" v-model="state.visualSettings.toHomeMaxEnabled"/>
   <Checkbox label="To enemy layer enabled" v-model="state.visualSettings.toEnemyEnabled"/>
   <Checkbox label="To enemy max layer enabled" v-model="state.visualSettings.toEnemyMaxEnabled"/>
-
   <Checkbox label="Ants enabled" v-model="state.visualSettings.antsEnabled"/>
+
+  <button class="btn" :onclick="reset">Reset All</button>
 </template>
 
 <style scoped>

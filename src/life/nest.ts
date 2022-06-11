@@ -6,6 +6,7 @@ import { Application, Graphics } from "pixi.js";
 import { Ant } from "./ant";
 import type { Garden } from "./garden";
 import { PheromoneField } from "./pheromone";
+import { gardenSettings } from "./settings";
 
 export class Nest {
   static lastId = 1;
@@ -17,7 +18,7 @@ export class Nest {
   antCost = 20;
   food = 1;
   totalFood = this.food;
-  antsLimit = 1000;
+  antsLimit = gardenSettings.colonySizeLimit;
   totalAnts = 0;
   deadAnts = 0;
   freedom = 0.004;
@@ -52,7 +53,7 @@ export class Nest {
     this.sprite.y = y;
 
     this.sprite.interactive = true;
-    this.sprite.on("click", () => {
+    this.sprite.on("pointerdown", () => {
       state.trackedNest = this.id;
     });
 
@@ -69,6 +70,10 @@ export class Nest {
     this.app.stage.removeChild(this.sprite);
     while (this.ants.length) {
       this.ants[0].destroy();
+    }
+    const nestIndex = this.garden.nests.indexOf(this);
+    if (nestIndex !== -1) {
+      this.garden.nests.splice(nestIndex, 1);
     }
   }
 

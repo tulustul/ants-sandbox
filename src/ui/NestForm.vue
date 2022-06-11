@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { inject, onUnmounted, ref, watch } from 'vue';
+import { inject, ref, watch } from 'vue';
+import { useIntervalFn } from '@vueuse/core'
+
 import type { Simulation } from './simulation';
 import { state } from './state';
 
@@ -12,17 +14,13 @@ const ants = ref(nest?.ants.length)
 const totalAnts = ref(nest?.totalAnts)
 const deadAnts = ref(nest?.deadAnts)
 
-const interval = setInterval(() => {
+useIntervalFn(() => {
   food.value = nest?.food
   totalFood.value = nest?.totalFood
   ants.value = nest?.ants.length
   totalAnts.value = nest?.totalAnts
   deadAnts.value = nest?.deadAnts
-},100)
-
-onUnmounted(() => {
-  clearInterval(interval)
-})
+}, 100)
 
 watch(state, () => {
   nest = getTrackedNest()
@@ -32,10 +30,8 @@ function getTrackedNest() {
   return simulation.garden.nests.find(nest=>nest.id===state.trackedNest)
 }
 
-function destroyAllAnts() {
-  while(nest?.ants.length) {
-    nest.ants[0].destroy()
-  }
+function destroyNest() {
+  nest?.destroy()
 }
 
 </script>
@@ -47,8 +43,7 @@ function destroyAllAnts() {
   <div>Total ants: {{totalAnts}} </div>
   <div>Dead ants : {{deadAnts}} </div>
 
-  <button class="btn" :onclick="destroyAllAnts">Destroy all ants</button>
-
+  <button class="btn" :onclick="destroyNest">Destroy Nest</button>
 </template>
 
 <style>

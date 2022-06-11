@@ -20,14 +20,16 @@ import type { TabsState } from './tabsState';
 <template>
 <section>
   <div class="tabs">
-    <div
-      role="button"
-      class="tab"
-      :class="{active: state.selectedTab === tab}"
-      v-for="tab in state.tabs"
-      :onclick="() => openTab(tab)"
-    >
-      {{tab}}
+    <div class="tabs-inner">
+      <div
+        role="button"
+        class="tab"
+        :class="{active: state.selectedTab === tab}"
+        v-for="tab in state.tabs"
+        :onclick="() => openTab(tab)"
+      >
+        {{tab}}
+      </div>
     </div>
   </div>
   <slot/>
@@ -38,29 +40,44 @@ import type { TabsState } from './tabsState';
 <style scoped>
 section {
   display: flex;
+  --filter: blur(15px);
+  --tab-inactive-background:rgba(20,20,20,0.8);
+  --tab-hover-background:rgba(40,40,40,0.8);
+  --tab-active-background:rgba(50,50,50,0.8);
 }
 .tabs {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 1;
+}
+.tabs-inner {
+  backdrop-filter: var(--filter);
 }
 .tab {
   flex: 1;
   text-align: center;
   padding: 10px;
   cursor: pointer;
-  min-height: 50px;
-  max-height: 50px;
+  min-height: 40px;
+  max-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-right: var(--border-width) solid var(--border-color);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+.tab.active {
+  background-color: var(--tab-active-background);
+  border-right-color: transparent;
 }
 .tab:not(.active):hover {
-  background-color: rgba(0,0,0,0.4);
+  background-color: var(--tab-hover-background);
 }
 .tab:not(.active) {
-  background-color: rgba(0,0,0,0.8);
-  border-bottom: 1px solid grey;
+  background-color: var(--tab-inactive-background);
 
 }
 </style>

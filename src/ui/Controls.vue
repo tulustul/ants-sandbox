@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { PauseIcon, PlayIcon } from '@heroicons/vue/solid'
+
 import Slider from './forms/Slider.vue';
 import { state } from './state';
 
@@ -11,17 +13,18 @@ function togglePause() {
 
 <template>
   <div class="controls">
-    <button :onclick="togglePause">
-      {{state.simulationSettings.pause ? "Play" : "Pause"}}
+    <button class="btn btn-icon shadow" :onclick="togglePause">
+      <PlayIcon v-if="state.simulationSettings.pause"/>
+      <PauseIcon v-else/>
     </button>
 
     <Slider
-      class="grow"
+      class="grow shadow"
       label="Speed"
       v-model="state.simulationSettings.speed"
       :default="1"
       :min="0.1"
-      :max="10"
+      :max="5"
       :step="0.1"
     />
   </div>
@@ -31,11 +34,9 @@ function togglePause() {
   .controls {
     display: flex;
     align-items: flex-end;
-    gap: 15px;
+    gap: 10px;
   }
-  button {
-    border-radius: 50%;
-    height: 50px;
-    width: 50px;
+  .btn-icon {
+    --size: 45px;
   }
 </style>

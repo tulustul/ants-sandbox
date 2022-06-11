@@ -38,9 +38,16 @@ export class Field {
   draw(atX: number, atY: number, radius: number, value: number) {
     atX = Math.floor(atX / this.cellSize);
     atY = Math.floor(atY / this.cellSize);
-    const halfRadius = Math.floor(radius / 2);
-    for (let x = atX - halfRadius; x < atX + halfRadius; x++) {
-      for (let y = atY - halfRadius; y < atY + halfRadius; y++) {
+    const halfRadius = radius / 2;
+
+    const minX = Math.round(atX - halfRadius);
+    const maxX = minX + radius;
+
+    const minY = Math.round(atY - halfRadius);
+    const maxY = minY + radius;
+
+    for (let x = minX; x < maxX; x++) {
+      for (let y = minY; y < maxY; y++) {
         this.data[y * this.width + x] = value;
       }
     }

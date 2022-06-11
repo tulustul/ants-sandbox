@@ -1,12 +1,18 @@
 <script setup lang="ts">
+  import { defineProps, ref } from 'vue';
+  import { useIntervalFn } from '@vueuse/core'
+
   import { Nest } from '@/life/nest';
-import { colorToHexString } from '@/utils/colors';
-import { defineProps } from 'vue';
-import { state } from './state';
+  import { colorToHexString } from '@/utils/colors';
+  import { state } from './state';
 
   const props= defineProps({
     nest:{type:Nest,required:true},
   })
+
+  const antsCount = ref(props.nest.ants.length)
+
+  useIntervalFn(() => antsCount.value = props.nest.ants.length, 200)
 
   const backgroundColor = colorToHexString(props.nest.color);
 
@@ -17,11 +23,18 @@ import { state } from './state';
 
 <template>
   <h3 class="row" :onclick="track" :class="{tracked: nest.id === state.trackedNest}">
-    <div class="color-box" :style="{backgroundColor}"></div>Nest #{{nest.id}}
+    <span class="item-left">
+      <span class="color-box" :style="{backgroundColor}"></span>
+      <span>Nest #{{nest.id}}</span>
+    </span>
+    <span>{{antsCount}} Ants</span>
   </h3>
 </template>
 
 <style scoped>
+  .row {
+    justify-content: space-between;
+  }
   h3:hover:not(.tracked) {
     cursor: pointer;
     background-color: #444
@@ -32,5 +45,9 @@ import { state } from './state';
   }
   .tracked {
     background-color: #666;
+  }
+  .item-left {
+    display: flex;
+    gap: 10px;
   }
 </style>

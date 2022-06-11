@@ -8,7 +8,14 @@
 }
 
 :root {
+  --field-color: #4d4d4d;
+  --field-color-hover: #5d5d5d;
+  --field-primary-color: #008000;
+  --field-primary-color-hover: #009600;
+  --label-color: #3794c8;
 
+  --border-width: 2px;
+  --border-color: #4c4c4c;
 }
 
 body {
@@ -19,6 +26,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: white;
+  user-select: none;
   overflow: hidden;
 }
 
@@ -27,9 +35,37 @@ button {
   background-color: grey;
   color: white;
   cursor: pointer;
+  background-color: var(--field-color);
 }
+
 .btn {
   padding: 10px;
+  border-radius: 10px;
+}
+
+.btn:hover {
+  background-color: var(--field-color-hover);
+}
+
+.btn-primary {
+  background-color: var(--field-primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--field-primary-color-hover);
+}
+
+.btn-icon {
+  --size: 25px;
+  min-width: var(--size);
+  width: var(--size);
+  min-height: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
 }
 
 .short {
@@ -42,5 +78,10 @@ button {
 
 .row {
   display: flex;
+  align-items: center;
   gap: 10px;
+}
+
+.shadow {
+  box-shadow: 0 0 5px 0 #000000;
 }

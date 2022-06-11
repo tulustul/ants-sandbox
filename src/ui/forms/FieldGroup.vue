@@ -17,8 +17,9 @@
   .group {
     padding: 10px;
     padding-top: 0;
-    border: 1px solid black;
+    border: 1px solid var(--border-color);
     border-radius: 10px;
+    background-color: rgba(0,0,0,0.1);
   }
   h3 {
     margin-bottom: 10px;

@@ -68,6 +68,7 @@ async function onReady() {
 
 #app {
   height: 100vh;
+  overflow-y: hidden;
 }
 
 </style>

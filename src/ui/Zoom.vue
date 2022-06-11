@@ -1,11 +1,14 @@
 <script setup lang="ts">
   import { inject } from 'vue';
+  import { PlusIcon, MinusIcon } from '@heroicons/vue/solid'
+
   import type { Simulation } from './simulation';
 
   let simulation= inject<Simulation>('simulation')!;
 
   function zoomOut() {
     simulation.canvas.camera.scaleByWithEasing(0.8, window.innerWidth/2, window.innerHeight/2);
+
   }
 
   function zoomIn() {
@@ -15,8 +18,12 @@
 
 <template>
   <div class="zooms">
-    <button :onclick="zoomIn">+</button>
-    <button :onclick="zoomOut">-</button>
+    <button class="btn btn-icon shadow" :onclick="zoomIn">
+      <PlusIcon/>
+    </button>
+    <button class="btn btn-icon shadow" :onclick="zoomOut">
+      <MinusIcon/>
+    </button>
   </div>
 </template>
 
@@ -24,5 +31,6 @@
   .zooms {
     display: flex;
     flex-direction: column;
+    gap:5px
   }
 </style>
