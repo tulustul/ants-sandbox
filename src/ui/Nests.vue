@@ -19,11 +19,11 @@ function addNewNest() {
   <button class="btn btn-primary" :onclick="addNewNest">Add new nest</button>
 
   <div class="nests">
-    <NestItem v-for="nest of nests" :nest="nest" />
+    <NestItem v-for="nest of nests" v-bind:key="nest.primeId" :nest="nest" />
   </div>
 
   <div>
-    <NestForm v-if="state.trackedNest"/>
+    <NestForm v-if="state.trackedNest" />
   </div>
 </template>
 
@@ -33,6 +33,6 @@ function addNewNest() {
   max-height: 200px;
   display: flex;
   flex-direction: column;
-  gap:5px;
+  gap: 5px;
 }
 </style>

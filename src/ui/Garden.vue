@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import { inject } from 'vue';
-import type { Simulation } from './simulation';
-import Slider from './forms/Slider.vue';
-import {state} from './state';
-import {defaultGardenSettings} from '@/life/settings';
-import Checkbox from './forms/Checkbox.vue';
-import FieldGroup from './forms/FieldGroup.vue';
-import { transferFields } from '@/utils/object';
+import { inject } from "vue";
+import type { Simulation } from "./simulation";
+import Slider from "./forms/Slider.vue";
+import { state } from "./state";
+import { defaultGardenSettings } from "@/life/settings";
+import Checkbox from "./forms/Checkbox.vue";
+import FieldGroup from "./forms/FieldGroup.vue";
+import { transferFields } from "@/utils/object";
 
-const simulation = inject<Simulation>('simulation')!;
+const simulation = inject<Simulation>("simulation")!;
 
 function makeNewGarden() {
-  simulation.restart()
+  simulation.restart();
 }
 
 function reset() {
   transferFields(state.gardenSettings, defaultGardenSettings);
 }
-
 </script>
 
 <template>
@@ -73,7 +72,7 @@ function reset() {
   </FieldGroup>
 
   <FieldGroup>
-    <Checkbox label="Food enabled" v-model="state.gardenSettings.foodEnabled"/>
+    <Checkbox label="Food enabled" v-model="state.gardenSettings.foodEnabled" />
 
     <Slider
       label="Food scale"
@@ -104,7 +103,7 @@ function reset() {
   </FieldGroup>
 
   <FieldGroup>
-    <Checkbox label="Rock enabled" v-model="state.gardenSettings.rockEnabled"/>
+    <Checkbox label="Rock enabled" v-model="state.gardenSettings.rockEnabled" />
 
     <Slider
       label="Rock scale"
@@ -128,5 +127,4 @@ function reset() {
   <button class="btn" :onclick="reset">Reset All</button>
 </template>
 
-<style>
-</style>
+<style></style>

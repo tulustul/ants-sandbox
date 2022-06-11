@@ -3,7 +3,7 @@ export function compressFloat32Array(buffer: Float32Array) {
   let lastValue = buffer[0];
   let reps = 0;
 
-  for (let v of buffer) {
+  for (const v of buffer) {
     if (v === lastValue) {
       reps++;
       continue;

@@ -1,49 +1,49 @@
 <script setup lang="ts">
-import { provide, reactive, type ComponentInternalInstance } from 'vue';
-import type { TabsState } from './tabsState';
+import { provide, reactive } from "vue";
+import type { TabsState } from "./tabsState";
 
-  const state: TabsState = reactive({
-    selectedTab: '',
-    tabs: [],
-  });
+const state: TabsState = reactive({
+  selectedTab: "",
+  tabs: [],
+});
 
-  provide('tabsProvider', state);
+provide("tabsProvider", state);
 
-  function openTab(tab: string) {
-    if (state.selectedTab === tab) {
-      tab = ''
-    }
-    state.selectedTab = tab
+function openTab(tab: string) {
+  if (state.selectedTab === tab) {
+    tab = "";
   }
+  state.selectedTab = tab;
+}
 </script>
 
 <template>
-<section>
-  <div class="tabs">
-    <div class="tabs-inner">
-      <div
-        role="button"
-        class="tab"
-        :class="{active: state.selectedTab === tab}"
-        v-for="tab in state.tabs"
-        :onclick="() => openTab(tab)"
-      >
-        {{tab}}
+  <section>
+    <div class="tabs">
+      <div class="tabs-inner">
+        <div
+          role="button"
+          class="tab"
+          :class="{ active: state.selectedTab === tab }"
+          v-for="tab in state.tabs"
+          v-bind:key="tab"
+          :onclick="() => openTab(tab)"
+        >
+          {{ tab }}
+        </div>
       </div>
     </div>
-  </div>
-  <slot/>
-</section>
-
+    <slot />
+  </section>
 </template>
 
 <style scoped>
 section {
   display: flex;
   --filter: blur(15px);
-  --tab-inactive-background:rgba(20,20,20,0.8);
-  --tab-hover-background:rgba(40,40,40,0.8);
-  --tab-active-background:rgba(50,50,50,0.8);
+  --tab-inactive-background: rgba(20, 20, 20, 0.8);
+  --tab-hover-background: rgba(40, 40, 40, 0.8);
+  --tab-active-background: rgba(50, 50, 50, 0.8);
 }
 .tabs {
   display: flex;
@@ -78,6 +78,5 @@ section {
 }
 .tab:not(.active) {
   background-color: var(--tab-inactive-background);
-
 }
 </style>

@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { computed } from '@vue/reactivity';
-import { inject, onBeforeMount } from 'vue';
-import type { TabsState } from './tabsState';
+import { computed } from "vue";
+import { inject, onBeforeMount } from "vue";
+import type { TabsState } from "./tabsState";
 
 const props = defineProps({
-  label:String,
-})
+  label: String,
+});
 
-const tabsProvider = inject<TabsState>('tabsProvider')!
+const tabsProvider = inject<TabsState>("tabsProvider")!;
 
-const isVisible = computed(()=>tabsProvider.selectedTab===props.label);
+const isVisible = computed(() => tabsProvider.selectedTab === props.label);
 
 onBeforeMount(() => {
-  tabsProvider.tabs.push(props.label!)
-})
+  tabsProvider.tabs.push(props.label!);
+});
 </script>
 
 <template>
-<section class="tab" v-if="isVisible">
-  <slot />
-</section>
+  <section class="tab" v-if="isVisible">
+    <slot />
+  </section>
 </template>
 
 <style scoped>
@@ -27,7 +27,7 @@ onBeforeMount(() => {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  width:350px;
+  width: 350px;
   max-width: 100%;
   max-height: calc(100vh - 130px);
   overflow-y: auto;
