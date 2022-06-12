@@ -4,6 +4,7 @@ import { FieldsLayer } from "@/canvas/fieldsLayer";
 import { getDistanceBetween } from "@/utils/distance";
 import { Container, Graphics } from "pixi.js";
 import type { Ant } from "./ant";
+import type { Corpse } from "./corpse";
 import { Field } from "./field";
 import { FoodField } from "./food";
 import { Nest } from "./nest";
@@ -12,6 +13,7 @@ import { simulationSettings, visualSettings } from "./settings";
 export class Garden {
   nests: Nest[] = [];
   ants: Ant[] = [];
+  corpses: Corpse[] = [];
 
   fieldCellSize = 20;
 
@@ -32,7 +34,13 @@ export class Garden {
 
   fieldsLayer: FieldsLayer;
 
+  antsMap: Ant[][] = [];
+
+  corpsesContainer = new Container();
   antsContainer = new Container();
+
+  corpsesPhase = 0;
+  corpsesTime = 60;
 
   constructor(
     public canvas: Canvas,
@@ -51,6 +59,7 @@ export class Garden {
 
     for (let i = 0; i < this.antsField.data.length; i++) {
       this.antsField.data[i] = 1;
+      this.antsMap[i] = [];
     }
 
     this.foodGraphics = new FieldGraphics(this, [0, 255, 0]);
@@ -61,6 +70,7 @@ export class Garden {
 
     this.fieldsLayer = new FieldsLayer(this, canvas);
 
+    canvas.app.stage.addChild(this.corpsesContainer);
     canvas.app.stage.addChild(this.antsContainer);
   }
 
@@ -101,6 +111,17 @@ export class Garden {
 
     for (const nest of this.nests) {
       nest.tick();
+    }
+
+    for (
+      let i = this.corpsesPhase++;
+      i < this.corpses.length;
+      i += this.corpsesTime
+    ) {
+      this.corpses[i].tick(this.corpsesTime);
+    }
+    if (this.corpsesPhase === this.corpsesTime) {
+      this.corpsesPhase = 0;
     }
 
     this.foodField.tick();

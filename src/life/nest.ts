@@ -1,9 +1,9 @@
 import type { DumpedNest } from "@/types";
 import { state } from "@/ui/state";
-import { getNextColor } from "@/utils/colors";
+import { desaturateColor, getNextColor } from "@/utils/colors";
 import { getNextPrimeNumber } from "@/utils/primeNumbers";
 import { Application, Graphics } from "pixi.js";
-import { Ant } from "./ant";
+import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
 import { PheromoneField } from "./pheromone";
 import { gardenSettings } from "./settings";
@@ -20,10 +20,16 @@ export class Nest {
   totalFood = this.food;
   antsLimit = gardenSettings.colonySizeLimit;
   totalAnts = 0;
-  deadAnts = 0;
+  starvedAnts = 0;
+  killedAnts = 0;
+  killedEnemyAnts = 0;
+
   freedom = 0.004;
   color: number;
+  corpseColor: number;
   primeId: number;
+
+  warriors = 100;
 
   toFoodField: PheromoneField;
   toHomeField: PheromoneField;
@@ -37,6 +43,8 @@ export class Nest {
     public app: Application
   ) {
     this.color = getNextColor(this.garden);
+    this.corpseColor = desaturateColor(this.color, 0.6);
+
     this.primeId = getNextPrimeNumber(this.garden);
 
     this.toFoodField = new PheromoneField(this.garden);
@@ -48,6 +56,7 @@ export class Nest {
     this.sprite.beginFill(this.color, 1);
     this.sprite.drawCircle(0, 0, 50);
     this.sprite.endFill();
+    this.sprite.zIndex = -1;
 
     this.sprite.x = x;
     this.sprite.y = y;
@@ -90,8 +99,10 @@ export class Nest {
   }
 
   releaseAnt() {
+    const type = Math.random() > 0.65 ? AntType.warrior : AntType.worker;
+
     this.food = Math.max(0, this.food - 20);
-    const ant = new Ant(this.sprite.x, this.sprite.y, this);
+    const ant = new Ant(type, this.sprite.x, this.sprite.y, this);
     this.ants.push(ant);
     this.garden.ants.push(ant);
     this.totalAnts++;
@@ -113,6 +124,8 @@ export class Nest {
     this.toHomeField.tick();
     this.toEnemyField.tick();
   }
+
+  getEnemyDirection() {}
 
   dump(): DumpedNest {
     return {

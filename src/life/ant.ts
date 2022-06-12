@@ -5,19 +5,29 @@ import type { Nest } from "./nest";
 import type { PheromoneField } from "./pheromone";
 import { simulationSettings, type FieldSampler } from "./settings";
 import { resources } from "@/canvas/resources";
+import { Corpse } from "./corpse";
 
 export enum AntMode {
   toFood,
   toHome,
+  toEnemy,
   smellsFood,
+}
+
+export enum AntType {
+  worker,
+  warrior,
 }
 
 export class Ant {
   sprite: Sprite;
-  velocity = new Vec(0, 5);
+  velocity: Vec;
   maxEnergy = 1 + (Math.random() - 0.5) * 0.6;
   energy = this.maxEnergy;
   mode: AntMode = AntMode.toFood;
+
+  healthPoints: number;
+  maxHealthPoints: number;
 
   followPoint: Vec | null = null;
 
@@ -40,14 +50,25 @@ export class Ant {
   maxPheromoneStrength = 0.01;
   pheromoneStrength = this.maxPheromoneStrength;
 
-  constructor(x: number, y: number, public nest: Nest) {
-    this.sprite = new Sprite(resources.atlas!.textures["ant.png"]);
+  targetAnt: Ant | null = null;
+
+  isInAntsMap = false;
+
+  constructor(public type: AntType, x: number, y: number, public nest: Nest) {
+    this.velocity = new Vec(0, this.type === AntType.worker ? 5 : 6);
+    this.maxHealthPoints =
+      this.type === AntType.worker ? 30 : 200 + 100 * (Math.random() - 0.5);
+    this.healthPoints = this.maxHealthPoints;
+
+    const texture =
+      this.type === AntType.worker ? "ant.png" : "ant-warrior.png";
+    this.sprite = new Sprite(resources.atlas!.textures[texture]);
 
     this.sprite.anchor.set(0.5);
 
     this.sprite.x = x;
     this.sprite.y = y;
-
+    this.sprite.zIndex = 1;
     this.sprite.tint = nest.color;
 
     nest.garden.antsContainer.addChild(this.sprite);
@@ -61,7 +82,7 @@ export class Ant {
   destroy() {
     this.nest.ants.splice(this.nest.ants.indexOf(this), 1);
     this.nest.garden.ants.splice(this.nest.garden.ants.indexOf(this), 1);
-    this.nest.app.stage.removeChild(this.sprite);
+    // this.nest.garden.antsContainer.removeChild(this.sprite);
     this.sprite.destroy();
   }
 
@@ -73,9 +94,7 @@ export class Ant {
 
     if (this.energy <= 0) {
       this.die();
-      if (this.updatedLastAntCell) {
-        antsField.data[this.lastAntCellIndex] /= this.nest.primeId;
-      }
+      this.nest.starvedAnts++;
       return false;
     }
 
@@ -121,6 +140,15 @@ export class Ant {
 
     const antsFieldindex = antsField.getIndex(x, y);
     if (antsFieldindex !== this.lastAntCellIndex) {
+      if (this.isInAntsMap) {
+        const ants = this.nest.garden.antsMap[this.lastAntCellIndex];
+        const index = ants.indexOf(this);
+        if (index !== -1) {
+          ants.splice(index, 1);
+        }
+        this.isInAntsMap = false;
+      }
+
       if (this.updatedLastAntCell) {
         antsField.data[this.lastAntCellIndex] /= this.nest.primeId;
       }
@@ -133,9 +161,28 @@ export class Ant {
       }
 
       if (antsField.data[antsFieldindex] !== this.nest.primeId) {
-        this.enterToHomeSeeEnemy();
+        if (this.type === AntType.worker) {
+          this.enterToHomeSeeEnemy();
+        }
       }
       this.lastAntCellIndex = antsFieldindex;
+    }
+
+    if (this.targetAnt) {
+      if (this.targetAnt.healthPoints > 0 && this.targetAnt.energy > 0) {
+        this.attackAnt(this.targetAnt);
+      } else {
+        this.targetAnt = null;
+      }
+    } else if (antsField.data[antsFieldindex] !== this.nest.primeId) {
+      if (!this.isInAntsMap) {
+        this.nest.garden.antsMap[antsFieldindex].push(this);
+        this.isInAntsMap = true;
+      }
+
+      if (this.type === AntType.warrior) {
+        this.attackClosesAnt(antsFieldindex);
+      }
     }
 
     const fieldindex = this.nest.garden.foodField.getIndex(x, y);
@@ -156,6 +203,54 @@ export class Ant {
     }
 
     return true;
+  }
+
+  attackClosesAnt(antsFieldindex: number) {
+    let closestDistance = Infinity;
+    let closestAnt: Ant | null = null;
+    for (const ant of this.nest.garden.antsMap[antsFieldindex]) {
+      if (ant.nest === this.nest) {
+        continue;
+      }
+      const distance = getDistanceBetween(
+        this.sprite.x,
+        this.sprite.y,
+        ant.sprite.x,
+        ant.sprite.y
+      );
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestAnt = ant;
+      }
+    }
+
+    if (closestAnt) {
+      this.attackAnt(closestAnt);
+    }
+  }
+
+  attackAnt(ant: Ant) {
+    const newVel = new Vec(ant.sprite.x, ant.sprite.y);
+    newVel.sub(new Vec(this.sprite.x, this.sprite.y));
+    newVel.normalize();
+    newVel.mulScalar(6);
+    this.velocity = newVel;
+
+    const distance = getDistanceBetween(
+      this.sprite.x,
+      this.sprite.y,
+      ant.sprite.x,
+      ant.sprite.y
+    );
+
+    if (distance < 30) {
+      ant.healthPoints--;
+      if (ant.healthPoints <= 0) {
+        ant.die();
+        this.nest.killedEnemyAnts++;
+        ant.nest.killedAnts++;
+      }
+    }
   }
 
   slowTick() {
@@ -189,11 +284,13 @@ export class Ant {
     this.turnAround();
     this.resetRepel();
     this.pheromoneToFollow = this.nest.toHomeField;
-    if (this.food > 0) {
-      this.sprite.texture = resources.atlas!.textures["ant-with-food.png"];
-      this.pheromoneToDrop = this.nest.toFoodField;
-    } else {
-      this.noFood = true;
+    if (this.type === AntType.worker) {
+      if (this.food > 0) {
+        this.sprite.texture = resources.atlas!.textures["ant-with-food.png"];
+        this.pheromoneToDrop = this.nest.toFoodField;
+      } else {
+        this.noFood = true;
+      }
     }
   }
 
@@ -214,6 +311,14 @@ export class Ant {
     this.pheromoneToFollow = this.nest.toFoodField;
     this.pheromoneToDrop = this.nest.toHomeField;
     this.sprite.texture = resources.atlas!.textures["ant.png"];
+  }
+
+  enterToEnemy() {
+    this.mode = AntMode.toEnemy;
+    this.turnAround();
+    this.resetRepel();
+    this.pheromoneToFollow = this.nest.toEnemyField;
+    this.pheromoneToDrop = this.nest.toHomeField;
   }
 
   resetRepel() {
@@ -338,6 +443,7 @@ export class Ant {
   }
 
   visitNest() {
+    this.healthPoints = this.maxHealthPoints;
     this.pheromoneStrength = this.maxPheromoneStrength;
     if (this.food) {
       this.nest.addFood(3);
@@ -347,7 +453,11 @@ export class Ant {
     if (this.energy < this.maxEnergy) {
       return;
     }
-    this.enterToFood();
+    if (this.type === AntType.worker) {
+      this.enterToFood();
+    } else {
+      this.enterToEnemy();
+    }
   }
 
   dropPheromone(index: number, pheromone: PheromoneField, value: number) {
@@ -378,12 +488,27 @@ export class Ant {
   }
 
   die() {
-    const index = this.nest.garden.foodField.getIndex(
-      this.sprite.x,
-      this.sprite.y
-    );
-    this.nest.garden.foodField.data[index] += 20;
-    this.nest.deadAnts++;
+    if (this.isInAntsMap) {
+      const ants = this.nest.garden.antsMap[this.lastAntCellIndex];
+      const index = ants.indexOf(this);
+      if (index !== -1) {
+        ants.splice(index, 1);
+      }
+    }
+    if (this.updatedLastAntCell) {
+      this.nest.garden.antsField.data[this.lastAntCellIndex] /=
+        this.nest.primeId;
+    }
+
+    // const index = this.nest.garden.foodField.getIndex(
+    //   this.sprite.x,
+    //   this.sprite.y
+    // );
+    // this.nest.garden.foodField.data[index] += 20;
+
+    const corpse = new Corpse(this);
+    this.nest.garden.corpses.push(corpse);
+
     this.destroy();
   }
 }

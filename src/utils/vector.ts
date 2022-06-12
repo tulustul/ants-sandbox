@@ -16,4 +16,24 @@ export class Vec {
   rotation() {
     return Math.atan2(this.y, this.x);
   }
+
+  normalize() {
+    const length = this.length;
+    this.x /= length;
+    this.y /= length;
+  }
+
+  get length() {
+    return Math.sqrt(this.x * this.x + this.y * this.y);
+  }
+
+  mulScalar(factor: number) {
+    this.x *= factor;
+    this.y *= factor;
+  }
+
+  sub(vec: Vec) {
+    this.x -= vec.x;
+    this.y -= vec.y;
+  }
 }
