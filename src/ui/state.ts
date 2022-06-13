@@ -21,6 +21,8 @@ const _state = {
     type: null as DrawingType,
     radius: 10,
     intensity: 10,
+    horizontalMirror: false,
+    verticalMirror: false,
   },
   trackedNest: 1,
 };

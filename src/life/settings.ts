@@ -24,7 +24,7 @@ export const defaultGardenSettings = {
   width: 5_000,
   height: 5_000,
 
-  numberOfNests: 3,
+  numberOfNests: 4,
   startingAnts: 100,
   colonySizeLimit: 500,
 
@@ -36,6 +36,9 @@ export const defaultGardenSettings = {
   rockEnabled: true,
   rockScale: 0.6,
   rockSize: 0.43,
+
+  horizontalMirror: false,
+  verticalMirror: false,
 };
 
 export const defaultVisualSettings = {

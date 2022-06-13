@@ -1,3 +1,4 @@
+import { state } from "@/ui/state";
 import { Vec } from "@/utils/vector";
 import type { Garden } from "./garden";
 
@@ -46,6 +47,32 @@ export class Field {
     const minY = Math.round(atY - halfRadius);
     const maxY = minY + radius;
 
+    this._draw(minX, maxX, minY, maxY, value);
+
+    if (state.drawing.horizontalMirror) {
+      this._draw(this.width - maxX, this.width - minX, minY, maxY, value);
+    }
+    if (state.drawing.verticalMirror) {
+      this._draw(minX, maxX, this.height - maxY, this.height - minY, value);
+    }
+    if (state.drawing.horizontalMirror && state.drawing.verticalMirror) {
+      this._draw(
+        this.width - maxX,
+        this.width - minX,
+        this.height - maxY,
+        this.height - minY,
+        value
+      );
+    }
+  }
+
+  private _draw(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    value: number
+  ) {
     for (let x = minX; x < maxX; x++) {
       for (let y = minY; y < maxY; y++) {
         this.data[y * this.width + x] = value;

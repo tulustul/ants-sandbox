@@ -49,6 +49,9 @@ export class Simulation {
       rockEnabled: gardenSettings.rockEnabled,
       rockScale: gardenSettings.rockScale,
       rockSize: gardenSettings.rockSize,
+
+      horizontalMirror: gardenSettings.horizontalMirror,
+      verticalMirror: gardenSettings.verticalMirror,
     });
 
     for (let i = 0; i < gardenSettings.numberOfNests; i++) {

@@ -1,3 +1,4 @@
+import type { Field } from "./field";
 import type { Garden } from "./garden";
 import { ComplexNoise } from "./noise";
 import { processRock } from "./rock";
@@ -13,6 +14,9 @@ export type GardenGeneratorOptions = {
   rockEnabled: boolean;
   rockSize: number;
   rockScale: number;
+
+  horizontalMirror: boolean;
+  verticalMirror: boolean;
 };
 
 export function fillGarden(options: GardenGeneratorOptions) {
@@ -26,6 +30,16 @@ export function fillGarden(options: GardenGeneratorOptions) {
   }
 
   processRock(options.garden.rockField);
+
+  if (options.horizontalMirror) {
+    applyHorizontalMirror(options.garden.rockField);
+    applyHorizontalMirror(options.garden.foodField);
+  }
+
+  if (options.verticalMirror) {
+    applyVerticalMirror(options.garden.rockField);
+    applyVerticalMirror(options.garden.foodField);
+  }
 }
 
 function generateRocks(options: GardenGeneratorOptions) {
@@ -80,6 +94,28 @@ function generateFood(
       if (rock.data[index] === 0 && value > 1 - options.foodSize) {
         food.data[index] = options.foodRichness;
       }
+    }
+  }
+}
+
+function applyHorizontalMirror(field: Field) {
+  const xMiddle = Math.ceil(field.width / 2);
+  for (let x = xMiddle; x < field.width; x++) {
+    for (let y = 0; y < field.height; y++) {
+      const mirroredIndex = y * field.width + x;
+      const originalIndex = y * field.width + (xMiddle - (x - xMiddle));
+      field.data[mirroredIndex] = field.data[originalIndex];
+    }
+  }
+}
+
+function applyVerticalMirror(field: Field) {
+  const yMiddle = Math.ceil(field.height / 2);
+  for (let x = 0; x < field.width; x++) {
+    for (let y = yMiddle; y < field.height; y++) {
+      const mirroredIndex = y * field.width + x;
+      const originalIndex = (yMiddle - (y - yMiddle)) * field.width + x;
+      field.data[mirroredIndex] = field.data[originalIndex];
     }
   }
 }

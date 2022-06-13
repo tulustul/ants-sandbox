@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { inject, ref } from "vue";
+import { inject, ref, type Ref } from "vue";
 
 import { useIntervalFn } from "@vueuse/core";
 import type { Simulation } from "./simulation";
 import Tabs from "./widgets/tabs/Tabs.vue";
 import Tab from "./widgets/tabs/Tab.vue";
 import NestsChart from "./widgets/NestsChart.vue";
+import type { Nest } from "@/life/nest";
 
 const simulation = inject<Simulation>("simulation")!;
 
-const nests = ref(simulation.garden.nests);
+const nests = ref(simulation.garden.nests) as Ref<Nest[]>;
 
 useIntervalFn(() => {
   nests.value = simulation.garden.nests;
@@ -42,6 +43,4 @@ useIntervalFn(() => {
   </Tabs>
 </template>
 
-<style scoped>
-:roo ;
-</style>
+<style scoped></style>

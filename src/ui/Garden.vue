@@ -124,6 +124,15 @@ function reset() {
     />
   </FieldGroup>
 
+  <Checkbox
+    label="Horizontal mirror"
+    v-model="state.gardenSettings.horizontalMirror"
+  />
+  <Checkbox
+    label="Vertical mirror"
+    v-model="state.gardenSettings.verticalMirror"
+  />
+
   <button class="btn" :onclick="reset">Reset All</button>
 </template>
 

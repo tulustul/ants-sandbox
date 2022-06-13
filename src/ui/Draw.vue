@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { state, type DrawingType } from "./state";
 import Slider from "./forms/Slider.vue";
+import Checkbox from "./forms/Checkbox.vue";
 
 function toggleDraw(type: DrawingType) {
   if (state.drawing.type === type) {
@@ -44,6 +45,12 @@ function toggleDraw(type: DrawingType) {
     :max="100"
     :step="1"
   />
+
+  <Checkbox
+    label="Horizontal mirror"
+    v-model="state.drawing.horizontalMirror"
+  />
+  <Checkbox label="Vertical mirror" v-model="state.drawing.verticalMirror" />
 </template>
 
 <style></style>

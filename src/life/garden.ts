@@ -8,7 +8,7 @@ import type { Corpse } from "./corpse";
 import { Field } from "./field";
 import { FoodField } from "./food";
 import { Nest } from "./nest";
-import { simulationSettings, visualSettings } from "./settings";
+import { gardenSettings, simulationSettings, visualSettings } from "./settings";
 
 export class Garden {
   nests: Nest[] = [];
@@ -55,7 +55,7 @@ export class Garden {
 
     this.foodField = new FoodField(this);
     this.rockField = new Field(this);
-    this.antsField = new Field(this, this.fieldCellSize * 3);
+    this.antsField = new Field(this, this.fieldCellSize * 6);
 
     for (let i = 0; i < this.antsField.data.length; i++) {
       this.antsField.data[i] = 1;
@@ -144,6 +144,54 @@ export class Garden {
   }
 
   placeRandomNest(numberOfAnts: number) {
+    // if (gardenSettings.horizontalMirror && gardenSettings.verticalMirror) {
+
+    // }
+
+    let x = 0;
+    let y = 0;
+
+    if (gardenSettings.horizontalMirror && gardenSettings.verticalMirror) {
+      if (this.nests.length % 4 === 1) {
+        const lastNest = this.nests[this.nests.length - 1];
+        [x, y] = [this.width - lastNest.sprite.x, lastNest.sprite.y];
+      } else if (this.nests.length % 4 === 2) {
+        const lastNest = this.nests[this.nests.length - 2];
+        [x, y] = [lastNest.sprite.x, this.height - lastNest.sprite.y];
+      } else if (this.nests.length % 4 === 3) {
+        const lastNest = this.nests[this.nests.length - 3];
+        [x, y] = [
+          this.width - lastNest.sprite.x,
+          this.height - lastNest.sprite.y,
+        ];
+      }
+    } else if (gardenSettings.horizontalMirror) {
+      if (this.nests.length % 2 === 1) {
+        const lastNest = this.nests[this.nests.length - 1];
+        [x, y] = [this.width - lastNest.sprite.x, lastNest.sprite.y];
+      }
+    } else if (gardenSettings.verticalMirror) {
+      if (this.nests.length % 2 === 1) {
+        const lastNest = this.nests[this.nests.length - 1];
+        [x, y] = [lastNest.sprite.x, this.height - lastNest.sprite.y];
+      }
+    }
+
+    if (!x || !y) {
+      [x, y] = this.getRandomNestPosition();
+    }
+
+    if (!x || !y) {
+      return;
+    }
+
+    const nest = new Nest(x, y, this, this.canvas.app);
+    nest.setStartingAntsNumber(numberOfAnts);
+
+    this.nests.push(nest);
+  }
+
+  getRandomNestPosition() {
     const minimalDistanceFromOtherNest =
       Math.min(this.width, this.height) / this.nests.length / 2;
 
@@ -164,13 +212,9 @@ export class Garden {
         continue;
       }
 
-      const nest = new Nest(x, y, this, this.canvas.app);
-      nest.setStartingAntsNumber(numberOfAnts);
-
-      this.nests.push(nest);
-
-      return;
+      return [x, y];
     }
+    return [0, 0];
   }
 
   getClosesNestDistance(x: number, y: number): number | null {
