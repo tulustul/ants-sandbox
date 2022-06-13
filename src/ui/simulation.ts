@@ -17,6 +17,8 @@ export class Simulation {
 
   tickAccumulator = 0;
 
+  totalTicks = 0;
+
   constructor(public canvas: Canvas) {}
 
   start() {
@@ -69,7 +71,7 @@ export class Simulation {
 
     while (this.tickAccumulator > 1) {
       this.tickAccumulator--;
-      this.garden.tick();
+      this.garden.tick(this.totalTicks++);
     }
 
     const t1 = performance.now();

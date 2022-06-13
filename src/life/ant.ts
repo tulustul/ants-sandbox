@@ -94,7 +94,7 @@ export class Ant {
 
     if (this.energy <= 0) {
       this.die();
-      this.nest.starvedAnts++;
+      this.nest.stats.starvedAnts++;
       return false;
     }
 
@@ -247,8 +247,8 @@ export class Ant {
       ant.healthPoints--;
       if (ant.healthPoints <= 0) {
         ant.die();
-        this.nest.killedEnemyAnts++;
-        ant.nest.killedAnts++;
+        this.nest.stats.killedEnemyAnts++;
+        ant.nest.stats.killedAnts++;
       }
     }
   }
@@ -500,15 +500,16 @@ export class Ant {
         this.nest.primeId;
     }
 
-    // const index = this.nest.garden.foodField.getIndex(
-    //   this.sprite.x,
-    //   this.sprite.y
-    // );
-    // this.nest.garden.foodField.data[index] += 20;
-
     const corpse = new Corpse(this);
     this.nest.garden.corpses.push(corpse);
 
     this.destroy();
+
+    if (this.type === AntType.worker) {
+      this.nest.stats.workers--;
+    } else {
+      this.nest.stats.warriors--;
+    }
+    this.nest.stats.livingAnts--;
   }
 }

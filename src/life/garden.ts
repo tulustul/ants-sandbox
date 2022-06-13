@@ -40,7 +40,7 @@ export class Garden {
   antsContainer = new Container();
 
   corpsesPhase = 0;
-  corpsesTime = 60;
+  corpsesTime = 120;
 
   constructor(
     public canvas: Canvas,
@@ -83,7 +83,7 @@ export class Garden {
     this.canvas.app.stage.addChild(this.background);
   }
 
-  tick() {
+  tick(totalTicks: number) {
     this.antSlowTickOffset++;
     this.antPreciseTickOffset++;
 
@@ -110,7 +110,7 @@ export class Garden {
     }
 
     for (const nest of this.nests) {
-      nest.tick();
+      nest.tick(totalTicks);
     }
 
     for (

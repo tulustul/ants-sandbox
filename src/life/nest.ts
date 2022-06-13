@@ -8,6 +8,34 @@ import type { Garden } from "./garden";
 import { PheromoneField } from "./pheromone";
 import { gardenSettings } from "./settings";
 
+export type NestStats = {
+  food: number;
+  totalFood: number;
+
+  livingAnts: number;
+  totalAnts: number;
+  starvedAnts: number;
+  killedAnts: number;
+  killedEnemyAnts: number;
+
+  workers: number;
+  warriors: number;
+};
+
+export type NestHistory = {
+  food: number[];
+  totalFood: number[];
+
+  livingAnts: number[];
+  totalAnts: number[];
+  starvedAnts: number[];
+  killedAnts: number[];
+  killedEnemyAnts: number[];
+
+  workers: number[];
+  warriors: number[];
+};
+
 export class Nest {
   static lastId = 1;
 
@@ -16,20 +44,41 @@ export class Nest {
   ants: Ant[] = [];
   startingsAnts = 1;
   antCost = 20;
-  food = 1;
-  totalFood = this.food;
+
+  stats: NestStats = {
+    food: 0,
+    totalFood: 0,
+
+    livingAnts: 0,
+    totalAnts: 0,
+    starvedAnts: 0,
+    killedAnts: 0,
+    killedEnemyAnts: 0,
+
+    workers: 0,
+    warriors: 0,
+  };
+
+  history: NestHistory = {
+    food: [],
+    totalFood: [],
+
+    livingAnts: [],
+    totalAnts: [],
+    starvedAnts: [],
+    killedAnts: [],
+    killedEnemyAnts: [],
+
+    workers: [],
+    warriors: [],
+  };
+
   antsLimit = gardenSettings.colonySizeLimit;
-  totalAnts = 0;
-  starvedAnts = 0;
-  killedAnts = 0;
-  killedEnemyAnts = 0;
 
   freedom = 0.004;
   color: number;
   corpseColor: number;
   primeId: number;
-
-  warriors = 100;
 
   toFoodField: PheromoneField;
   toHomeField: PheromoneField;
@@ -70,8 +119,8 @@ export class Nest {
   }
 
   setStartingAntsNumber(numberOfAnts: number) {
-    this.food = numberOfAnts * this.antCost + numberOfAnts * 10;
-    this.totalFood = this.food;
+    this.stats.food = numberOfAnts * this.antCost + numberOfAnts * 10;
+    this.stats.totalFood = this.stats.food;
   }
 
   destroy() {
@@ -87,31 +136,38 @@ export class Nest {
   }
 
   addFood(food: number) {
-    this.food += food;
-    this.totalFood += food;
+    this.stats.food += food;
+    this.stats.totalFood += food;
   }
 
   feedAnt(ant: Ant) {
-    if (this.food > 0) {
+    if (this.stats.food > 0) {
       ant.energy = ant.maxEnergy;
-      this.food--;
+      this.stats.food--;
     }
   }
 
   releaseAnt() {
     const type = Math.random() > 0.65 ? AntType.warrior : AntType.worker;
 
-    this.food = Math.max(0, this.food - 20);
+    if (type === AntType.worker) {
+      this.stats.workers++;
+    } else {
+      this.stats.warriors++;
+    }
+
+    this.stats.food = Math.max(0, this.stats.food - 20);
     const ant = new Ant(type, this.sprite.x, this.sprite.y, this);
     this.ants.push(ant);
     this.garden.ants.push(ant);
-    this.totalAnts++;
+    this.stats.totalAnts++;
+    this.stats.livingAnts++;
   }
 
-  tick() {
+  tick(totalTick: number) {
     if (
       this.ants.length < this.antsLimit &&
-      this.food > this.ants.length * 10
+      this.stats.food > this.ants.length * 10
     ) {
       this.releaseAnt();
     }
@@ -123,9 +179,25 @@ export class Nest {
     this.toFoodField.tick();
     this.toHomeField.tick();
     this.toEnemyField.tick();
+
+    if (totalTick % (60 * 2) === 0) {
+      this.storeStats();
+    }
   }
 
-  getEnemyDirection() {}
+  storeStats() {
+    this.history.food.push(this.stats.food);
+    this.history.totalFood.push(this.stats.totalFood);
+
+    this.history.warriors.push(this.stats.warriors);
+    this.history.workers.push(this.stats.workers);
+    this.history.livingAnts.push(this.stats.livingAnts);
+    this.history.totalAnts.push(this.stats.totalAnts);
+
+    this.history.killedAnts.push(this.stats.killedAnts);
+    this.history.killedEnemyAnts.push(this.stats.killedEnemyAnts);
+    this.history.starvedAnts.push(this.stats.starvedAnts);
+  }
 
   dump(): DumpedNest {
     return {

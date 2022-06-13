@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Tab from "./widgets/tabs/Tab.vue";
-import Tabs from "./widgets/tabs/Tabs.vue";
+import { Tabs, Tab } from "./widgets";
 import Simulation from "./Simulation.vue";
 import Draw from "./Draw.vue";
 import Maps from "./Maps.vue";
 import Visuals from "./Visuals.vue";
 import Nests from "./Nests.vue";
 import Garden from "./Garden.vue";
+import NestsStats from "./NestsStats.vue";
 </script>
 
 <template>
@@ -24,9 +24,9 @@ import Garden from "./Garden.vue";
       <Tab label="Nests">
         <Nests />
       </Tab>
-      <!-- <Tab label="Stats">
-        <Stats/>
-      </Tab> -->
+      <Tab label="Stats" :paddings="false">
+        <NestsStats />
+      </Tab>
       <Tab label="Sim">
         <Simulation />
       </Tab>

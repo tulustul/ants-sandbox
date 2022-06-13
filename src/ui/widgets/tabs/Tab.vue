@@ -4,7 +4,18 @@ import { inject, onBeforeMount } from "vue";
 import type { TabsState } from "./tabsState";
 
 const props = defineProps({
-  label: String,
+  label: {
+    type: String,
+    required: true,
+  },
+  decorations: {
+    type: Boolean,
+    default: true,
+  },
+  paddings: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const tabsProvider = inject<TabsState>("tabsProvider")!;
@@ -12,12 +23,15 @@ const tabsProvider = inject<TabsState>("tabsProvider")!;
 const isVisible = computed(() => tabsProvider.selectedTab === props.label);
 
 onBeforeMount(() => {
-  tabsProvider.tabs.push(props.label!);
+  if (tabsProvider.selectFirst && !tabsProvider.selectedTab) {
+    tabsProvider.selectedTab = props.label;
+  }
+  tabsProvider.tabs.push(props.label);
 });
 </script>
 
 <template>
-  <section class="tab" v-if="isVisible">
+  <section class="tab" :class="{ decorations, paddings }" v-if="isVisible">
     <slot />
   </section>
 </template>
@@ -26,18 +40,22 @@ onBeforeMount(() => {
 .tab {
   display: flex;
   flex-direction: column;
-  padding: 10px;
   width: 350px;
   max-width: 100%;
   max-height: calc(100vh - 130px);
   overflow-y: auto;
   gap: 10px;
+}
+.paddings {
+  padding: 10px;
+}
+.decorations {
   background-color: var(--tab-active-background);
   border: var(--border-width) solid var(--border-color);
   border-top: 0;
   border-radius: 0 0 10px 10px;
-  margin-left: calc(var(--border-width) * -1);
   backdrop-filter: var(--filter);
+  margin-left: calc(var(--border-width) * -1);
 }
 @media only screen and (max-width: 450px) {
   .tab {

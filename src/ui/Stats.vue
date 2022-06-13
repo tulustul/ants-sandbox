@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from "vue";
+import { useIntervalFn } from "@vueuse/core";
+import { ref } from "vue";
 import { state } from "./state";
 
 const numberOfAnts = ref(state.simulationStats.numberOfAnts);
 const simTime = ref(state.simulationStats.simulationTime);
 
-const interval = setInterval(() => {
+useIntervalFn(() => {
   numberOfAnts.value = state.simulationStats.numberOfAnts;
   simTime.value = state.simulationStats.simulationTime;
 }, 200);
-
-onBeforeUnmount(() => clearInterval(interval));
 </script>
 
 <template>

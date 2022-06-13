@@ -4,7 +4,7 @@ import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
 
 export class Corpse {
-  decayTime = 60 * 60;
+  decayTime = 60 * 60 * 3;
   decayTimeLeft = this.decayTime;
   sprite: Sprite;
   garden: Garden;

@@ -8,23 +8,11 @@ import { state } from "./state";
 const simulation = inject<Simulation>("simulation")!;
 let nest = getTrackedNest();
 
-const food = ref(nest?.food);
-const totalFood = ref(nest?.totalFood);
-const ants = ref(nest?.ants.length);
-const totalAnts = ref(nest?.totalAnts);
-const starvedAnts = ref(nest?.starvedAnts);
-const killedAnts = ref(nest?.killedAnts);
-const killedEnemyAnts = ref(nest?.killedEnemyAnts);
+const stats = ref(nest!.stats);
 
 useIntervalFn(() => {
-  food.value = nest?.food;
-  totalFood.value = nest?.totalFood;
-  ants.value = nest?.ants.length;
-  totalAnts.value = nest?.totalAnts;
-  starvedAnts.value = nest?.starvedAnts;
-  killedAnts.value = nest?.killedAnts;
-  killedEnemyAnts.value = nest?.killedEnemyAnts;
-}, 100);
+  stats.value = { ...nest!.stats };
+}, 200);
 
 watch(state, () => {
   nest = getTrackedNest();
@@ -40,14 +28,17 @@ function destroyNest() {
 </script>
 
 <template>
-  <div>Current food: {{ food }}</div>
-  <div>Total food: {{ totalFood }}</div>
-  <div>Current ants: {{ ants }}</div>
-  <div>Total ants: {{ totalAnts }}</div>
+  <div>Current food: {{ stats.food }}</div>
+  <div>Total food: {{ stats.totalFood }}</div>
 
-  <div>Starved ants : {{ starvedAnts }}</div>
-  <div>Killed ants : {{ killedAnts }}</div>
-  <div>Killed enemy ants : {{ killedEnemyAnts }}</div>
+  <div>Workers: {{ stats.workers }}</div>
+  <div>Warriors: {{ stats.warriors }}</div>
+  <div>Living ants: {{ stats.livingAnts }}</div>
+  <div>Total ants: {{ stats.totalAnts }}</div>
+
+  <div>Starved ants : {{ stats.starvedAnts }}</div>
+  <div>Killed ants : {{ stats.killedAnts }}</div>
+  <div>Killed enemy ants : {{ stats.killedEnemyAnts }}</div>
 
   <button class="btn" :onclick="destroyNest">Destroy Nest</button>
 </template>
