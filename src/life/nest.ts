@@ -76,6 +76,9 @@ export class Nest {
   antsLimit = gardenSettings.colonySizeLimit;
 
   freedom = 0.004;
+  aggresivenessCoef = 0.1;
+  cumulatedAggresiveness = 0;
+
   color: number;
   corpseColor: number;
   primeId: number;
@@ -148,7 +151,11 @@ export class Nest {
   }
 
   releaseAnt() {
-    const type = Math.random() > 0.65 ? AntType.warrior : AntType.worker;
+    const warriorThreshold =
+      this.aggresivenessCoef +
+      this.cumulatedAggresiveness / (this.ants.length + 1);
+    const type =
+      Math.random() < warriorThreshold ? AntType.warrior : AntType.worker;
 
     if (type === AntType.worker) {
       this.stats.workers++;
@@ -172,17 +179,32 @@ export class Nest {
       this.releaseAnt();
     }
 
-    if (Math.random() > 0.99) {
-      this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000);
-    }
-
     this.toFoodField.tick();
     this.toHomeField.tick();
     this.toEnemyField.tick();
 
     if (totalTick % (60 * 2) === 0) {
       this.storeStats();
+      this.cumulatedAggresiveness *= 0.99;
     }
+
+    if (this.ants.length === 0) {
+      this.sprite.visible = false;
+    } else {
+      if (Math.random() > 0.99) {
+        this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000);
+      }
+    }
+  }
+
+  onAntDied(ant: Ant) {
+    if (ant.type === AntType.worker) {
+      this.stats.workers--;
+    } else {
+      this.stats.warriors--;
+    }
+    this.stats.livingAnts--;
+    this.cumulatedAggresiveness++;
   }
 
   storeStats() {

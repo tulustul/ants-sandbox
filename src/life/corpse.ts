@@ -18,6 +18,10 @@ export class Corpse {
     this.sprite = new Sprite(resources.atlas!.textures[texture]);
 
     this.sprite.anchor.set(0.5);
+    if (ant.type === AntType.warrior) {
+      this.sprite.scale.x = 1.25;
+      this.sprite.scale.y = 1.25;
+    }
 
     this.sprite.x = ant.sprite.x;
     this.sprite.y = ant.sprite.y;

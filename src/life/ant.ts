@@ -55,7 +55,7 @@ export class Ant {
   isInAntsMap = false;
 
   constructor(public type: AntType, x: number, y: number, public nest: Nest) {
-    this.velocity = new Vec(0, this.type === AntType.worker ? 5 : 6);
+    this.velocity = new Vec(0, this.type === AntType.worker ? 4 : 5);
     this.maxHealthPoints =
       this.type === AntType.worker ? 30 : 200 + 100 * (Math.random() - 0.5);
     this.healthPoints = this.maxHealthPoints;
@@ -65,6 +65,10 @@ export class Ant {
     this.sprite = new Sprite(resources.atlas!.textures[texture]);
 
     this.sprite.anchor.set(0.5);
+    if (this.type === AntType.warrior) {
+      this.sprite.scale.x = 1.25;
+      this.sprite.scale.y = 1.25;
+    }
 
     this.sprite.x = x;
     this.sprite.y = y;
@@ -276,6 +280,8 @@ export class Ant {
       this.toFood();
     } else if (this.mode === AntMode.toHome) {
       this.toHome();
+    } else if (this.mode === AntMode.toEnemy) {
+      this.toEnemy();
     }
   }
 
@@ -442,6 +448,13 @@ export class Ant {
     }
   }
 
+  toEnemy() {
+    if (this.energy <= this.maxEnergy * 0.6) {
+      this.enterToHome();
+      return;
+    }
+  }
+
   visitNest() {
     this.healthPoints = this.maxHealthPoints;
     this.pheromoneStrength = this.maxPheromoneStrength;
@@ -503,13 +516,14 @@ export class Ant {
     const corpse = new Corpse(this);
     this.nest.garden.corpses.push(corpse);
 
-    this.destroy();
+    this.nest.onAntDied(this);
 
-    if (this.type === AntType.worker) {
-      this.nest.stats.workers--;
-    } else {
-      this.nest.stats.warriors--;
-    }
-    this.nest.stats.livingAnts--;
+    // const index = this.nest.garden.foodField.getIndex(
+    //   this.sprite.x,
+    //   this.sprite.y
+    // );
+    // this.nest.garden.foodField.data[index] += 10;
+
+    this.destroy();
   }
 }
