@@ -462,7 +462,7 @@ export class Ant {
       this.nest.addFood(3);
       this.food = 0;
     }
-    this.nest.feedAnt(this);
+    this.nest.visit(this);
     if (this.energy < this.maxEnergy) {
       return;
     }

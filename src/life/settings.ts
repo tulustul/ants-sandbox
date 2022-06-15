@@ -12,6 +12,7 @@ export const defaultSimulationSettings = {
   pause: false,
   pheromoneDissipation: 1.003,
   antSeekRandomness: 3,
+  antsBirthRate: 1 / 60,
   performance: {
     antSlowTickTimeout: 2,
     antPreciseTickTimeout: 180,

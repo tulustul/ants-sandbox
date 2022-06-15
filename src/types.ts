@@ -8,7 +8,7 @@ export type DumpedGarden = {
 export type DumpedNest = {
   x: number;
   y: number;
-  startingAnts: number;
+  antsToRelease: number;
   antsLimit: number;
 };
 

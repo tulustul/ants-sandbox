@@ -9,11 +9,11 @@ const simulation = inject<Simulation>("simulation")!;
 let nest = getTrackedNest()!;
 
 const stats = ref(nest.stats);
-const cumulatedAggresiveness = ref(nest.cumulatedAggresiveness);
+const warCoef = ref(nest.warCoef);
 
 useIntervalFn(() => {
   stats.value = { ...nest.stats };
-  cumulatedAggresiveness.value = nest.cumulatedAggresiveness;
+  warCoef.value = nest.warCoef;
 }, 200);
 
 watch(state, () => {
@@ -30,7 +30,7 @@ function destroyNest() {
 </script>
 
 <template>
-  <div>Current food: {{ stats.food }}</div>
+  <div>Current food: {{ stats.food.toFixed(0) }}</div>
   <div>Total food: {{ stats.totalFood }}</div>
 
   <div>Workers: {{ stats.workers }}</div>
@@ -42,7 +42,7 @@ function destroyNest() {
   <div>Killed ants : {{ stats.killedAnts }}</div>
   <div>Killed enemy ants : {{ stats.killedEnemyAnts }}</div>
 
-  <div>Cumulated aggresiveness : {{ cumulatedAggresiveness }}</div>
+  <div>War coefficient : {{ warCoef.toFixed(3) }}</div>
 
   <button class="btn" :onclick="destroyNest">Destroy Nest</button>
 </template>

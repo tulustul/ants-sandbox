@@ -122,7 +122,7 @@ export class Simulation {
         this.garden,
         this.canvas.app
       );
-      nest.startingsAnts = nestData.startingAnts;
+      nest.antsToRelease = nestData.antsToRelease;
       nest.antsLimit = nestData.antsLimit;
       this.garden.nests.push(nest);
     }

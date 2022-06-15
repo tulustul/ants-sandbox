@@ -20,7 +20,12 @@ useIntervalFn(() => {
 <template>
   <Tabs direction="horizontal" :selectFirst="true">
     <Tab label="Current" :decorations="false">
-      <NestsChart :nests="nests" label="Current food" field="food" />
+      <NestsChart
+        :nests="nests"
+        label="Current food"
+        field="food"
+        :yAxisPrecision="0"
+      />
       <NestsChart :nests="nests" label="Living ants" field="livingAnts" />
       <NestsChart :nests="nests" label="Workers" field="workers" />
     </Tab>
@@ -33,6 +38,12 @@ useIntervalFn(() => {
         field="killedEnemyAnts"
       />
       <NestsChart :nests="nests" label="Warriors" field="warriors" />
+      <NestsChart
+        :nests="nests"
+        label="War coefficient"
+        field="warCoef"
+        :yAxisPrecision="3"
+      />
     </Tab>
 
     <Tab label="Totals" :decorations="false">

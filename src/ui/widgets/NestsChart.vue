@@ -17,13 +17,14 @@ defineProps({
     type: String as PropType<keyof NestHistory>,
     required: true,
   },
+  yAxisPrecision: Number,
 });
 </script>
 
 <template>
   <div>
     <h3>{{ label }}</h3>
-    <Chart>
+    <Chart :yAxisPrecision="yAxisPrecision">
       <ChartLine
         v-for="nest of nests"
         v-bind:key="nest.primeId"

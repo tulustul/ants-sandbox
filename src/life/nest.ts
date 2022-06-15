@@ -6,7 +6,7 @@ import { Application, Graphics } from "pixi.js";
 import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
 import { PheromoneField } from "./pheromone";
-import { gardenSettings } from "./settings";
+import { gardenSettings, simulationSettings } from "./settings";
 
 export type NestStats = {
   food: number;
@@ -31,6 +31,7 @@ export type NestHistory = {
   starvedAnts: number[];
   killedAnts: number[];
   killedEnemyAnts: number[];
+  warCoef: number[];
 
   workers: number[];
   warriors: number[];
@@ -42,7 +43,8 @@ export class Nest {
   id = Nest.lastId++;
   sprite: Graphics;
   ants: Ant[] = [];
-  startingsAnts = 1;
+  startingAnts = 1;
+  antsToRelease = 1;
   antCost = 20;
 
   stats: NestStats = {
@@ -68,16 +70,19 @@ export class Nest {
     starvedAnts: [],
     killedAnts: [],
     killedEnemyAnts: [],
+    warCoef: [],
 
     workers: [],
     warriors: [],
   };
 
   antsLimit = gardenSettings.colonySizeLimit;
+  lastAntBirth = 0;
+  warCoef = 0;
+  cumulatedAggresiveness = 0;
 
   freedom = 0.004;
-  aggresivenessCoef = 0.1;
-  cumulatedAggresiveness = 0;
+  aggresivenessCoef = Math.random();
 
   color: number;
   corpseColor: number;
@@ -124,6 +129,7 @@ export class Nest {
   setStartingAntsNumber(numberOfAnts: number) {
     this.stats.food = numberOfAnts * this.antCost + numberOfAnts * 10;
     this.stats.totalFood = this.stats.food;
+    this.antsToRelease = numberOfAnts;
   }
 
   destroy() {
@@ -143,19 +149,20 @@ export class Nest {
     this.stats.totalFood += food;
   }
 
-  feedAnt(ant: Ant) {
+  visit(ant: Ant) {
     if (this.stats.food > 0) {
+      this.stats.food -= ant.maxEnergy - ant.energy;
       ant.energy = ant.maxEnergy;
-      this.stats.food--;
+    }
+    if (ant.pheromoneToDrop === this.toEnemyField) {
+      this.warCoef +=
+        (this.aggresivenessCoef / this.ants.length) * (1 - this.warCoef);
     }
   }
 
   releaseAnt() {
-    const warriorThreshold =
-      this.aggresivenessCoef +
-      this.cumulatedAggresiveness / (this.ants.length + 1);
     const type =
-      Math.random() < warriorThreshold ? AntType.warrior : AntType.worker;
+      Math.random() < this.warCoef ? AntType.warrior : AntType.worker;
 
     if (type === AntType.worker) {
       this.stats.workers++;
@@ -163,7 +170,10 @@ export class Nest {
       this.stats.warriors++;
     }
 
-    this.stats.food = Math.max(0, this.stats.food - 20);
+    if (!this.antsToRelease) {
+      this.stats.food = Math.max(0, this.stats.food - 20);
+    }
+
     const ant = new Ant(type, this.sprite.x, this.sprite.y, this);
     this.ants.push(ant);
     this.garden.ants.push(ant);
@@ -171,25 +181,32 @@ export class Nest {
     this.stats.livingAnts++;
   }
 
-  tick(totalTick: number) {
-    if (
+  tick(totalTicks: number) {
+    if (this.antsToRelease > 0) {
+      this.releaseAnt();
+      this.antsToRelease--;
+    } else if (
       this.ants.length < this.antsLimit &&
-      this.stats.food > this.ants.length * 10
+      this.stats.food > this.ants.length * 10 &&
+      this.lastAntBirth + 1 / simulationSettings.antsBirthRate < totalTicks
     ) {
       this.releaseAnt();
+      this.lastAntBirth = totalTicks;
     }
 
     this.toFoodField.tick();
     this.toHomeField.tick();
     this.toEnemyField.tick();
 
-    if (totalTick % (60 * 2) === 0) {
+    this.warCoef *= 0.9995 + 0.0005 * (1 - this.aggresivenessCoef);
+
+    if (totalTicks % (60 * 2) === 0) {
       this.storeStats();
-      this.cumulatedAggresiveness *= 0.99;
     }
 
     if (this.ants.length === 0) {
       this.sprite.visible = false;
+      this.stats.food = 0;
     } else {
       if (Math.random() > 0.99) {
         this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000);
@@ -204,7 +221,6 @@ export class Nest {
       this.stats.warriors--;
     }
     this.stats.livingAnts--;
-    this.cumulatedAggresiveness++;
   }
 
   storeStats() {
@@ -219,6 +235,8 @@ export class Nest {
     this.history.killedAnts.push(this.stats.killedAnts);
     this.history.killedEnemyAnts.push(this.stats.killedEnemyAnts);
     this.history.starvedAnts.push(this.stats.starvedAnts);
+
+    this.history.warCoef.push(this.warCoef);
   }
 
   dump(): DumpedNest {
@@ -226,7 +244,7 @@ export class Nest {
       x: this.sprite.x,
       y: this.sprite.y,
       antsLimit: this.antsLimit,
-      startingAnts: this.startingsAnts,
+      antsToRelease: this.antsToRelease,
     };
   }
 }

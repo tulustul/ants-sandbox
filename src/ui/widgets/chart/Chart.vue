@@ -7,6 +7,10 @@ import { useIntervalFn } from "@vueuse/core";
 
 const canvasRef = ref<HTMLCanvasElement>();
 
+const props = defineProps({
+  yAxisPrecision: Number,
+});
+
 const state = reactive<ChartState>({
   lastId: 0,
   charts: [],
@@ -16,8 +20,8 @@ provide("chartProvider", state);
 
 let ctx: CanvasRenderingContext2D;
 
-const minValue = ref(0);
-const maxValue = ref(0);
+const minValue = ref("0");
+const maxValue = ref("0");
 
 onMounted(() => {
   ctx = canvasRef.value!.getContext("2d")!;
@@ -51,8 +55,13 @@ function draw() {
     }
   }
 
-  minValue.value = _minValue;
-  maxValue.value = _maxValue;
+  if (props.yAxisPrecision !== undefined) {
+    minValue.value = _minValue.toFixed(props.yAxisPrecision);
+    maxValue.value = _maxValue.toFixed(props.yAxisPrecision);
+  } else {
+    minValue.value = _minValue.toString();
+    maxValue.value = _maxValue.toString();
+  }
 }
 </script>
 
