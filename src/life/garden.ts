@@ -137,6 +137,10 @@ export class Garden {
       this.nests[0].destroy();
     }
 
+    while (this.corpses.length) {
+      this.corpses[0].destroy();
+    }
+
     this.foodGraphics.destroy();
     this.rockGraphics.destroy();
 
