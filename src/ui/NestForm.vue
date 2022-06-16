@@ -6,6 +6,7 @@ import type { Simulation } from "./simulation";
 import { state } from "./state";
 import FieldGroup from "./forms/FieldGroup.vue";
 import Slider from "./forms/Slider.vue";
+import { vExplode } from "./widgets";
 import { AntType } from "@/life/ant";
 
 const simulation = inject<Simulation>("simulation")!;
@@ -88,10 +89,10 @@ function move() {
       </div>
 
       <div class="row">
-        <button class="btn btn-primary grow" :onclick="addFood">
+        <button class="btn btn-primary grow" v-explode :onclick="addFood">
           Add 1000 food
         </button>
-        <button class="btn btn-danger grow" :onclick="removeFood">
+        <button class="btn btn-danger grow" v-explode :onclick="removeFood">
           Remove 1000 food
         </button>
       </div>
@@ -109,18 +110,26 @@ function move() {
 
       <div class="row">
         <div class="column grow">
-          <button class="btn btn-primary grow" :onclick="addWorkers">
+          <button class="btn btn-primary grow" v-explode :onclick="addWorkers">
             Add 100 workers
           </button>
-          <button class="btn btn-danger grow" :onclick="removeWorkers">
+          <button
+            class="btn btn-danger grow"
+            v-explode
+            :onclick="removeWorkers"
+          >
             Kill 100 workers
           </button>
         </div>
         <div class="column grow">
-          <button class="btn btn-primary grow" :onclick="addSoldiers">
+          <button class="btn btn-primary grow" v-explode :onclick="addSoldiers">
             Add 25 soldiers
           </button>
-          <button class="btn btn-danger grow" :onclick="removeSoldiers">
+          <button
+            class="btn btn-danger grow"
+            v-explode
+            :onclick="removeSoldiers"
+          >
             Kill 25 soldiers
           </button>
         </div>

@@ -12,8 +12,8 @@
   --field-color-hover: #5d5d5d;
   --field-primary-color: #008000;
   --field-primary-color-hover: #009600;
-  --field-danger-color: #7a000a;
-  --field-danger-color-hover: #92000c;
+  --field-danger-color: #ad000e;
+  --field-danger-color-hover: #c70011;
   --label-color: #3794c8;
 
   --border-width: 2px;
@@ -54,12 +54,12 @@ strong {
 }
 
 .btn-primary {
-  background-color: var(--field-primary-color);
+  --field-color: var(--field-primary-color);
   --field-color-hover: var(--field-primary-color-hover);
 }
 
 .btn-danger {
-  background-color: var(--field-danger-color);
+  --field-color: var(--field-danger-color);
   --field-color-hover: var(--field-danger-color-hover);
 }
 
