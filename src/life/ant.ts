@@ -46,7 +46,7 @@ export class Ant {
   repelTimeout = 200;
 
   pheromoneToFollow: PheromoneField;
-  pheromoneToDrop: PheromoneField;
+  pheromoneToDrop: PheromoneField | null;
   maxPheromoneStrength = 0.01;
   pheromoneStrength = this.maxPheromoneStrength;
 
@@ -92,7 +92,7 @@ export class Ant {
 
   fastTick() {
     this.energy -= 0.00004;
-    this.pheromoneStrength /= 1.0006;
+    this.pheromoneStrength *= 0.9997;
 
     const antsField = this.nest.garden.antsField;
 
@@ -190,7 +190,7 @@ export class Ant {
     }
 
     const fieldindex = this.nest.garden.foodField.getIndex(x, y);
-    if (fieldindex !== this.lastCellIndex) {
+    if (this.pheromoneToDrop && fieldindex !== this.lastCellIndex) {
       this.dropPheromone(
         fieldindex,
         this.pheromoneToDrop,
@@ -289,7 +289,9 @@ export class Ant {
     this.mode = AntMode.toHome;
     this.turnAround();
     this.resetRepel();
+    this.pheromoneStrength = this.maxPheromoneStrength;
     this.pheromoneToFollow = this.nest.toHomeField;
+    this.pheromoneToDrop = null;
     if (this.type === AntType.worker) {
       if (this.food > 0) {
         this.sprite.texture = resources.atlas!.textures["ant-with-food.png"];
@@ -306,6 +308,7 @@ export class Ant {
       this.turnAround();
     }
     this.resetRepel();
+    this.pheromoneStrength = this.maxPheromoneStrength;
     this.pheromoneToFollow = this.nest.toHomeField;
     this.pheromoneToDrop = this.nest.toEnemyField;
   }
@@ -365,7 +368,7 @@ export class Ant {
 
         // value = field.data[index];
         value = field.maxValues.data[index];
-        if (value > 0.001) {
+        if (value > 0.0001) {
           value = Math.pow(value, 1 / this.nest.freedom);
           value = Math.max(0, value);
         } else {
