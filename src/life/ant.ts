@@ -92,11 +92,29 @@ export class Ant {
 
     this.velocity.rotate(Math.random() * Math.PI * 2);
 
-    this.pheromoneToFollow = nest.toFoodField;
+    if (this.type === AntType.worker) {
+      this.pheromoneToFollow = nest.toFoodField;
+    } else {
+      this.pheromoneToFollow = nest.toEnemyField;
+    }
     this.pheromoneToDrop = nest.toHomeField;
   }
 
   destroy() {
+    if (this.isInAntsMap) {
+      const ants = this.nest.garden.antsMap[this.lastAntCellIndex];
+      const index = ants.indexOf(this);
+      if (index !== -1) {
+        ants.splice(index, 1);
+      }
+    }
+    if (this.updatedLastAntCell) {
+      this.nest.garden.antsField.data[this.lastAntCellIndex] /=
+        this.nest.primeId;
+    }
+
+    this.nest.onAntDied(this);
+
     this.nest.ants.splice(this.nest.ants.indexOf(this), 1);
     this.nest.garden.ants.splice(this.nest.garden.ants.indexOf(this), 1);
     // this.nest.garden.antsContainer.removeChild(this.sprite);
@@ -555,22 +573,8 @@ export class Ant {
   }
 
   die() {
-    if (this.isInAntsMap) {
-      const ants = this.nest.garden.antsMap[this.lastAntCellIndex];
-      const index = ants.indexOf(this);
-      if (index !== -1) {
-        ants.splice(index, 1);
-      }
-    }
-    if (this.updatedLastAntCell) {
-      this.nest.garden.antsField.data[this.lastAntCellIndex] /=
-        this.nest.primeId;
-    }
-
     const corpse = new Corpse(this);
     this.nest.garden.corpses.push(corpse);
-
-    this.nest.onAntDied(this);
 
     // const index = this.nest.garden.foodField.getIndex(
     //   this.sprite.x,

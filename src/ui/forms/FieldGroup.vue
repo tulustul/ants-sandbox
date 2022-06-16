@@ -22,6 +22,7 @@ defineProps({
   background-color: rgba(0, 0, 0, 0.1);
 }
 h3 {
+  font-weight: 600;
   margin-bottom: 10px;
 }
 .fields {

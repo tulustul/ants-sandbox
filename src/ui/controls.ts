@@ -36,6 +36,9 @@ export class Controls {
 
   onPointerDown(event: PointerEvent) {
     this.pointers.set(event.pointerId, [event.clientX, event.clientY]);
+    if (state.movingNest) {
+      this.moveNest(event);
+    }
   }
 
   onPointerUp(event: PointerEvent) {
@@ -108,5 +111,36 @@ export class Controls {
       this.garden.foodGraphics.texture.update();
       this.garden.rockGraphics.texture.update();
     }
+  }
+
+  moveNest(event: PointerEvent) {
+    if (!state.trackedNest || !this.simulation) {
+      state.movingNest = false;
+      return;
+    }
+
+    const garden = this.simulation.garden;
+
+    const nest = garden.nests.find((nest) => nest.id === state.trackedNest);
+    if (!nest) {
+      state.movingNest = false;
+      return;
+    }
+
+    const [x, y] = this.camera.screenToCanvas(event.clientX, event.clientY);
+
+    if (x < 0 || y < 0 || x >= garden.width || y >= garden.height) {
+      return;
+    }
+
+    const rock = garden.rockField.getAt(x, y);
+    if (rock) {
+      return;
+    }
+
+    nest.sprite.x = x;
+    nest.sprite.y = y;
+
+    state.movingNest = false;
   }
 }

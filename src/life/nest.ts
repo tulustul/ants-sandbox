@@ -81,8 +81,8 @@ export class Nest {
   warCoef = 0;
   cumulatedAggresiveness = 0;
 
-  freedom = 0.004;
-  aggresivenessCoef = Math.random();
+  freedom = 0.0003 + Math.random() * 0.002;
+  aggresiveness = Math.random();
 
   color: number;
   corpseColor: number;
@@ -135,11 +135,11 @@ export class Nest {
   }
 
   destroy() {
-    this.sprite.destroy();
-    this.app.stage.removeChild(this.sprite);
     while (this.ants.length) {
       this.ants[0].destroy();
     }
+    this.sprite.destroy();
+    this.app.stage.removeChild(this.sprite);
     const nestIndex = this.garden.nests.indexOf(this);
     if (nestIndex !== -1) {
       this.garden.nests.splice(nestIndex, 1);
@@ -151,6 +151,11 @@ export class Nest {
     this.stats.totalFood += food;
   }
 
+  removeFood(food: number) {
+    this.stats.food = Math.max(0, this.stats.food - food);
+    this.stats.totalFood = Math.max(0, this.stats.totalFood - food);
+  }
+
   visit(ant: Ant) {
     if (this.stats.food > 0) {
       this.stats.food -= ant.maxEnergy - ant.energy;
@@ -158,22 +163,26 @@ export class Nest {
     }
     if (ant.pheromoneToDrop === this.toEnemyField) {
       this.warCoef +=
-        (this.aggresivenessCoef / this.ants.length) * (1 - this.warCoef);
+        (this.aggresiveness / this.ants.length) * (1 - this.warCoef);
     }
   }
 
-  releaseAnt() {
+  releaseRandomAnt() {
     const type =
       Math.random() < this.warCoef ? AntType.soldier : AntType.worker;
 
+    if (!this.antsToRelease) {
+      this.stats.food = Math.max(0, this.stats.food - 20);
+    }
+
+    this.releaseAnt(type);
+  }
+
+  releaseAnt(type: AntType) {
     if (type === AntType.worker) {
       this.stats.workers++;
     } else {
       this.stats.soldiers++;
-    }
-
-    if (!this.antsToRelease) {
-      this.stats.food = Math.max(0, this.stats.food - 20);
     }
 
     const ant = new Ant(type, this.sprite.x, this.sprite.y, this);
@@ -185,14 +194,14 @@ export class Nest {
 
   tick(totalTicks: number) {
     if (this.antsToRelease > 0) {
-      this.releaseAnt();
+      this.releaseRandomAnt();
       this.antsToRelease--;
     } else if (
       this.ants.length < this.antsLimit &&
       this.stats.food > this.ants.length * 10 &&
       this.lastAntBirth + 1 / simulationSettings.antsBirthRate < totalTicks
     ) {
-      this.releaseAnt();
+      this.releaseRandomAnt();
       this.lastAntBirth = totalTicks;
     }
 
@@ -200,7 +209,7 @@ export class Nest {
     this.toHomeField.tick();
     this.toEnemyField.tick();
 
-    this.warCoef *= 0.9995 + 0.0005 * (1 - this.aggresivenessCoef);
+    this.warCoef *= 0.9995 + 0.0005 * (1 - this.aggresiveness);
 
     if (totalTicks % (60 * 2) === 0) {
       this.storeStats();
@@ -248,5 +257,24 @@ export class Nest {
       antsLimit: this.antsLimit,
       antsToRelease: this.antsToRelease,
     };
+  }
+
+  addAnts(type: AntType, quantity: number) {
+    for (let i = 0; i < quantity; i++) {
+      this.releaseAnt(type);
+    }
+  }
+
+  killAnts(type: AntType, quantity: number) {
+    let removed = 0;
+    for (let i = this.ants.length - 1; i >= 0; i--) {
+      const ant = this.ants[i];
+      if (ant.type === type) {
+        ant.die();
+        if (++removed === quantity) {
+          return;
+        }
+      }
+    }
   }
 }

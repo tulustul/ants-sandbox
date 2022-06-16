@@ -11,7 +11,12 @@ const simulation = inject<Simulation>("simulation")!;
 let nests = reactive(simulation.garden.nests) as Nest[];
 
 function addNewNest() {
-  simulation.garden.placeRandomNest(state.gardenSettings.startingAnts);
+  const nest = simulation.garden.placeRandomNest(
+    state.gardenSettings.startingAnts
+  );
+  if (nest) {
+    setTimeout(() => (state.trackedNest = nest.id));
+  }
 }
 </script>
 

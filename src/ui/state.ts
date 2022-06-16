@@ -24,7 +24,8 @@ const _state = {
     horizontalMirror: false,
     verticalMirror: false,
   },
-  trackedNest: 1,
+  trackedNest: 1 as number | null,
+  movingNest: false,
 };
 
 export const state = reactive(_state);

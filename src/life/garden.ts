@@ -193,6 +193,8 @@ export class Garden {
     nest.setStartingAntsNumber(numberOfAnts);
 
     this.nests.push(nest);
+
+    return nest;
   }
 
   getRandomNestPosition() {

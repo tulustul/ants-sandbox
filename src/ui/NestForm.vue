@@ -4,12 +4,29 @@ import { useIntervalFn } from "@vueuse/core";
 
 import type { Simulation } from "./simulation";
 import { state } from "./state";
+import FieldGroup from "./forms/FieldGroup.vue";
+import Slider from "./forms/Slider.vue";
+import { AntType } from "@/life/ant";
 
 const simulation = inject<Simulation>("simulation")!;
 let nest = getTrackedNest()!;
 
 const stats = ref(nest.stats);
 const warCoef = ref(nest.warCoef);
+
+const freedom = ref(nest.freedom);
+const aggresiveness = ref(nest.aggresiveness);
+
+watch(state, () => {
+  if (!state.trackedNest) {
+    return;
+  }
+  nest = getTrackedNest()!;
+  freedom.value = nest.freedom;
+  aggresiveness.value = nest.aggresiveness;
+});
+watch(freedom, () => (nest.freedom = freedom.value));
+watch(aggresiveness, () => (nest.aggresiveness = aggresiveness.value));
 
 useIntervalFn(() => {
   stats.value = { ...nest.stats };
@@ -25,26 +42,141 @@ function getTrackedNest() {
 }
 
 function destroyNest() {
-  nest?.destroy();
+  nest.destroy();
+  state.trackedNest = null;
+}
+
+function addFood() {
+  nest.addFood(1000);
+}
+
+function removeFood() {
+  nest.removeFood(1000);
+}
+
+function addWorkers() {
+  nest.addAnts(AntType.worker, 100);
+}
+
+function removeWorkers() {
+  nest.killAnts(AntType.worker, 100);
+}
+
+function addSoldiers() {
+  nest.addAnts(AntType.soldier, 25);
+}
+
+function removeSoldiers() {
+  nest.killAnts(AntType.soldier, 25);
+}
+
+function move() {
+  state.movingNest = !state.movingNest;
 }
 </script>
 
 <template>
-  <div>Current food: {{ stats.food.toFixed(0) }}</div>
-  <div>Total food: {{ stats.totalFood }}</div>
+  <div class="column">
+    <FieldGroup label="Food">
+      <div class="row space-between">
+        <span
+          >Current <strong>{{ stats.food.toFixed(0) }}</strong></span
+        >
+        <span
+          >Total <strong>{{ stats.totalFood }}</strong></span
+        >
+      </div>
 
-  <div>Workers: {{ stats.workers }}</div>
-  <div>Soldiers: {{ stats.soldiers }}</div>
-  <div>Living ants: {{ stats.livingAnts }}</div>
-  <div>Total ants: {{ stats.totalAnts }}</div>
+      <div class="row">
+        <button class="btn btn-primary grow" :onclick="addFood">
+          Add 1000 food
+        </button>
+        <button class="btn btn-danger grow" :onclick="removeFood">
+          Remove 1000 food
+        </button>
+      </div>
+    </FieldGroup>
 
-  <div>Starved ants : {{ stats.starvedAnts }}</div>
-  <div>Killed ants : {{ stats.killedAnts }}</div>
-  <div>Killed enemy ants : {{ stats.killedEnemyAnts }}</div>
+    <FieldGroup label="Ants">
+      <div class="row space-between">
+        <span
+          >Workers <strong>{{ stats.workers }}</strong></span
+        >
+        <span
+          >Soldiers <strong>{{ stats.soldiers }}</strong></span
+        >
+      </div>
 
-  <div>War coefficient : {{ warCoef.toFixed(3) }}</div>
+      <div class="row">
+        <div class="column grow">
+          <button class="btn btn-primary grow" :onclick="addWorkers">
+            Add 100 workers
+          </button>
+          <button class="btn btn-danger grow" :onclick="removeWorkers">
+            Kill 100 workers
+          </button>
+        </div>
+        <div class="column grow">
+          <button class="btn btn-primary grow" :onclick="addSoldiers">
+            Add 25 soldiers
+          </button>
+          <button class="btn btn-danger grow" :onclick="removeSoldiers">
+            Kill 25 soldiers
+          </button>
+        </div>
+      </div>
+    </FieldGroup>
 
-  <button class="btn" :onclick="destroyNest">Destroy Nest</button>
+    <FieldGroup label="Stats">
+      <div class="row space-between">
+        <span
+          >Total ants <strong>{{ stats.totalAnts }}</strong></span
+        >
+        <span
+          >Starved ants <strong>{{ stats.starvedAnts }}</strong></span
+        >
+      </div>
+      <div class="row space-between">
+        <span
+          >Killed ants <strong>{{ stats.killedAnts }}</strong></span
+        >
+        <span
+          >Killed enemy ants <strong>{{ stats.killedEnemyAnts }}</strong></span
+        >
+      </div>
+      <span
+        >War coefficient <strong>{{ warCoef.toFixed(3) }}</strong></span
+      >
+    </FieldGroup>
+
+    <FieldGroup label="Parameters">
+      <Slider
+        label="Ants freedom"
+        v-model="freedom"
+        :min="0.0002"
+        :max="0.01"
+        :step="0.0001"
+      />
+
+      <Slider
+        label="Aggresiveness"
+        v-model="aggresiveness"
+        :min="0"
+        :max="1"
+        :step="0.01"
+      />
+    </FieldGroup>
+
+    <div class="row">
+      <button class="btn grow" :onclick="move">
+        <span v-if="state.movingNest">Click on the map...</span>
+        <span v-else>Move</span>
+      </button>
+      <button class="btn btn-danger grow" :onclick="destroyNest">
+        Destroy
+      </button>
+    </div>
+  </div>
 </template>
 
 <style></style>
