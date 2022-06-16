@@ -1,5 +1,6 @@
 import { state } from "@/ui/state";
 import { Vec } from "@/utils/vector";
+import { FIELD_CELL_SIZE } from "./const";
 import type { Garden } from "./garden";
 
 export class Field {
@@ -10,7 +11,7 @@ export class Field {
 
   constructor(public garden: Garden, cellSize?: number) {
     if (!cellSize) {
-      cellSize = garden.fieldCellSize;
+      cellSize = FIELD_CELL_SIZE;
     }
     this.cellSize = cellSize;
     this.width = Math.ceil(garden.width / this.cellSize);

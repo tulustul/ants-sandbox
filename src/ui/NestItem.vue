@@ -24,6 +24,7 @@ function track() {
 <template>
   <h3
     class="row"
+    role="button"
     :onclick="track"
     :class="{ tracked: nest.id === state.trackedNest }"
   >
@@ -38,20 +39,29 @@ function track() {
 <style scoped>
 .row {
   justify-content: space-between;
-}
-h3:hover:not(.tracked) {
+  background-color: var(--field-color);
+  border-radius: 10px;
+  padding: 0 5px;
   cursor: pointer;
-  background-color: #444;
+}
+.row:active,
+.tracked {
+  box-shadow: inset 0 0 10px 0px rgba(0, 0, 0, 0.4);
+}
+.row.tracked {
+  background-color: var(--field-primary-color);
+}
+.row:hover:not(.tracked) {
+  --field-color: var(--field-color-hover);
 }
 .color-box {
-  width: 30px;
-  height: 30px;
-}
-.tracked {
-  background-color: #666;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }
 .item-left {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 </style>

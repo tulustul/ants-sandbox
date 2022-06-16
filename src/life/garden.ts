@@ -4,6 +4,7 @@ import { FieldsLayer } from "@/canvas/fieldsLayer";
 import { getDistanceBetween } from "@/utils/distance";
 import { Container, Graphics } from "pixi.js";
 import type { Ant } from "./ant";
+import { FIELD_CELL_SIZE } from "./const";
 import type { Corpse } from "./corpse";
 import { Field } from "./field";
 import { FoodField } from "./food";
@@ -14,8 +15,6 @@ export class Garden {
   nests: Nest[] = [];
   ants: Ant[] = [];
   corpses: Corpse[] = [];
-
-  fieldCellSize = 20;
 
   foodField: FoodField;
   rockField: Field;
@@ -42,20 +41,22 @@ export class Garden {
   corpsesPhase = 0;
   corpsesTime = 120;
 
+  isDestroyed = false;
+
   constructor(
     public canvas: Canvas,
     public width: number,
     public height: number
   ) {
-    this.fieldWidth = Math.ceil(this.width / this.fieldCellSize);
-    this.fieldHeight = Math.ceil(this.height / this.fieldCellSize);
+    this.fieldWidth = Math.ceil(this.width / FIELD_CELL_SIZE);
+    this.fieldHeight = Math.ceil(this.height / FIELD_CELL_SIZE);
 
     this.background = new Graphics();
     this.drawBackground();
 
     this.foodField = new FoodField(this);
     this.rockField = new Field(this);
-    this.antsField = new Field(this, this.fieldCellSize * 6);
+    this.antsField = new Field(this, FIELD_CELL_SIZE * 6);
 
     for (let i = 0; i < this.antsField.data.length; i++) {
       this.antsField.data[i] = 1;
@@ -131,6 +132,8 @@ export class Garden {
   }
 
   destroy() {
+    this.isDestroyed = true;
+
     this.background.destroy();
 
     while (this.nests.length) {

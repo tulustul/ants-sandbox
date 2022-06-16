@@ -34,8 +34,7 @@ onMounted(async () => {
 });
 
 async function onReady() {
-  simulation.start();
-  // canvas.camera.moveTo(-simulation.garden.width/2+500,-simulation.garden.height/2+500)
+  simulation.makeGarden();
 
   canvas.app.ticker.add(() => {
     simulation.tick();

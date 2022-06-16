@@ -38,8 +38,6 @@ export function fillGarden(options: GardenGeneratorOptions) {
     applyVerticalMirror(options.garden.rockField);
     applyVerticalMirror(options.garden.foodField);
   }
-
-  processRock(options.garden.rockField);
 }
 
 function generateRocks(options: GardenGeneratorOptions) {

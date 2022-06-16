@@ -1,4 +1,5 @@
 import type { Canvas } from "@/canvas";
+import { makeGardenFromImage } from "@/life/fromImage";
 import { Garden } from "@/life/garden";
 import { fillGarden } from "@/life/gardenGenerator";
 import { Nest } from "@/life/nest";
@@ -21,22 +22,40 @@ export class Simulation {
 
   constructor(public canvas: Canvas) {}
 
-  start() {
-    this.randomizeGarden();
+  async makeGarden() {
+    const settings = state.gardenSettings;
+
+    if (settings.type === "image" && state.imageFile) {
+      this.garden = await makeGardenFromImage(this.canvas, state.imageFile);
+    } else {
+      this.garden = new Garden(this.canvas, settings.width, settings.height);
+    }
+
+    if (settings.type === "random") {
+      this.randomizeGarden();
+    }
+
+    if (settings.type !== "empty") {
+      for (let i = 0; i < settings.numberOfNests; i++) {
+        this.garden.placeRandomNest(settings.startingAnts);
+      }
+
+      if (this.garden.nests.length) {
+        state.trackedNest = this.garden.nests[0].id;
+      }
+
+      processRock(this.garden.rockField);
+    }
   }
 
   restart() {
     this.garden.destroy();
-    this.start();
+
+    this.makeGarden();
   }
 
   randomizeGarden() {
     const gardenSettings = state.gardenSettings;
-    this.garden = new Garden(
-      this.canvas,
-      gardenSettings.width,
-      gardenSettings.height
-    );
 
     fillGarden({
       garden: this.garden,
@@ -53,17 +72,13 @@ export class Simulation {
       horizontalMirror: gardenSettings.horizontalMirror,
       verticalMirror: gardenSettings.verticalMirror,
     });
-
-    for (let i = 0; i < gardenSettings.numberOfNests; i++) {
-      this.garden.placeRandomNest(gardenSettings.startingAnts);
-    }
-
-    if (this.garden.nests.length) {
-      state.trackedNest = this.garden.nests[0].id;
-    }
   }
 
   tick() {
+    if (this.garden.isDestroyed) {
+      return;
+    }
+
     const t0 = performance.now();
 
     if (simulationSettings.pause) {

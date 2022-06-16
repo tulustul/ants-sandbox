@@ -24,8 +24,9 @@ const _state = {
     horizontalMirror: false,
     verticalMirror: false,
   },
-  trackedNest: 1 as number | null,
+  trackedNest: null as number | null,
   movingNest: false,
+  imageFile: null as File | null,
 };
 
 export const state = reactive(_state);

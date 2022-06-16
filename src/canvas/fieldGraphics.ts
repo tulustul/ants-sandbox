@@ -1,3 +1,4 @@
+import { FIELD_CELL_SIZE } from "@/life/const";
 import type { Garden } from "@/life/garden";
 import { visualSettings } from "@/life/settings";
 import { Texture, Sprite, FORMATS, TYPES, Filter } from "pixi.js";
@@ -32,8 +33,8 @@ export class FieldGraphics {
   constructor(public garden: Garden, tint: [number, number, number]) {
     this.texture = Texture.EMPTY;
     this.sprite = new Sprite(this.texture);
-    this.sprite.scale.x = garden.fieldCellSize;
-    this.sprite.scale.y = garden.fieldCellSize;
+    this.sprite.scale.x = FIELD_CELL_SIZE;
+    this.sprite.scale.y = FIELD_CELL_SIZE;
 
     const arr = new Float32Array(3);
     arr[0] = tint[0] / 255;

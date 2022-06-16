@@ -53,6 +53,10 @@ strong {
   background-color: var(--field-color-hover);
 }
 
+.btn:active {
+  box-shadow: inset 0 0 10px 0px rgba(0, 0, 0, 0.4);
+}
+
 .btn-primary {
   --field-color: var(--field-primary-color);
   --field-color-hover: var(--field-primary-color-hover);

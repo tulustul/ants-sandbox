@@ -6,6 +6,7 @@ import type { PheromoneField } from "./pheromone";
 import { simulationSettings, type FieldSampler } from "./settings";
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
+import { FIELD_CELL_SIZE } from "./const";
 
 export enum AntMode {
   toFood,
@@ -405,7 +406,7 @@ export class Ant {
     for (const angle of sampler.angleSamples) {
       let total = 0;
       for (let i = 1; i <= sampler.distanceSamplesCount; i++) {
-        const vec = new Vec(0, this.nest.garden.fieldCellSize * i);
+        const vec = new Vec(0, FIELD_CELL_SIZE * i);
         vec.rotateTo(this.velocity.rotation() + angle);
         const x = this.sprite.x + vec.x;
         const y = this.sprite.y + vec.y;

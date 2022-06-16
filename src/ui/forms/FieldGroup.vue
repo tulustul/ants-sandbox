@@ -1,13 +1,22 @@
 <script setup lang="ts">
 defineProps({
   label: String,
+  contentVisible: {
+    type: Boolean,
+    default: true,
+  },
 });
 </script>
 
 <template>
   <div class="group">
-    <h3>{{ label }}</h3>
-    <div class="fields">
+    <label
+      ><strong>
+        {{ label }}
+      </strong>
+      <slot name="header"></slot
+    ></label>
+    <div class="column" v-if="contentVisible">
       <slot />
     </div>
   </div>
@@ -15,19 +24,18 @@ defineProps({
 
 <style scoped>
 .group {
-  padding: 10px;
-  padding-top: 0;
+  padding: 10px 10px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.1);
 }
-h3 {
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-.fields {
+label {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+.column {
+  margin-top: 10px;
 }
 </style>

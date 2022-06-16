@@ -21,7 +21,11 @@ export const defaultSimulationSettings = {
   },
 };
 
+export type MapGenerationType = "empty" | "random" | "image";
+
 export const defaultGardenSettings = {
+  type: "random" as MapGenerationType,
+
   width: 5_000,
   height: 5_000,
 
@@ -66,6 +70,10 @@ export const gardenSettings = getFromStorage(
   "gardenSettings",
   defaultGardenSettings
 );
+
+if (gardenSettings.type === "image") {
+  gardenSettings.type = "random";
+}
 
 export const visualSettings = getFromStorage(
   "visualSettings",

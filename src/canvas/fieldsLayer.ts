@@ -36,6 +36,10 @@ export class FieldsLayer {
   }
 
   tick() {
+    if (this.garden.isDestroyed) {
+      return;
+    }
+
     if (this.nest?.id !== state.trackedNest) {
       this.nest =
         this.garden.nests.find((nest) => nest.id === state.trackedNest) ?? null;

@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, ref } from "vue";
 import type { Simulation } from "./simulation";
-import Slider from "./forms/Slider.vue";
 import { state } from "./state";
 import { defaultGardenSettings } from "@/life/settings";
-import Checkbox from "./forms/Checkbox.vue";
-import FieldGroup from "./forms/FieldGroup.vue";
 import { transferFields } from "@/utils/object";
+import {
+  RadioGroup,
+  RadioOption,
+  FieldGroup,
+  Checkbox,
+  Slider,
+} from "@/ui/forms";
 
 const simulation = inject<Simulation>("simulation")!;
+
+const imageFile = ref();
 
 function makeNewGarden() {
   simulation.restart();
@@ -17,12 +23,33 @@ function makeNewGarden() {
 function reset() {
   transferFields(state.gardenSettings, defaultGardenSettings);
 }
+
+function onImageChange(event: Event) {
+  state.imageFile = (event as any).target.files[0];
+}
 </script>
 
 <template>
   <button class="btn btn-primary" :onclick="makeNewGarden">New garden</button>
 
-  <FieldGroup>
+  <RadioGroup v-model="state.gardenSettings.type">
+    <RadioOption label="Random" value="random" />
+    <RadioOption label="Empty" value="empty" />
+    <RadioOption label="From image" value="image" />
+  </RadioGroup>
+
+  <FieldGroup label="Image" v-if="state.gardenSettings.type === 'image'">
+    <input type="file" ref="imageFile" :onchange="onImageChange" />
+
+    <p>
+      Red channel - rock.<br />
+      Green channel - food.<br />
+      <br />
+      Maximum resolution - 500x500px
+    </p>
+  </FieldGroup>
+
+  <FieldGroup label="Size" v-if="state.gardenSettings.type !== 'image'">
     <Slider
       label="Garden width"
       v-model="state.gardenSettings.width"
@@ -42,7 +69,7 @@ function reset() {
     />
   </FieldGroup>
 
-  <FieldGroup>
+  <FieldGroup label="Colonies" v-if="state.gardenSettings.type !== 'empty'">
     <Slider
       label="Number of nests"
       v-model="state.gardenSettings.numberOfNests"
@@ -71,11 +98,18 @@ function reset() {
     />
   </FieldGroup>
 
-  <FieldGroup>
-    <Checkbox label="Food enabled" v-model="state.gardenSettings.foodEnabled" />
+  <FieldGroup
+    label="Food"
+    v-if="state.gardenSettings.type !== 'empty'"
+    :contentVisible="state.gardenSettings.foodEnabled"
+  >
+    <template v-slot:header>
+      <input type="checkbox" v-model="state.gardenSettings.foodEnabled" />
+    </template>
 
     <Slider
-      label="Food scale"
+      label="Scale"
+      v-if="state.gardenSettings.type === 'random'"
       v-model="state.gardenSettings.foodScale"
       :default="defaultGardenSettings.foodScale"
       :min="0.01"
@@ -84,7 +118,7 @@ function reset() {
     />
 
     <Slider
-      label="Food size"
+      label="Size"
       v-model="state.gardenSettings.foodSize"
       :default="defaultGardenSettings.foodSize"
       :min="0.3"
@@ -93,7 +127,7 @@ function reset() {
     />
 
     <Slider
-      label="Food richness"
+      label="Richness"
       v-model="state.gardenSettings.foodRichness"
       :default="defaultGardenSettings.foodRichness"
       :min="1"
@@ -102,11 +136,18 @@ function reset() {
     />
   </FieldGroup>
 
-  <FieldGroup>
-    <Checkbox label="Rock enabled" v-model="state.gardenSettings.rockEnabled" />
+  <FieldGroup
+    label="Rocks"
+    v-if="state.gardenSettings.type !== 'empty'"
+    :contentVisible="state.gardenSettings.rockEnabled"
+  >
+    <template v-slot:header>
+      <input type="checkbox" v-model="state.gardenSettings.rockEnabled" />
+    </template>
 
     <Slider
-      label="Rock scale"
+      label="Scale"
+      v-if="state.gardenSettings.type === 'random'"
       v-model="state.gardenSettings.rockScale"
       :default="defaultGardenSettings.rockScale"
       :min="0.1"
@@ -115,7 +156,7 @@ function reset() {
     />
 
     <Slider
-      label="Rock size"
+      label="Size"
       v-model="state.gardenSettings.rockSize"
       :default="defaultGardenSettings.rockSize"
       :min="0"
@@ -124,14 +165,16 @@ function reset() {
     />
   </FieldGroup>
 
-  <Checkbox
-    label="Horizontal mirror"
-    v-model="state.gardenSettings.horizontalMirror"
-  />
-  <Checkbox
-    label="Vertical mirror"
-    v-model="state.gardenSettings.verticalMirror"
-  />
+  <div v-if="state.gardenSettings.type === 'random'">
+    <Checkbox
+      label="Horizontal mirror"
+      v-model="state.gardenSettings.horizontalMirror"
+    />
+    <Checkbox
+      label="Vertical mirror"
+      v-model="state.gardenSettings.verticalMirror"
+    />
+  </div>
 
   <button class="btn" :onclick="reset">Reset All</button>
 </template>
