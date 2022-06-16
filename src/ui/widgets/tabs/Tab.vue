@@ -8,14 +8,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  decorations: {
-    type: Boolean,
-    default: true,
-  },
-  paddings: {
-    type: Boolean,
-    default: true,
-  },
 });
 
 const tabsProvider = inject<TabsState>("tabsProvider")!;
@@ -23,15 +15,12 @@ const tabsProvider = inject<TabsState>("tabsProvider")!;
 const isVisible = computed(() => tabsProvider.selectedTab === props.label);
 
 onBeforeMount(() => {
-  if (tabsProvider.selectFirst && !tabsProvider.selectedTab) {
-    tabsProvider.selectedTab = props.label;
-  }
   tabsProvider.tabs.push(props.label);
 });
 </script>
 
 <template>
-  <section class="tab" :class="{ decorations, paddings }" v-if="isVisible">
+  <section class="tab" v-if="isVisible">
     <slot />
   </section>
 </template>
@@ -45,11 +34,7 @@ onBeforeMount(() => {
   max-height: calc(100vh - 130px);
   overflow-y: auto;
   gap: 10px;
-}
-.paddings {
   padding: 10px;
-}
-.decorations {
   background-color: var(--tab-active-background);
   border: var(--border-width) solid var(--border-color);
   border-top: 0;

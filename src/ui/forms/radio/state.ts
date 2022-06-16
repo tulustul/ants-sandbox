@@ -1,3 +1,3 @@
 export type RadioGroupState = {
-  value: string;
+  value: string | null;
 };

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { state, type DrawingType } from "./state";
-import Slider from "./forms/Slider.vue";
-import Checkbox from "./forms/Checkbox.vue";
+import { Slider, Checkbox } from "./forms";
 
 function toggleDraw(type: DrawingType) {
   if (state.drawing.type === type) {

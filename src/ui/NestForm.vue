@@ -2,71 +2,70 @@
 import { inject, ref, watch } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
-import type { Simulation } from "./simulation";
 import { state } from "./state";
 import FieldGroup from "./forms/FieldGroup.vue";
 import Slider from "./forms/Slider.vue";
 import { vExplode } from "./widgets";
 import { AntType } from "@/life/ant";
-import { Nest } from "@/life/nest";
-
-const props = defineProps({
-  nest: {
-    type: Nest,
-    required: true,
-  },
-});
+import type { Simulation } from "./simulation";
 
 const simulation = inject<Simulation>("simulation")!;
 
-const stats = ref(props.nest.stats);
-const warCoef = ref(props.nest.warCoef);
+let nest = getTrackedNest()!;
 
-const freedom = ref(props.nest.freedom);
-const aggresiveness = ref(props.nest.aggresiveness);
+const stats = ref(nest.stats);
+const warCoef = ref(nest.warCoef);
+
+const freedom = ref(nest.freedom);
+const aggresiveness = ref(nest.aggresiveness);
 
 watch(state, () => {
   if (!state.trackedNest) {
     return;
   }
-  freedom.value = props.nest.freedom;
-  aggresiveness.value = props.nest.aggresiveness;
+  nest = getTrackedNest()!;
+  freedom.value = nest.freedom;
+  aggresiveness.value = nest.aggresiveness;
 });
-watch(freedom, () => (props.nest.freedom = freedom.value));
-watch(aggresiveness, () => (props.nest.aggresiveness = aggresiveness.value));
+watch(freedom, () => (nest.freedom = freedom.value));
+watch(aggresiveness, () => (nest.aggresiveness = aggresiveness.value));
 
 useIntervalFn(() => {
-  stats.value = { ...props.nest.stats };
-  warCoef.value = props.nest.warCoef;
+  stats.value = { ...nest.stats };
+  warCoef.value = nest.warCoef;
 }, 200);
 
+function getTrackedNest() {
+  return simulation.garden.nests.find((nest) => nest.id === state.trackedNest);
+}
+
 function destroyNest() {
-  props.nest.destroy();
+  nest.destroy();
   state.trackedNest = null;
 }
 
 function addFood() {
-  props.nest.addFood(1000);
+  nest.addFood(1000);
 }
 
 function removeFood() {
-  props.nest.removeFood(1000);
+  nest.removeFood(1000);
 }
 
 function addWorkers() {
-  props.nest.addAnts(AntType.worker, 100);
+  (nest as any).addAnts(AntType.worker, 100);
 }
 
 function removeWorkers() {
-  props.nest.killAnts(AntType.worker, 100);
+  nest.killAnts(AntType.worker, 100);
 }
 
 function addSoldiers() {
-  props.nest.addAnts(AntType.soldier, 25);
+  nest.addAnts(AntType.soldier, 25);
 }
 
 function removeSoldiers() {
-  props.nest.killAnts(AntType.soldier, 25);
+  nest.killAnts(AntType.soldier, 25);
 }
 
 function move() {

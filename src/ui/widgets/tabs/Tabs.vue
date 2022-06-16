@@ -2,19 +2,7 @@
 import { provide, reactive, type PropType } from "vue";
 import type { TabsState } from "./tabsState";
 
-const props = defineProps({
-  direction: {
-    type: String as PropType<"vertical" | "horizontal">,
-    default: "vertical",
-  },
-  selectFirst: {
-    type: Boolean,
-    default: false,
-  },
-});
-
 const state: TabsState = reactive({
-  selectFirst: props.selectFirst,
   selectedTab: "",
   tabs: [],
 });
@@ -30,38 +18,13 @@ function openTab(tab: string) {
 </script>
 
 <template>
-  <section
-    :class="direction"
-    :style="{
-      flexDirection: direction === 'horizontal' ? 'column' : 'row',
-    }"
-  >
-    <div
-      class="tabs"
-      :style="{
-        width: direction === 'horizontal' ? '100%' : 'auto',
-      }"
-    >
-      <div
-        class="tabs-inner"
-        :style="{
-          flexDirection: direction === 'horizontal' ? 'row' : 'column',
-        }"
-      >
+  <section>
+    <div class="tabs">
+      <div class="tabs-inner">
         <div
           role="button"
           class="tab"
           :class="{ active: state.selectedTab === tab }"
-          :style="{
-            borderRightColor:
-              state.selectedTab === tab && direction === 'vertical'
-                ? 'transparent'
-                : 'var(--border-color)',
-            borderBottomColor:
-              state.selectedTab === tab && direction === 'horizontal'
-                ? 'transparent'
-                : 'var(--border-color)',
-          }"
           v-for="tab in state.tabs"
           v-bind:key="tab"
           :onclick="() => openTab(tab)"
@@ -90,6 +53,7 @@ section {
 .tabs-inner {
   backdrop-filter: var(--filter);
   display: flex;
+  flex-direction: column;
   justify-content: stretch;
 }
 .tab {
@@ -107,6 +71,7 @@ section {
 }
 .tab.active {
   background-color: var(--tab-active-background);
+  border-right-color: transparent;
 }
 .tab:not(.active):hover {
   background-color: var(--tab-hover-background);

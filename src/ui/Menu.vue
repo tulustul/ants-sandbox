@@ -24,7 +24,7 @@ import NestsStats from "./NestsStats.vue";
       <Tab label="Nests">
         <Nests />
       </Tab>
-      <Tab label="Stats" :paddings="false">
+      <Tab label="Stats">
         <NestsStats />
       </Tab>
       <Tab label="Sim">

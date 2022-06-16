@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { reactive, provide, watch } from "vue";
+import { reactive, provide, watch, type PropType } from "vue";
 import type { RadioGroupState } from "./state";
 
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: String as PropType<string | null>,
     required: true,
   },
 });

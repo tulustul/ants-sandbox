@@ -17,6 +17,9 @@ watch(state, () => {
 
   if (state.trackedNest) {
     trackedNest.value = getTrackedNest() ?? null;
+    if (!trackedNest.value) {
+      state.trackedNest = null;
+    }
   } else {
     trackedNest.value = null;
   }
@@ -48,14 +51,12 @@ function addNewNest() {
   </div>
 
   <div>
-    <NestForm v-if="trackedNest" :nest="(trackedNest as Nest)" />
+    <NestForm v-if="trackedNest" />
   </div>
 </template>
 
 <style scoped>
 .nests {
-  overflow-y: auto;
-  max-height: 200px;
   display: flex;
   flex-direction: column;
   gap: 5px;
