@@ -37,7 +37,7 @@ useIntervalFn(() => {
         label="Killed enemy ants"
         field="killedEnemyAnts"
       />
-      <NestsChart :nests="nests" label="Warriors" field="warriors" />
+      <NestsChart :nests="nests" label="Soldiers" field="soldiers" />
       <NestsChart
         :nests="nests"
         label="War coefficient"

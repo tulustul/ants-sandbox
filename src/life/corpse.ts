@@ -14,11 +14,11 @@ export class Corpse {
     this.garden = ant.nest.garden;
 
     const texture =
-      ant.type === AntType.worker ? "ant-dead.png" : "ant-warrior-dead.png";
+      ant.type === AntType.worker ? "ant-dead.png" : "ant-soldier-dead.png";
     this.sprite = new Sprite(resources.atlas!.textures[texture]);
 
     this.sprite.anchor.set(0.5);
-    if (ant.type === AntType.warrior) {
+    if (ant.type === AntType.soldier) {
       this.sprite.scale.x = 1.25;
       this.sprite.scale.y = 1.25;
     }

@@ -34,7 +34,7 @@ function destroyNest() {
   <div>Total food: {{ stats.totalFood }}</div>
 
   <div>Workers: {{ stats.workers }}</div>
-  <div>Warriors: {{ stats.warriors }}</div>
+  <div>Soldiers: {{ stats.soldiers }}</div>
   <div>Living ants: {{ stats.livingAnts }}</div>
   <div>Total ants: {{ stats.totalAnts }}</div>
 

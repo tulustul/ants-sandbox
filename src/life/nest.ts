@@ -19,7 +19,7 @@ export type NestStats = {
   killedEnemyAnts: number;
 
   workers: number;
-  warriors: number;
+  soldiers: number;
 };
 
 export type NestHistory = {
@@ -34,7 +34,7 @@ export type NestHistory = {
   warCoef: number[];
 
   workers: number[];
-  warriors: number[];
+  soldiers: number[];
 };
 
 export class Nest {
@@ -58,7 +58,7 @@ export class Nest {
     killedEnemyAnts: 0,
 
     workers: 0,
-    warriors: 0,
+    soldiers: 0,
   };
 
   history: NestHistory = {
@@ -73,7 +73,7 @@ export class Nest {
     warCoef: [],
 
     workers: [],
-    warriors: [],
+    soldiers: [],
   };
 
   antsLimit = gardenSettings.colonySizeLimit;
@@ -92,6 +92,7 @@ export class Nest {
   toHomeField: PheromoneField;
   toEnemyField: PheromoneField;
   foodHereField: PheromoneField;
+  enemyHereField: PheromoneField;
 
   constructor(
     x: number,
@@ -108,6 +109,7 @@ export class Nest {
     this.toHomeField = new PheromoneField(this.garden);
     this.toEnemyField = new PheromoneField(this.garden);
     this.foodHereField = new PheromoneField(this.garden);
+    this.enemyHereField = new PheromoneField(this.garden);
     this.sprite = new Graphics();
 
     this.sprite.beginFill(this.color, 1);
@@ -162,12 +164,12 @@ export class Nest {
 
   releaseAnt() {
     const type =
-      Math.random() < this.warCoef ? AntType.warrior : AntType.worker;
+      Math.random() < this.warCoef ? AntType.soldier : AntType.worker;
 
     if (type === AntType.worker) {
       this.stats.workers++;
     } else {
-      this.stats.warriors++;
+      this.stats.soldiers++;
     }
 
     if (!this.antsToRelease) {
@@ -218,7 +220,7 @@ export class Nest {
     if (ant.type === AntType.worker) {
       this.stats.workers--;
     } else {
-      this.stats.warriors--;
+      this.stats.soldiers--;
     }
     this.stats.livingAnts--;
   }
@@ -227,7 +229,7 @@ export class Nest {
     this.history.food.push(this.stats.food);
     this.history.totalFood.push(this.stats.totalFood);
 
-    this.history.warriors.push(this.stats.warriors);
+    this.history.soldiers.push(this.stats.soldiers);
     this.history.workers.push(this.stats.workers);
     this.history.livingAnts.push(this.stats.livingAnts);
     this.history.totalAnts.push(this.stats.totalAnts);
