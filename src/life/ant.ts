@@ -7,6 +7,7 @@ import { simulationSettings, type FieldSampler } from "./settings";
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
 import { FIELD_CELL_SIZE } from "./const";
+import type { Field } from "./field";
 
 export enum AntMode {
   toFood,
@@ -118,7 +119,6 @@ export class Ant {
 
     this.nest.ants.splice(this.nest.ants.indexOf(this), 1);
     this.nest.garden.ants.splice(this.nest.garden.ants.indexOf(this), 1);
-    // this.nest.garden.antsContainer.removeChild(this.sprite);
     this.sprite.destroy();
   }
 
@@ -138,11 +138,23 @@ export class Ant {
     this.sprite.y += this.velocity.y;
     this.sprite.rotation = this.velocity.rotation() + Math.PI / 2;
 
+    let x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
+    let y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
+
+    const antsFieldIndex = antsField.getIndex(x, y);
     const rockField = this.nest.garden.rockField;
-    if (rockField.getAt(this.sprite.x, this.sprite.y) > 0) {
+    let fieldIndex = rockField.getIndex(x, y);
+
+    if (rockField.data[fieldIndex] > 0) {
       this.sprite.x -= this.velocity.x;
       this.sprite.y -= this.velocity.y;
-      this.turnRandomly();
+
+      let x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
+      let y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
+
+      fieldIndex = rockField.getIndex(x, y);
+
+      this.resolveColision(fieldIndex);
       return true;
     }
 
@@ -169,12 +181,6 @@ export class Ant {
       this.sprite.y = this.nest.garden.height - 1;
       this.turnRandomly();
     }
-
-    const x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
-    const y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
-
-    const antsFieldIndex = antsField.getIndex(x, y);
-    const fieldIndex = this.nest.garden.foodField.getIndex(x, y);
 
     if (antsFieldIndex !== this.lastAntCellIndex) {
       if (this.isInAntsMap) {
@@ -305,15 +311,39 @@ export class Ant {
       simulationSettings.performance.fastFieldSampler,
       false
     );
+
     this.brainTick();
   }
 
   preciseTick() {
-    this.followField(
+    const isFollowing = this.followField(
       this.pheromoneToFollow,
       simulationSettings.performance.preciseFieldSampler,
       true
     );
+
+    // if (!isFollowing && this.mode === AntMode.toFood) {
+    //   const sampler = simulationSettings.performance.preciseFieldSampler;
+    //   const [sumOfValues, values] = this.sampleNeighbourhood(
+    //     this.nest.toHomeField,
+    //     sampler
+    //   );
+
+    //   let currentValue = 0;
+    //   const r = Math.random() * sumOfValues;
+    //   for (let i = 0; i < values.length; i++) {
+    //     if (values[i] === 0) {
+    //       this.velocity.rotate(sampler.angleSamples[i]);
+    //       return;
+    //     }
+    //     // currentValue += 1 - values[i];
+    //     // if (r <= currentValue) {
+    //     //   this.velocity.rotate(sampler.angleSamples[i]);
+    //     //   return;
+    //     // }
+    //   }
+    // }
+
     this.brainTick();
   }
 
@@ -325,6 +355,49 @@ export class Ant {
     } else if (this.mode === AntMode.toEnemy) {
       this.toEnemy();
     }
+  }
+
+  resolveColision(index: number) {
+    const rock = this.nest.garden.rockField;
+    const rockData = rock.data;
+    const rot = this.velocity.rotation();
+    const halfPi = Math.PI / 2;
+
+    if (rot < -halfPi) {
+      if (rockData[index - 1] === 0) {
+        this.velocity.rotateTo(Math.PI);
+        return;
+      } else if (rockData[index - rock.height] === 0) {
+        this.velocity.rotateTo(-halfPi);
+        return;
+      }
+    } else if (rot >= halfPi) {
+      if (rockData[index - 1] === 0) {
+        this.velocity.rotateTo(Math.PI);
+        return;
+      } else if (rockData[index + rock.height] === 0) {
+        this.velocity.rotateTo(halfPi);
+        return;
+      }
+    } else if (rot < 0) {
+      if (rockData[index - rock.height] === 0) {
+        this.velocity.rotateTo(-halfPi);
+        return;
+      } else if (rockData[index + 1] === 0) {
+        this.velocity.rotateTo(0);
+        return;
+      }
+    } else if (rot >= 0) {
+      if (rockData[index + 1] === 0) {
+        this.velocity.rotateTo(0);
+        return;
+      } else if (rockData[index + rock.height] === 0) {
+        this.velocity.rotateTo(halfPi);
+        return;
+      }
+    }
+
+    this.turnRandomly();
   }
 
   enterToHome() {
@@ -400,46 +473,7 @@ export class Ant {
     sampler: FieldSampler,
     chooseBest: boolean
   ) {
-    let sumOfValues = 0;
-    const values: number[] = [];
-
-    for (const angle of sampler.angleSamples) {
-      let total = 0;
-      for (let i = 1; i <= sampler.distanceSamplesCount; i++) {
-        const vec = new Vec(0, FIELD_CELL_SIZE * i);
-        vec.rotateTo(this.velocity.rotation() + angle);
-        const x = this.sprite.x + vec.x;
-        const y = this.sprite.y + vec.y;
-        const index = field.getIndex(x, y);
-        let value = 0;
-
-        if (this.nest.garden.rockField.data[index]) {
-          total = 0;
-          break;
-        }
-
-        if (
-          this.mode === AntMode.toFood &&
-          this.nest.garden.foodField.data[index]
-        ) {
-          total += 10000;
-          break;
-        }
-
-        // value = field.data[index];
-        value = field.maxValues.data[index];
-        if (value > 0.0001) {
-          value = Math.pow(value, 1 / this.nest.freedom);
-          value = Math.max(0, value);
-        } else {
-          value = 0;
-        }
-
-        total += value;
-      }
-      sumOfValues += total;
-      values.push(total);
-    }
+    const [sumOfValues, values] = this.sampleNeighbourhood(field, sampler);
 
     if (sumOfValues === 0) {
       // if (this.food) {
@@ -477,6 +511,54 @@ export class Ant {
 
     this.turnSlightly();
     return false;
+  }
+
+  sampleNeighbourhood(
+    field: PheromoneField,
+    sampler: FieldSampler
+  ): [number, number[]] {
+    let sumOfValues = 0;
+    const values: number[] = [];
+
+    for (const angle of sampler.angleSamples) {
+      let total = 0;
+      for (let i = 1; i <= sampler.distanceSamplesCount; i++) {
+        const vec = new Vec(0, FIELD_CELL_SIZE * i);
+        vec.rotateTo(this.velocity.rotation() + angle);
+        const x = this.sprite.x + vec.x;
+        const y = this.sprite.y + vec.y;
+        const index = field.getIndex(x, y);
+        let value = 0;
+
+        if (this.nest.garden.rockField.data[index]) {
+          total = 0;
+          break;
+        }
+
+        if (
+          this.mode === AntMode.toFood &&
+          this.nest.garden.foodField.data[index]
+        ) {
+          total += 10000;
+          break;
+        }
+
+        // value = field.data[index];
+        value = field.maxValues.data[index];
+        if (value > 0.001) {
+          value = Math.pow(value, 1 / this.nest.freedom);
+          value = Math.max(0, value);
+        } else {
+          value = 0;
+        }
+
+        total += value;
+      }
+      sumOfValues += total;
+      values.push(total);
+    }
+
+    return [sumOfValues, values];
   }
 
   toFood() {
