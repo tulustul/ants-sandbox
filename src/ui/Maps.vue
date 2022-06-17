@@ -3,6 +3,7 @@ import { inject, ref } from "vue";
 import { TrashIcon } from "@heroicons/vue/solid";
 
 import type { Simulation } from "./simulation";
+import { state } from "./state";
 
 const name = ref("");
 
@@ -25,6 +26,7 @@ function dump() {
 
 function load(name: string) {
   const data = localStorage.getItem(`scenario:${name}`)!;
+  state.loadedMap = name;
   simulation.load(data);
 }
 
@@ -57,7 +59,10 @@ function saveScenariosNames() {
   >
     <button class="btn" :onclick="() => load(map)">Load</button>
 
-    <div class="grow">{{ map }}</div>
+    <div class="row grow">
+      <span>{{ map }}</span>
+      <span class="loaded" v-if="map === state.loadedMap">(loaded)</span>
+    </div>
 
     <button class="btn btn-icon" :onclick="() => remove(map)">
       <TrashIcon />
@@ -74,5 +79,8 @@ function saveScenariosNames() {
 }
 .save {
   align-items: stretch;
+}
+.loaded {
+  color: green;
 }
 </style>

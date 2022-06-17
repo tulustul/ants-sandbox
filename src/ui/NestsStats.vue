@@ -34,6 +34,7 @@ let tab = ref("current");
     />
     <NestsChart :nests="nests" label="Living ants" field="livingAnts" />
     <NestsChart :nests="nests" label="Workers" field="workers" />
+    <NestsChart :nests="nests" label="Soldiers" field="soldiers" />
   </template>
 
   <template v-if="tab === 'warfare'">

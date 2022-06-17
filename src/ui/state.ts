@@ -27,6 +27,7 @@ const _state = {
   trackedNest: null as number | null,
   movingNest: false,
   imageFile: null as File | null,
+  loadedMap: null as string | null,
 };
 
 export const state = reactive(_state);

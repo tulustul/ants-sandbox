@@ -1,7 +1,6 @@
 import type { Field } from "./field";
 import type { Garden } from "./garden";
 import { ComplexNoise } from "./noise";
-import { processRock } from "./rock";
 
 export type GardenGeneratorOptions = {
   garden: Garden;

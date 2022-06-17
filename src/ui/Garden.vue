@@ -35,7 +35,7 @@ function onImageChange(event: Event) {
   <RadioGroup v-model="state.gardenSettings.type">
     <RadioOption label="Random" value="random" />
     <RadioOption label="Empty" value="empty" />
-    <RadioOption label="From image" value="image" />
+    <RadioOption label="Image" value="image" />
   </RadioGroup>
 
   <FieldGroup label="Image" v-if="state.gardenSettings.type === 'image'">

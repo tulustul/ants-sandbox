@@ -23,6 +23,8 @@ export class Simulation {
   constructor(public canvas: Canvas) {}
 
   async makeGarden() {
+    state.loadedMap = null;
+
     const settings = state.gardenSettings;
 
     if (settings.type === "image" && state.imageFile) {
@@ -137,8 +139,12 @@ export class Simulation {
         this.garden,
         this.canvas.app
       );
-      nest.antsToRelease = nestData.antsToRelease;
-      nest.antsLimit = nestData.antsLimit;
+      nest.antsToRelease = nestData.antsToRelease ?? 1;
+      nest.antsLimit = nestData.antsLimit ?? 1;
+      nest.aggresiveness = nestData.aggresiveness ?? 0;
+      nest.freedom = nestData.freedom ?? 0.1;
+      nest.stats.food = nestData.food ?? 0;
+      nest.stats.totalFood = nestData.food ?? 0;
       this.garden.nests.push(nest);
     }
 

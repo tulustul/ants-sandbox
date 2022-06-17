@@ -255,7 +255,10 @@ export class Nest {
       x: this.sprite.x,
       y: this.sprite.y,
       antsLimit: this.antsLimit,
-      antsToRelease: this.antsToRelease,
+      antsToRelease: Math.max(this.antsToRelease, this.ants.length),
+      food: this.stats.food,
+      aggresiveness: this.aggresiveness,
+      freedom: this.freedom,
     };
   }
 
