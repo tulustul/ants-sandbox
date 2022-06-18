@@ -2,8 +2,10 @@
 import { inject, ref } from "vue";
 import { TrashIcon } from "@heroicons/vue/solid";
 
-import type { Simulation } from "./simulation";
-import { state } from "./state";
+import type { Simulation } from "../simulation";
+import { state } from "../state";
+import MapExport from "./MapExport.vue";
+import MapImport from "./MapImport.vue";
 
 const name = ref("");
 
@@ -51,6 +53,12 @@ function saveScenariosNames() {
     />
     <button class="btn" :onclick="dump">Save</button>
   </div>
+
+  <div class="row">
+    <MapExport />
+    <MapImport />
+  </div>
+
   <div
     class="row map"
     v-for="map in scenarios"

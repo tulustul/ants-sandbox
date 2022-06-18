@@ -75,6 +75,16 @@ function move() {
 
 <template>
   <div class="column">
+    <div class="row">
+      <button class="btn grow" :onclick="move">
+        <span v-if="state.movingNest">Click on the map...</span>
+        <span v-else>Move</span>
+      </button>
+      <button class="btn btn-danger grow" :onclick="destroyNest">
+        Destroy
+      </button>
+    </div>
+
     <FieldGroup label="Food">
       <div class="row space-between">
         <span
@@ -172,16 +182,6 @@ function move() {
         >War coefficient <strong>{{ warCoef.toFixed(3) }}</strong></span
       >
     </FieldGroup>
-
-    <div class="row">
-      <button class="btn grow" :onclick="move">
-        <span v-if="state.movingNest">Click on the map...</span>
-        <span v-else>Move</span>
-      </button>
-      <button class="btn btn-danger grow" :onclick="destroyNest">
-        Destroy
-      </button>
-    </div>
   </div>
 </template>
 

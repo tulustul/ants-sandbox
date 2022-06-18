@@ -2,7 +2,7 @@
 import { Tabs, Tab } from "./widgets";
 import Simulation from "./Simulation.vue";
 import Draw from "./Draw.vue";
-import Maps from "./Maps.vue";
+import Maps from "./maps/Maps.vue";
 import Visuals from "./Visuals.vue";
 import Nests from "./Nests.vue";
 import Garden from "./Garden.vue";

@@ -109,7 +109,9 @@ export class Simulation {
         width: this.garden.width,
         height: this.garden.height,
         foodField: compressFloat32Array(this.garden.foodField.data),
-        rockField: compressFloat32Array(this.garden.rockField.data),
+        rockField: compressFloat32Array(this.garden.rockField.data, {
+          zeroOrOne: true,
+        }),
       },
       nests: this.garden.nests.map((nest) => nest.dump()),
     };

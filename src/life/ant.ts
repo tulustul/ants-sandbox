@@ -138,8 +138,8 @@ export class Ant {
     this.sprite.y += this.velocity.y;
     this.sprite.rotation = this.velocity.rotation() + Math.PI / 2;
 
-    let x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
-    let y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
+    const x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
+    const y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
 
     const antsFieldIndex = antsField.getIndex(x, y);
     const rockField = this.nest.garden.rockField;
@@ -149,8 +149,8 @@ export class Ant {
       this.sprite.x -= this.velocity.x;
       this.sprite.y -= this.velocity.y;
 
-      let x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
-      let y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
+      const x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
+      const y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
 
       fieldIndex = rockField.getIndex(x, y);
 

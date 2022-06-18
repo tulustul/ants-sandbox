@@ -8,6 +8,7 @@
 }
 
 :root {
+  --content-background-color:rgba(50, 50, 50, 0.8);
   --field-color: #4d4d4d;
   --field-color-hover: #5d5d5d;
   --field-primary-color: #008000;
@@ -38,6 +39,9 @@ button {
   color: white;
   cursor: pointer;
   background-color: var(--field-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 strong {
@@ -106,4 +110,12 @@ strong {
 
 .shadow {
   box-shadow: 0 0 5px 0 #000000;
+}
+
+.success {
+  color: var(--field-primary-color-hover)
+}
+
+.danger {
+  color:var(--field-danger-color-hover)
 }

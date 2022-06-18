@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, reactive, type PropType } from "vue";
+import { provide, reactive } from "vue";
 import type { TabsState } from "./tabsState";
 
 const state: TabsState = reactive({
@@ -43,7 +43,7 @@ section {
   --filter: blur(15px);
   --tab-inactive-background: rgba(20, 20, 20, 0.8);
   --tab-hover-background: rgba(40, 40, 40, 0.8);
-  --tab-active-background: rgba(50, 50, 50, 0.8);
+  --tab-active-background: var(--content-background-color);
 }
 .tabs {
   max-height: 60vh;

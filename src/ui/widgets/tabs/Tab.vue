@@ -35,7 +35,7 @@ onBeforeMount(() => {
   overflow-y: auto;
   gap: 10px;
   padding: 10px;
-  background-color: var(--tab-active-background);
+  background-color: var(--content-background-color);
   border: var(--border-width) solid var(--border-color);
   border-top: 0;
   border-radius: 0 0 10px 10px;
