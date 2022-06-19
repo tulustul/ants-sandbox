@@ -3,7 +3,11 @@ import { Vec } from "@/utils/vector";
 import { Sprite } from "pixi.js";
 import type { Colony } from "./colony";
 import type { PheromoneField } from "./pheromone";
-import { simulationSettings, type FieldSampler } from "./settings";
+import {
+  getFieldSampler,
+  simulationSettings,
+  type FieldSampler,
+} from "./settings";
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
 import { FIELD_CELL_SIZE } from "./const";
@@ -20,10 +24,17 @@ export enum AntType {
   soldier,
 }
 
+const magicSampler: FieldSampler = {
+  angle: Math.PI * 2,
+  angleSamplesCount: 2,
+  distanceSamplesCount: 5,
+  angleSamples: [0, Math.PI],
+};
+
 export class Ant {
   sprite: Sprite;
   velocity: Vec;
-  maxEnergy = 2 + (Math.random() - 0.5) * 0.6;
+  maxEnergy = 10 + (Math.random() - 0.5) * 1.6;
   energy = this.maxEnergy;
   mode: AntMode = AntMode.toFood;
 
@@ -41,13 +52,13 @@ export class Ant {
   isStopped = false;
 
   // Worker repel settings.
-  workerMaxRepelTicks = 2000;
+  workerMaxRepelTicks = 4000;
   workerRepelTimeout = 150;
   workerRepelStrength = 1.1;
   toFoodRepelMarkerStrength = 100;
 
   // Soldier repel settings.
-  soldierMaxRepelTicks = 3000;
+  soldierMaxRepelTicks = 6000;
   soldierRepelTimeout = 500;
   solderRepelStrength = 1.5;
   toEnemyRepelMarkerStrength = 200;
@@ -338,27 +349,20 @@ export class Ant {
       true
     );
 
-    // if (!isFollowing && this.mode === AntMode.toFood) {
-    //   const sampler = simulationSettings.performance.preciseFieldSampler;
-    //   const [sumOfValues, values] = this.sampleNeighbourhood(
-    //     this.colony.toHomeField,
-    //     sampler
-    //   );
-
-    //   let currentValue = 0;
-    //   const r = Math.random() * sumOfValues;
-    //   for (let i = 0; i < values.length; i++) {
-    //     if (values[i] === 0) {
-    //       this.velocity.rotate(sampler.angleSamples[i]);
-    //       return;
-    //     }
-    //     // currentValue += 1 - values[i];
-    //     // if (r <= currentValue) {
-    //     //   this.velocity.rotate(sampler.angleSamples[i]);
-    //     //   return;
-    //     // }
-    //   }
-    // }
+    if (!isFollowing && this.mode === AntMode.toFood && Math.random() > 0.5) {
+      // If the ant goes upward the gradient of toHome then turn around.
+      // This makes the ants much better at solving mazes as they penetrate it faster instead of circling around nest.
+      // On the other, hand this leads to ants gathering and stucking in dead ends corridors.
+      // The Math.random is a simple trick that allows the ants to escape dead ends quicker.
+      const [sumOfValues, values] = this.sampleNeighbourhood(
+        this.colony.toHomeField,
+        magicSampler
+      );
+      if (values[1] < values[0]) {
+        this.turnAround();
+        this.turnStrongly();
+      }
+    }
 
     this.brainTick();
   }

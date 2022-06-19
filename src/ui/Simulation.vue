@@ -45,9 +45,9 @@ function reset() {
       v-model="state.simulationSettings.performance.antPreciseTickTimeout"
       label="Ant precise tick timeout"
       :default="defaultSimulationSettings.performance.antPreciseTickTimeout"
-      :min="1"
-      :max="300"
-      :step="1"
+      :min="10"
+      :max="500"
+      :step="10"
     />
 
     <FieldGroup label="Slow tick sampler">
