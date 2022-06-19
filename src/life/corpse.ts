@@ -4,24 +4,26 @@ import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
 
 export class Corpse {
-  decayTime = 60 * 60 * 3;
+  decayTime = 60 * 60 * 5;
   decayTimeLeft = this.decayTime;
   sprite: Sprite;
   garden: Garden;
   alpha = 0.8;
+  phase = 1;
+  textureName: string;
 
   constructor(ant: Ant) {
     this.garden = ant.colony.garden;
 
-    const texture =
-      ant.type === AntType.worker ? "ant-dead.png" : "ant-soldier-dead.png";
-    this.sprite = new Sprite(resources.atlas!.textures[texture]);
+    this.textureName =
+      ant.type === AntType.worker ? "ant-dead" : "ant-soldier-dead";
+    this.sprite = new Sprite(
+      resources.atlas!.textures[`${this.textureName}-${this.phase}.png`]
+    );
 
     this.sprite.anchor.set(0.5);
-    if (ant.type === AntType.soldier) {
-      this.sprite.scale.x = 1.25;
-      this.sprite.scale.y = 1.25;
-    }
+    this.sprite.scale.x = 0.4;
+    this.sprite.scale.y = 0.4;
 
     this.sprite.x = ant.sprite.x;
     this.sprite.y = ant.sprite.y;
@@ -41,7 +43,16 @@ export class Corpse {
 
   tick(ticks: number) {
     this.decayTimeLeft -= ticks;
-    this.sprite.alpha = (this.decayTimeLeft / this.decayTime) * this.alpha;
+    this.sprite.alpha = this.decayTimeLeft / this.decayTime;
+    const phase = 9 - Math.ceil((this.decayTimeLeft / this.decayTime) * 8);
+    if (phase !== this.phase) {
+      if (phase > 2) {
+        this.textureName = "ant-dead";
+      }
+      this.phase = phase;
+      this.sprite.texture =
+        resources.atlas!.textures[`${this.textureName}-${phase}.png`];
+    }
     if (this.decayTimeLeft <= 0) {
       this.destroy();
     }
