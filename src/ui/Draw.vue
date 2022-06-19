@@ -27,6 +27,16 @@ function toggleDraw(type: DrawingType) {
     >
       Draw rock
     </button>
+
+    <div class="eraser">
+      <button
+        class="btn"
+        :class="{ 'btn-primary': state.drawing.erasing }"
+        :onclick="() => (state.drawing.erasing = !state.drawing.erasing)"
+      >
+        Erase
+      </button>
+    </div>
   </div>
 
   <Slider
@@ -38,9 +48,10 @@ function toggleDraw(type: DrawingType) {
   />
 
   <Slider
-    label="Intensity"
+    label="Food richness"
+    v-if="state.drawing.type === 'food'"
     v-model="state.drawing.intensity"
-    :min="0"
+    :min="1"
     :max="100"
     :step="1"
   />
@@ -52,4 +63,9 @@ function toggleDraw(type: DrawingType) {
   <Checkbox label="Vertical mirror" v-model="state.drawing.verticalMirror" />
 </template>
 
-<style></style>
+<style scoped>
+.eraser {
+  padding-left: 10px;
+  border-left: 2px solid var(--border-color);
+}
+</style>

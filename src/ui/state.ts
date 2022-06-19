@@ -23,6 +23,7 @@ const _state = {
     intensity: 10,
     horizontalMirror: false,
     verticalMirror: false,
+    erasing: false,
   },
   trackedNest: null as number | null,
   movingNest: false,

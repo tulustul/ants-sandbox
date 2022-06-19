@@ -116,7 +116,8 @@ export class Controls {
       this.wasDrawingRock = true;
     }
     if (field) {
-      field.draw(x, y, state.drawing.radius, state.drawing.intensity);
+      const intensity = state.drawing.erasing ? 0 : state.drawing.intensity;
+      field.draw(x, y, state.drawing.radius, intensity);
       this.garden.foodGraphics.texture.update();
       this.garden.rockGraphics.texture.update();
     }
