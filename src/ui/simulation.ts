@@ -49,11 +49,12 @@ export class Simulation {
 
       processRock(this.garden.rockField);
     }
+
+    this.centerCamera();
   }
 
   restart() {
     this.garden.destroy();
-
     this.makeGarden();
   }
 
@@ -161,5 +162,15 @@ export class Simulation {
     }
 
     state.trackedNest = this.garden.nests[0].id;
+
+    this.centerCamera();
+  }
+
+  centerCamera() {
+    const widthScale = window.innerWidth / this.garden.width;
+    const heightScale = window.innerHeight / this.garden.height;
+    this.canvas.camera.transform.scale =
+      Math.min(widthScale, heightScale) * 0.95;
+    this.canvas.camera.centerAt(this.garden.width / 2, this.garden.height / 2);
   }
 }

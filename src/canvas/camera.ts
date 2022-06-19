@@ -35,12 +35,9 @@ export class Camera {
   centerAt(x: number, y: number) {
     const oldScale = this.transform.scale;
 
-    this.transform.x = -x;
-    this.transform.y = -y;
+    this.transform.x = -x + window.innerWidth / 2;
+    this.transform.y = -y + window.innerHeight / 2;
     this.transform.scale = 1;
-
-    // this.transform.x += window.innerWidth / 2;
-    // this.transform.y += window.innerHeight / 2;
 
     this.scaleTo(oldScale, window.innerWidth / 2, window.innerHeight / 2);
   }

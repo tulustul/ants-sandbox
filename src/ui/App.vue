@@ -46,11 +46,6 @@ async function onReady() {
     canvas.camera.update();
   });
 
-  const nest = simulation.garden.nests[0];
-  if (nest) {
-    canvas.camera.centerAt(nest.sprite.x, nest.sprite.y);
-  }
-
   ready.value = true;
 }
 </script>
