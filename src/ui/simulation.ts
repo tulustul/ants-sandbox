@@ -167,10 +167,11 @@ export class Simulation {
   }
 
   centerCamera() {
+    const camera = this.canvas.camera;
     const widthScale = window.innerWidth / this.garden.width;
     const heightScale = window.innerHeight / this.garden.height;
-    this.canvas.camera.transform.scale =
-      Math.min(widthScale, heightScale) * 0.95;
-    this.canvas.camera.centerAt(this.garden.width / 2, this.garden.height / 2);
+    camera.transform.scale = Math.min(widthScale, heightScale) * 0.95;
+    camera.centerAt(this.garden.width / 2, this.garden.height / 2);
+    camera.targetScale = camera.transform.scale;
   }
 }

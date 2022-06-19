@@ -91,7 +91,7 @@ function move() {
           >Current <strong>{{ stats.food.toFixed(0) }}</strong></span
         >
         <span
-          >Total <strong>{{ stats.totalFood }}</strong></span
+          >Total <strong>{{ stats.totalFood.toFixed(0) }}</strong></span
         >
       </div>
 

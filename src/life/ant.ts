@@ -7,7 +7,6 @@ import { simulationSettings, type FieldSampler } from "./settings";
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
 import { FIELD_CELL_SIZE } from "./const";
-import type { Field } from "./field";
 
 export enum AntMode {
   toFood,
@@ -24,7 +23,7 @@ export enum AntType {
 export class Ant {
   sprite: Sprite;
   velocity: Vec;
-  maxEnergy = 1 + (Math.random() - 0.5) * 0.6;
+  maxEnergy = 2 + (Math.random() - 0.5) * 0.6;
   energy = this.maxEnergy;
   mode: AntMode = AntMode.toFood;
 
@@ -149,8 +148,14 @@ export class Ant {
       this.sprite.x -= this.velocity.x;
       this.sprite.y -= this.velocity.y;
 
-      const x = Math.max(1, Math.min(this.nest.garden.width - 1, this.sprite.x));
-      const y = Math.max(1, Math.min(this.nest.garden.height - 1, this.sprite.y));
+      const x = Math.max(
+        1,
+        Math.min(this.nest.garden.width - 1, this.sprite.x)
+      );
+      const y = Math.max(
+        1,
+        Math.min(this.nest.garden.height - 1, this.sprite.y)
+      );
 
       fieldIndex = rockField.getIndex(x, y);
 
@@ -367,7 +372,7 @@ export class Ant {
       if (rockData[index - 1] === 0) {
         this.velocity.rotateTo(Math.PI);
         return;
-      } else if (rockData[index - rock.height] === 0) {
+      } else if (rockData[index - rock.width] === 0) {
         this.velocity.rotateTo(-halfPi);
         return;
       }
@@ -375,12 +380,12 @@ export class Ant {
       if (rockData[index - 1] === 0) {
         this.velocity.rotateTo(Math.PI);
         return;
-      } else if (rockData[index + rock.height] === 0) {
+      } else if (rockData[index + rock.width] === 0) {
         this.velocity.rotateTo(halfPi);
         return;
       }
     } else if (rot < 0) {
-      if (rockData[index - rock.height] === 0) {
+      if (rockData[index - rock.width] === 0) {
         this.velocity.rotateTo(-halfPi);
         return;
       } else if (rockData[index + 1] === 0) {
@@ -391,7 +396,7 @@ export class Ant {
       if (rockData[index + 1] === 0) {
         this.velocity.rotateTo(0);
         return;
-      } else if (rockData[index + rock.height] === 0) {
+      } else if (rockData[index + rock.width] === 0) {
         this.velocity.rotateTo(halfPi);
         return;
       }
