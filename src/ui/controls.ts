@@ -1,4 +1,5 @@
 import type { Field } from "@/life/field";
+import { processRock } from "@/life/rock";
 import type { Simulation } from "./simulation";
 import { state } from "./state";
 
@@ -6,6 +7,8 @@ export class Controls {
   public simulation: Simulation | null = null;
 
   pointers = new Map<number, [number, number]>();
+
+  wasDrawingRock = false;
 
   get camera() {
     return this.simulation!.canvas.camera;
@@ -43,6 +46,11 @@ export class Controls {
 
   onPointerUp(event: PointerEvent) {
     this.pointers.delete(event.pointerId);
+    if (this.wasDrawingRock) {
+      processRock(this.garden.rockField);
+      this.garden.rockGraphics.texture.update();
+      this.wasDrawingRock = false;
+    }
   }
 
   onPointerMove(event: PointerEvent) {
@@ -105,6 +113,7 @@ export class Controls {
       field = this.garden.foodField;
     } else if (state.drawing.type === "rock") {
       field = this.garden.rockField;
+      this.wasDrawingRock = true;
     }
     if (field) {
       field.draw(x, y, state.drawing.radius, state.drawing.intensity);

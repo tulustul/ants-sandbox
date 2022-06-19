@@ -101,7 +101,7 @@ function segmentRock(
   }
 
   for (const index of visited) {
-    const val = (depthData[index] / depth + rock.data[index]) / 3.5;
+    const val = depthData[index] / depth / 2 + 0.3;
     rock.data[index] = val + Math.random() * 0.07;
   }
 }
