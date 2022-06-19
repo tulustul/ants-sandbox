@@ -49,12 +49,17 @@ async function dump() {
     <AccordionItem label="Tutorial">
       <MapsList :source="predefinedMaps.tutorial" />
     </AccordionItem>
+
     <AccordionItem label="Mazes">
       <MapsList :source="predefinedMaps.mazes" />
     </AccordionItem>
 
     <AccordionItem label="People">
       <MapsList :source="predefinedMaps.people" />
+    </AccordionItem>
+
+    <AccordionItem label="Other">
+      <MapsList :source="predefinedMaps.other" />
     </AccordionItem>
 
     <AccordionItem label="Custom">

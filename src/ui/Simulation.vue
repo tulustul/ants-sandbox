@@ -11,6 +11,8 @@ function reset() {
 </script>
 
 <template>
+  <p><strong>Warning:</strong> Don't touch :)</p>
+
   <Slider
     v-model="state.simulationSettings.pheromoneDissipation"
     label="Pheromone dissipation"

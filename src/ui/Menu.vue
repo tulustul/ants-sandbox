@@ -4,16 +4,16 @@ import Simulation from "./Simulation.vue";
 import Draw from "./Draw.vue";
 import Maps from "./maps/Maps.vue";
 import Visuals from "./Visuals.vue";
-import Nests from "./Nests.vue";
-import Garden from "./Garden.vue";
-import NestsStats from "./NestsStats.vue";
+import Colonies from "./colonies/Colonies.vue";
+import NewGarden from "./NewGarden.vue";
+import ColoniesStats from "./ColoniesStats.vue";
 </script>
 
 <template>
   <div class="menu">
     <Tabs>
-      <Tab label="Garden">
-        <Garden />
+      <Tab label="New">
+        <NewGarden />
       </Tab>
       <Tab label="Maps">
         <Maps />
@@ -21,11 +21,11 @@ import NestsStats from "./NestsStats.vue";
       <Tab label="Draw">
         <Draw />
       </Tab>
-      <Tab label="Nests">
-        <Nests />
+      <Tab label="Colonies">
+        <Colonies />
       </Tab>
       <Tab label="Stats">
-        <NestsStats />
+        <ColoniesStats />
       </Tab>
       <Tab label="Sim">
         <Simulation />

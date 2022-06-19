@@ -8,11 +8,11 @@ import { FIELD_CELL_SIZE } from "./const";
 import type { Corpse } from "./corpse";
 import { Field } from "./field";
 import { FoodField } from "./food";
-import { Nest } from "./nest";
+import { Colony } from "./colony";
 import { gardenSettings, simulationSettings, visualSettings } from "./settings";
 
 export class Garden {
-  nests: Nest[] = [];
+  colonies: Colony[] = [];
   ants: Ant[] = [];
   corpses: Corpse[] = [];
 
@@ -110,8 +110,8 @@ export class Garden {
       this.antPreciseTickOffset = 0;
     }
 
-    for (const nest of this.nests) {
-      nest.tick(totalTicks);
+    for (const colony of this.colonies) {
+      colony.tick(totalTicks);
     }
 
     for (
@@ -136,8 +136,8 @@ export class Garden {
 
     this.background.destroy();
 
-    while (this.nests.length) {
-      this.nests[0].destroy();
+    while (this.colonies.length) {
+      this.colonies[0].destroy();
     }
 
     while (this.corpses.length) {
@@ -150,7 +150,7 @@ export class Garden {
     this.fieldsLayer.destroy();
   }
 
-  placeRandomNest(numberOfAnts: number) {
+  placeRandomColony(numberOfAnts: number) {
     // if (gardenSettings.horizontalMirror && gardenSettings.verticalMirror) {
 
     // }
@@ -159,50 +159,50 @@ export class Garden {
     let y = 0;
 
     if (gardenSettings.horizontalMirror && gardenSettings.verticalMirror) {
-      if (this.nests.length % 4 === 1) {
-        const lastNest = this.nests[this.nests.length - 1];
-        [x, y] = [this.width - lastNest.sprite.x, lastNest.sprite.y];
-      } else if (this.nests.length % 4 === 2) {
-        const lastNest = this.nests[this.nests.length - 2];
-        [x, y] = [lastNest.sprite.x, this.height - lastNest.sprite.y];
-      } else if (this.nests.length % 4 === 3) {
-        const lastNest = this.nests[this.nests.length - 3];
+      if (this.colonies.length % 4 === 1) {
+        const lastColony = this.colonies[this.colonies.length - 1];
+        [x, y] = [this.width - lastColony.sprite.x, lastColony.sprite.y];
+      } else if (this.colonies.length % 4 === 2) {
+        const lastColony = this.colonies[this.colonies.length - 2];
+        [x, y] = [lastColony.sprite.x, this.height - lastColony.sprite.y];
+      } else if (this.colonies.length % 4 === 3) {
+        const lastColony = this.colonies[this.colonies.length - 3];
         [x, y] = [
-          this.width - lastNest.sprite.x,
-          this.height - lastNest.sprite.y,
+          this.width - lastColony.sprite.x,
+          this.height - lastColony.sprite.y,
         ];
       }
     } else if (gardenSettings.horizontalMirror) {
-      if (this.nests.length % 2 === 1) {
-        const lastNest = this.nests[this.nests.length - 1];
-        [x, y] = [this.width - lastNest.sprite.x, lastNest.sprite.y];
+      if (this.colonies.length % 2 === 1) {
+        const lastColony = this.colonies[this.colonies.length - 1];
+        [x, y] = [this.width - lastColony.sprite.x, lastColony.sprite.y];
       }
     } else if (gardenSettings.verticalMirror) {
-      if (this.nests.length % 2 === 1) {
-        const lastNest = this.nests[this.nests.length - 1];
-        [x, y] = [lastNest.sprite.x, this.height - lastNest.sprite.y];
+      if (this.colonies.length % 2 === 1) {
+        const lastColony = this.colonies[this.colonies.length - 1];
+        [x, y] = [lastColony.sprite.x, this.height - lastColony.sprite.y];
       }
     }
 
     if (!x || !y) {
-      [x, y] = this.getRandomNestPosition();
+      [x, y] = this.getRandomColonyPosition();
     }
 
     if (!x || !y) {
       return;
     }
 
-    const nest = new Nest(x, y, this, this.canvas.app);
-    nest.setStartingAntsNumber(numberOfAnts);
+    const colony = new Colony(x, y, this, this.canvas.app);
+    colony.setStartingAntsNumber(numberOfAnts);
 
-    this.nests.push(nest);
+    this.colonies.push(colony);
 
-    return nest;
+    return colony;
   }
 
-  getRandomNestPosition() {
-    const minimalDistanceFromOtherNest =
-      Math.min(this.width, this.height) / this.nests.length / 2;
+  getRandomColonyPosition() {
+    const minimalDistanceFromOtherColony =
+      Math.min(this.width, this.height) / this.colonies.length / 2;
 
     let tries = 0;
     while (tries++ < 50) {
@@ -213,10 +213,10 @@ export class Garden {
         continue;
       }
 
-      const closestNestDistance = this.getClosesNestDistance(x, y);
+      const closestColonyDistance = this.getClosesColonyDistance(x, y);
       if (
-        closestNestDistance &&
-        closestNestDistance < minimalDistanceFromOtherNest
+        closestColonyDistance &&
+        closestColonyDistance < minimalDistanceFromOtherColony
       ) {
         continue;
       }
@@ -226,11 +226,16 @@ export class Garden {
     return [0, 0];
   }
 
-  getClosesNestDistance(x: number, y: number): number | null {
+  getClosesColonyDistance(x: number, y: number): number | null {
     let closestDistance = null;
 
-    for (const nest of this.nests) {
-      const distance = getDistanceBetween(x, y, nest.sprite.x, nest.sprite.y);
+    for (const colony of this.colonies) {
+      const distance = getDistanceBetween(
+        x,
+        y,
+        colony.sprite.x,
+        colony.sprite.y
+      );
       if (!closestDistance || distance < closestDistance) {
         closestDistance = distance;
       }

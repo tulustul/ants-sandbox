@@ -1,5 +1,5 @@
 import type { Garden } from "@/life/garden";
-import type { Nest } from "@/life/nest";
+import type { Colony } from "@/life/colony";
 import { visualSettings } from "@/life/settings";
 import { state } from "@/ui/state";
 import { BLEND_MODES } from "pixi.js";
@@ -16,7 +16,7 @@ export class FieldsLayer {
   toEnemy: FieldGraphics;
   toEnemyMax: FieldGraphics;
 
-  nest: Nest | null = null;
+  colony: Colony | null = null;
 
   constructor(public garden: Garden, public canvas: Canvas) {
     this.toFood = new FieldGraphics(this.garden, [30, 250, 30]);
@@ -40,18 +40,20 @@ export class FieldsLayer {
       return;
     }
 
-    if (this.nest?.id !== state.trackedNest) {
-      this.nest =
-        this.garden.nests.find((nest) => nest.id === state.trackedNest) ?? null;
-      if (this.nest) {
-        this.toFood.bindData(this.nest.toFoodField.data);
-        this.toFoodMax.bindData(this.nest.toFoodField.maxValues.data);
+    if (this.colony?.id !== state.trackedColony) {
+      this.colony =
+        this.garden.colonies.find(
+          (colony) => colony.id === state.trackedColony
+        ) ?? null;
+      if (this.colony) {
+        this.toFood.bindData(this.colony.toFoodField.data);
+        this.toFoodMax.bindData(this.colony.toFoodField.maxValues.data);
 
-        this.toHome.bindData(this.nest.toHomeField.data);
-        this.toHomeMax.bindData(this.nest.toHomeField.maxValues.data);
+        this.toHome.bindData(this.colony.toHomeField.data);
+        this.toHomeMax.bindData(this.colony.toHomeField.maxValues.data);
 
-        this.toEnemy.bindData(this.nest.toEnemyField.data);
-        this.toEnemyMax.bindData(this.nest.toEnemyField.maxValues.data);
+        this.toEnemy.bindData(this.colony.toEnemyField.data);
+        this.toEnemyMax.bindData(this.colony.toEnemyField.maxValues.data);
       }
     }
 

@@ -2,7 +2,7 @@ import type { Canvas } from "@/canvas";
 import { makeGardenFromImage } from "@/life/fromImage";
 import { Garden } from "@/life/garden";
 import { fillGarden } from "@/life/gardenGenerator";
-import { Nest } from "@/life/nest";
+import { Colony } from "@/life/colony";
 import { processRock } from "@/life/rock";
 import { simulationSettings } from "@/life/settings";
 import { simulationStats } from "@/life/stats";
@@ -39,12 +39,12 @@ export class Simulation {
     }
 
     if (settings.type !== "empty") {
-      for (let i = 0; i < settings.numberOfNests; i++) {
-        this.garden.placeRandomNest(settings.startingAnts);
+      for (let i = 0; i < settings.numberOfColonies; i++) {
+        this.garden.placeRandomColony(settings.startingAnts);
       }
 
-      if (this.garden.nests.length) {
-        state.trackedNest = this.garden.nests[0].id;
+      if (this.garden.colonies.length) {
+        state.trackedColony = this.garden.colonies[0].id;
       }
 
       processRock(this.garden.rockField);
@@ -115,7 +115,7 @@ export class Simulation {
           zeroOrOne: true,
         }),
       },
-      nests: this.garden.nests.map((nest) => nest.dump()),
+      colonies: this.garden.colonies.map((colony) => colony.dump()),
     };
 
     const zip = new JSZip();
@@ -145,23 +145,23 @@ export class Simulation {
 
     processRock(this.garden.rockField);
 
-    for (const nestData of data.nests) {
-      const nest = new Nest(
-        nestData.x,
-        nestData.y,
+    for (const colonyData of data.colonies) {
+      const colony = new Colony(
+        colonyData.x,
+        colonyData.y,
         this.garden,
         this.canvas.app
       );
-      nest.antsToRelease = nestData.antsToRelease ?? 1;
-      nest.antsLimit = nestData.antsLimit ?? 1;
-      nest.aggresiveness = nestData.aggresiveness ?? 0;
-      nest.freedom = nestData.freedom ?? 0.1;
-      nest.stats.food = nestData.food ?? 0;
-      nest.stats.totalFood = nestData.food ?? 0;
-      this.garden.nests.push(nest);
+      colony.antsToRelease = colonyData.antsToRelease ?? 1;
+      colony.antsLimit = colonyData.antsLimit ?? 1;
+      colony.aggresiveness = colonyData.aggresiveness ?? 0;
+      colony.freedom = colonyData.freedom ?? 0.1;
+      colony.stats.food = colonyData.food ?? 0;
+      colony.stats.totalFood = colonyData.food ?? 0;
+      this.garden.colonies.push(colony);
     }
 
-    state.trackedNest = this.garden.nests[0].id;
+    state.trackedColony = this.garden.colonies[0].id;
 
     this.centerCamera();
   }

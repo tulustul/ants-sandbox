@@ -71,9 +71,9 @@ function onImageChange(event: Event) {
 
   <FieldGroup label="Colonies" v-if="state.gardenSettings.type !== 'empty'">
     <Slider
-      label="Number of nests"
-      v-model="state.gardenSettings.numberOfNests"
-      :default="defaultGardenSettings.numberOfNests"
+      label="Number of colonies"
+      v-model="state.gardenSettings.numberOfColonies"
+      :default="defaultGardenSettings.numberOfColonies"
       :min="1"
       :max="5"
       :step="1"

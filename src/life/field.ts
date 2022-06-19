@@ -37,7 +37,13 @@ export class Field {
     return this.data[this.getIndex(x, y)];
   }
 
-  draw(atX: number, atY: number, radius: number, value: number) {
+  draw(
+    atX: number,
+    atY: number,
+    radius: number,
+    value: number,
+    ignoreMirroring = false
+  ) {
     atX = Math.floor(atX / this.cellSize);
     atY = Math.floor(atY / this.cellSize);
     const halfRadius = radius / 2;
@@ -49,6 +55,10 @@ export class Field {
     const maxY = minY + radius;
 
     this._draw(minX, maxX, minY, maxY, value);
+
+    if (ignoreMirroring) {
+      return;
+    }
 
     if (state.drawing.horizontalMirror) {
       this._draw(this.width - maxX, this.width - minX, minY, maxY, value);

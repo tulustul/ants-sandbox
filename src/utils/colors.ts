@@ -15,7 +15,7 @@ const COLORS = [
 ];
 
 export function getNextColor(garden: Garden): number {
-  const usedColors = new Set(garden.nests.map((nest) => nest.color));
+  const usedColors = new Set(garden.colonies.map((colony) => colony.color));
   for (const color of COLORS) {
     if (!usedColors.has(color)) {
       return color;

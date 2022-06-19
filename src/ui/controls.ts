@@ -39,8 +39,8 @@ export class Controls {
 
   onPointerDown(event: PointerEvent) {
     this.pointers.set(event.pointerId, [event.clientX, event.clientY]);
-    if (state.movingNest) {
-      this.moveNest(event);
+    if (state.movingColony) {
+      this.moveColony(event);
     }
   }
 
@@ -123,17 +123,19 @@ export class Controls {
     }
   }
 
-  moveNest(event: PointerEvent) {
-    if (!state.trackedNest || !this.simulation) {
-      state.movingNest = false;
+  moveColony(event: PointerEvent) {
+    if (!state.trackedColony || !this.simulation) {
+      state.movingColony = false;
       return;
     }
 
     const garden = this.simulation.garden;
 
-    const nest = garden.nests.find((nest) => nest.id === state.trackedNest);
-    if (!nest) {
-      state.movingNest = false;
+    const colony = garden.colonies.find(
+      (colony) => colony.id === state.trackedColony
+    );
+    if (!colony) {
+      state.movingColony = false;
       return;
     }
 
@@ -148,9 +150,9 @@ export class Controls {
       return;
     }
 
-    nest.sprite.x = x;
-    nest.sprite.y = y;
+    colony.sprite.x = x;
+    colony.sprite.y = y;
 
-    state.movingNest = false;
+    state.movingColony = false;
   }
 }

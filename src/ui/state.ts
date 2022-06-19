@@ -25,8 +25,8 @@ const _state = {
     verticalMirror: false,
     erasing: false,
   },
-  trackedNest: null as number | null,
-  movingNest: false,
+  trackedColony: null as number | null,
+  movingColony: false,
   imageFile: null as File | null,
   loadedMap: null as string | null,
 };

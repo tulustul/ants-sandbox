@@ -5,7 +5,7 @@ export type DumpedGarden = {
   rockField: number[];
 };
 
-export type DumpedNest = {
+export type DumpedColony = {
   x: number;
   y: number;
   antsToRelease: number;
@@ -17,5 +17,5 @@ export type DumpedNest = {
 
 export type DumpedSimulation = {
   garden: DumpedGarden;
-  nests: DumpedNest[];
+  colonies: DumpedColony[];
 };

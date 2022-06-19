@@ -11,7 +11,7 @@ export class Corpse {
   alpha = 0.8;
 
   constructor(ant: Ant) {
-    this.garden = ant.nest.garden;
+    this.garden = ant.colony.garden;
 
     const texture =
       ant.type === AntType.worker ? "ant-dead.png" : "ant-soldier-dead.png";
@@ -28,7 +28,7 @@ export class Corpse {
     this.sprite.rotation = ant.sprite.rotation;
     this.sprite.alpha = this.alpha;
 
-    this.sprite.tint = ant.nest.corpseColor;
+    this.sprite.tint = ant.colony.corpseColor;
 
     this.garden.corpsesContainer.addChild(this.sprite);
   }

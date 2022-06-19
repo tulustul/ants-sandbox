@@ -2,74 +2,75 @@
 import { inject, ref, watch } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
-import { state } from "./state";
-import FieldGroup from "./forms/FieldGroup.vue";
-import Slider from "./forms/Slider.vue";
-import { vExplode } from "./widgets";
+import { state } from "@/ui/state";
+import { FieldGroup, Slider } from "@/ui/forms";
+import { vExplode } from "@/ui/widgets";
 import { AntType } from "@/life/ant";
-import type { Simulation } from "./simulation";
+import type { Simulation } from "@/ui/simulation";
 
 const simulation = inject<Simulation>("simulation")!;
 
-let nest = getTrackedNest()!;
+let colony = getTrackedColony()!;
 
-const stats = ref(nest.stats);
-const warCoef = ref(nest.warCoef);
+const stats = ref(colony.stats);
+const warCoef = ref(colony.warCoef);
 
-const freedom = ref(nest.freedom);
-const aggresiveness = ref(nest.aggresiveness);
+const freedom = ref(colony.freedom);
+const aggresiveness = ref(colony.aggresiveness);
 
 watch(state, () => {
-  if (!state.trackedNest) {
+  if (!state.trackedColony) {
     return;
   }
-  nest = getTrackedNest()!;
-  freedom.value = nest.freedom;
-  aggresiveness.value = nest.aggresiveness;
+  colony = getTrackedColony()!;
+  freedom.value = colony.freedom;
+  aggresiveness.value = colony.aggresiveness;
 });
-watch(freedom, () => (nest.freedom = freedom.value));
-watch(aggresiveness, () => (nest.aggresiveness = aggresiveness.value));
+watch(freedom, () => (colony.freedom = freedom.value));
+watch(aggresiveness, () => (colony.aggresiveness = aggresiveness.value));
 
 useIntervalFn(() => {
-  stats.value = { ...nest.stats };
-  warCoef.value = nest.warCoef;
+  stats.value = { ...colony.stats };
+  warCoef.value = colony.warCoef;
 }, 200);
 
-function getTrackedNest() {
-  return simulation.garden.nests.find((nest) => nest.id === state.trackedNest);
+function getTrackedColony() {
+  return simulation.garden.colonies.find(
+    (colony) => colony.id === state.trackedColony
+  );
 }
 
-function destroyNest() {
-  nest.destroy();
-  state.trackedNest = null;
+function destroyColony() {
+  colony.destroy();
+  state.trackedColony = null;
 }
 
 function addFood() {
-  nest.addFood(1000);
+  colony.addFood(1000);
 }
 
 function removeFood() {
-  nest.removeFood(1000);
+  colony.removeFood(1000);
 }
 
 function addWorkers() {
-  (nest as any).addAnts(AntType.worker, 100);
+  (colony as any).addAnts(AntType.worker, 100);
 }
 
 function removeWorkers() {
-  nest.killAnts(AntType.worker, 100);
+  colony.killAnts(AntType.worker, 100);
 }
 
 function addSoldiers() {
-  nest.addAnts(AntType.soldier, 25);
+  colony.addAnts(AntType.soldier, 25);
 }
 
 function removeSoldiers() {
-  nest.killAnts(AntType.soldier, 25);
+  colony.killAnts(AntType.soldier, 25);
 }
 
 function move() {
-  state.movingNest = !state.movingNest;
+  state.movingColony = !state.movingColony;
 }
 </script>
 
@@ -77,10 +78,10 @@ function move() {
   <div class="column">
     <div class="row">
       <button class="btn grow" :onclick="move">
-        <span v-if="state.movingNest">Click on the map...</span>
+        <span v-if="state.movingColony">Click on the map...</span>
         <span v-else>Move</span>
       </button>
-      <button class="btn btn-danger grow" :onclick="destroyNest">
+      <button class="btn btn-danger grow" :onclick="destroyColony">
         Destroy
       </button>
     </div>

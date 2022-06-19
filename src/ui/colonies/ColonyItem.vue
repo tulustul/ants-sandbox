@@ -2,22 +2,22 @@
 import { ref } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
-import { Nest } from "@/life/nest";
+import { Colony } from "@/life/colony";
 import { colorToHexString } from "@/utils/colors";
-import { state } from "./state";
+import { state } from "@/ui/state";
 
 const props = defineProps({
-  nest: { type: Nest, required: true },
+  colony: { type: Colony, required: true },
 });
 
-const antsCount = ref(props.nest.ants.length);
+const antsCount = ref(props.colony.ants.length);
 
-useIntervalFn(() => (antsCount.value = props.nest.ants.length), 200);
+useIntervalFn(() => (antsCount.value = props.colony.ants.length), 200);
 
-const backgroundColor = colorToHexString(props.nest.color);
+const backgroundColor = colorToHexString(props.colony.color);
 
 function track() {
-  state.trackedNest = props.nest.id;
+  state.trackedColony = props.colony.id;
 }
 </script>
 
@@ -26,11 +26,11 @@ function track() {
     class="row"
     role="button"
     :onclick="track"
-    :class="{ tracked: nest.id === state.trackedNest }"
+    :class="{ tracked: colony.id === state.trackedColony }"
   >
     <span class="item-left">
       <span class="color-box" :style="{ backgroundColor }" />
-      <span>Nest #{{ nest.id }}</span>
+      <span>Colony #{{ colony.id }}</span>
     </span>
     <span>{{ antsCount }} Ants</span>
   </h3>

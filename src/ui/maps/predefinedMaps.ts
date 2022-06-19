@@ -1,4 +1,5 @@
 export default {
+  tutorial: {},
   mazes: {
     "Maze 1": "/maps/mazes/maze_1.map",
     "Maze 2": "/maps/mazes/maze_2.map",
@@ -12,5 +13,7 @@ export default {
     "Elon Musk": "/maps/people/ElonMusk.map",
     Avengers: "/maps/people/Avengers.map",
   },
-  tutorial: {},
+  other: {
+    "Circle of food": "/maps/other/circle_of_food.map",
+  },
 };

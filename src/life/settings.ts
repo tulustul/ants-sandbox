@@ -14,7 +14,7 @@ export const defaultSimulationSettings = {
   antSeekRandomness: 3,
   antsBirthRate: 1 / 60,
   performance: {
-    antSlowTickTimeout: 2,
+    antSlowTickTimeout: 3,
     antPreciseTickTimeout: 180,
     fastFieldSampler: getFieldSampler(Math.PI / 2, 3, 3),
     preciseFieldSampler: getFieldSampler(Math.PI * 2, 20, 5),
@@ -29,14 +29,14 @@ export const defaultGardenSettings = {
   width: 5_000,
   height: 5_000,
 
-  numberOfNests: 4,
+  numberOfColonies: 4,
   startingAnts: 100,
   colonySizeLimit: 500,
 
   foodEnabled: true,
   foodScale: 0.2,
   foodSize: 0.48,
-  foodRichness: 20,
+  foodRichness: 10,
 
   rockEnabled: true,
   rockScale: 0.6,

@@ -1,4 +1,4 @@
-import type { DumpedNest } from "@/types";
+import type { DumpedColony } from "@/types";
 import { state } from "@/ui/state";
 import { desaturateColor, getNextColor } from "@/utils/colors";
 import { getNextPrimeNumber } from "@/utils/primeNumbers";
@@ -8,7 +8,7 @@ import type { Garden } from "./garden";
 import { PheromoneField } from "./pheromone";
 import { gardenSettings, simulationSettings } from "./settings";
 
-export type NestStats = {
+export type ColonyStats = {
   food: number;
   totalFood: number;
 
@@ -22,7 +22,7 @@ export type NestStats = {
   soldiers: number;
 };
 
-export type NestHistory = {
+export type ColonyHistory = {
   food: number[];
   totalFood: number[];
 
@@ -37,17 +37,17 @@ export type NestHistory = {
   soldiers: number[];
 };
 
-export class Nest {
+export class Colony {
   static lastId = 1;
 
-  id = Nest.lastId++;
+  id = Colony.lastId++;
   sprite: Graphics;
   ants: Ant[] = [];
   startingAnts = 1;
   antsToRelease = 1;
   antCost = 20;
 
-  stats: NestStats = {
+  stats: ColonyStats = {
     food: 0,
     totalFood: 0,
 
@@ -61,7 +61,7 @@ export class Nest {
     soldiers: 0,
   };
 
-  history: NestHistory = {
+  history: ColonyHistory = {
     food: [],
     totalFood: [],
 
@@ -81,7 +81,7 @@ export class Nest {
   warCoef = 0;
   cumulatedAggresiveness = 0;
 
-  freedom = 0.0003 + Math.random() * 0.002;
+  freedom = 0.005 + Math.random() * 0.003;
   aggresiveness = Math.random();
 
   color: number;
@@ -122,7 +122,7 @@ export class Nest {
 
     this.sprite.interactive = true;
     this.sprite.on("pointerdown", () => {
-      state.trackedNest = this.id;
+      state.trackedColony = this.id;
     });
 
     app.stage.addChild(this.sprite);
@@ -140,9 +140,9 @@ export class Nest {
     }
     this.sprite.destroy();
     this.app.stage.removeChild(this.sprite);
-    const nestIndex = this.garden.nests.indexOf(this);
-    if (nestIndex !== -1) {
-      this.garden.nests.splice(nestIndex, 1);
+    const colonyIndex = this.garden.colonies.indexOf(this);
+    if (colonyIndex !== -1) {
+      this.garden.colonies.splice(colonyIndex, 1);
     }
   }
 
@@ -220,7 +220,7 @@ export class Nest {
       this.stats.food = 0;
     } else {
       if (Math.random() > 0.99) {
-        this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000);
+        this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000, true);
       }
     }
   }
@@ -250,7 +250,7 @@ export class Nest {
     this.history.warCoef.push(this.warCoef);
   }
 
-  dump(): DumpedNest {
+  dump(): DumpedColony {
     return {
       x: this.sprite.x,
       y: this.sprite.y,
