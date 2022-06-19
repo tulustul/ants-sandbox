@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { inject, onBeforeMount } from "vue";
-import type { TabsState } from "./tabsState";
+import type { TabsState } from "./types";
 
 const props = defineProps({
   label: {

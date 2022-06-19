@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { provide, reactive } from "vue";
-import type { TabsState } from "./tabsState";
+import type { TabsState } from "./types";
 
 const state: TabsState = reactive({
   selectedTab: "",

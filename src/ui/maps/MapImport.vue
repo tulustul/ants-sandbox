@@ -1,27 +1,31 @@
 <script setup lang="ts">
 import { inject, ref, watch } from "vue";
 
-import { Modal } from "@/ui/widgets";
+import { Modal, Spinner } from "@/ui/widgets";
 import type { Simulation } from "../simulation";
 
 let simulation = inject<Simulation>("simulation")!;
 
 const data = ref("");
 const error = ref("");
+const waiting = ref(false);
 
 const importModalVisible = ref(false);
 
 watch(importModalVisible, () => {
   data.value = "";
+  error.value = "";
 });
 
-function importMap() {
+async function importMap() {
+  waiting.value = true;
   try {
-    simulation.load(data.value);
+    await simulation.load(data.value);
     close();
   } catch {
     error.value = "Broken map string. Unable to import the map.";
   }
+  waiting.value = false;
 }
 
 function close() {
@@ -45,7 +49,8 @@ function close() {
     </template>
 
     <template v-slot:actions>
-      <button class="btn btn-primary" @click="importMap">Import</button>
+      <Spinner v-if="waiting" />
+      <button v-else class="btn btn-primary" @click="importMap">Import</button>
       <button class="btn" @click="close">Cancel</button>
     </template>
   </Modal>

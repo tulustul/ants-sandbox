@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject, ref, watch } from "vue";
 
-import { Modal } from "@/ui/widgets";
+import { Modal, Spinner } from "@/ui/widgets";
 import type { Simulation } from "../simulation";
 
 let simulation = inject<Simulation>("simulation")!;
@@ -9,10 +9,15 @@ let simulation = inject<Simulation>("simulation")!;
 const exportModalVisible = ref(false);
 const isCopied = ref(false);
 const data = ref("");
+const waiting = ref(false);
 
-watch(exportModalVisible, () => {
+watch(exportModalVisible, async () => {
+  data.value = "";
+  isCopied.value = false;
   if (exportModalVisible.value) {
-    data.value = simulation.dump();
+    waiting.value = true;
+    data.value = await simulation.dump();
+    waiting.value = false;
   }
 });
 
@@ -33,7 +38,10 @@ async function copyToClipboard() {
         Below you can find a map string that can be imported by other users.
       </p>
 
-      <div class="data">{{ data }}</div>
+      <div v-if="waiting" class="spinner">
+        <Spinner />
+      </div>
+      <div v-else class="data">{{ data }}</div>
     </template>
 
     <template v-slot:actions>
@@ -58,5 +66,10 @@ async function copyToClipboard() {
   max-height: 250px;
   overflow-y: auto;
   font-family: monospace;
+}
+.spinner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 </style>

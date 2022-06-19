@@ -11,6 +11,7 @@ import {
   compressFloat32Array,
   decompressFloat32Array,
 } from "@/utils/compression";
+import JSZip from "jszip";
 import { state } from "./state";
 
 export class Simulation {
@@ -103,7 +104,7 @@ export class Simulation {
       (simulationStats.simulationTime * 9 + dt) / 10;
   }
 
-  dump(): string {
+  async dump(): Promise<string> {
     const data: DumpedSimulation = {
       garden: {
         width: this.garden.width,
@@ -115,13 +116,22 @@ export class Simulation {
       },
       nests: this.garden.nests.map((nest) => nest.dump()),
     };
-    const sData = JSON.stringify(data);
-    return btoa(sData);
+
+    const zip = new JSZip();
+    zip.file("map", JSON.stringify(data));
+
+    return await zip.generateAsync({
+      type: "base64",
+      compression: "DEFLATE",
+    });
   }
 
-  load(b64Data: string) {
-    const sData = atob(b64Data);
+  async load(zippedData: string) {
+    const zip = new JSZip();
+    const zipData = await zip.loadAsync(zippedData, { base64: true });
+    const sData = await zipData.file("map")!.async("string");
     const data: DumpedSimulation = JSON.parse(sData);
+
     this.garden.destroy();
 
     this.garden = new Garden(

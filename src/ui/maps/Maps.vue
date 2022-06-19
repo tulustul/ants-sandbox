@@ -1,45 +1,31 @@
 <script setup lang="ts">
-import { inject, ref } from "vue";
-import { TrashIcon } from "@heroicons/vue/solid";
+import { inject, reactive, ref } from "vue";
 
 import type { Simulation } from "../simulation";
-import { state } from "../state";
 import MapExport from "./MapExport.vue";
 import MapImport from "./MapImport.vue";
+import MapsList from "./MapsList.vue";
+import { Accordion, AccordionItem } from "@/ui/widgets";
+import predefinedMaps from "./predefinedMaps";
+import { saveMapsNames } from "./utils";
 
 const name = ref("");
 
-const scenarios: Set<string> = new Set(
-  JSON.parse(localStorage.getItem("scenarios") ?? "[]")
+const customMaps = reactive<string[]>(
+  Array.from(new Set(JSON.parse(localStorage.getItem("maps") ?? "[]")))
 );
 
 let simulation = inject<Simulation>("simulation")!;
 
-function dump() {
+async function dump() {
   if (!name.value) {
     return;
   }
-  const dumpedSim = simulation.dump();
-  localStorage.setItem(`scenario:${name.value}`, dumpedSim);
-  scenarios.add(name.value);
-  saveScenariosNames();
+  const dumpedSim = await simulation.dump();
+  localStorage.setItem(`map:${name.value}`, dumpedSim);
+  customMaps.push(name.value);
   name.value = "";
-}
-
-function load(name: string) {
-  const data = localStorage.getItem(`scenario:${name}`)!;
-  state.loadedMap = name;
-  simulation.load(data);
-}
-
-function remove(name: string) {
-  localStorage.removeItem(`scenario:${name}`);
-  scenarios.delete(name);
-  saveScenariosNames();
-}
-
-function saveScenariosNames() {
-  localStorage.setItem("scenarios", JSON.stringify(Array.from(scenarios)));
+  saveMapsNames(customMaps);
 }
 </script>
 
@@ -59,36 +45,26 @@ function saveScenariosNames() {
     <MapImport />
   </div>
 
-  <div
-    class="row map"
-    v-for="map in scenarios"
-    v-bind:key="map"
-    :onclick="() => (name = map)"
-  >
-    <button class="btn" :onclick="() => load(map)">Load</button>
+  <Accordion>
+    <AccordionItem label="Tutorial">
+      <MapsList :source="predefinedMaps.tutorial" />
+    </AccordionItem>
+    <AccordionItem label="Mazes">
+      <MapsList :source="predefinedMaps.mazes" />
+    </AccordionItem>
 
-    <div class="row grow">
-      <span>{{ map }}</span>
-      <span class="loaded" v-if="map === state.loadedMap">(loaded)</span>
-    </div>
+    <AccordionItem label="People">
+      <MapsList :source="predefinedMaps.people" />
+    </AccordionItem>
 
-    <button class="btn btn-icon" :onclick="() => remove(map)">
-      <TrashIcon />
-    </button>
-  </div>
+    <AccordionItem label="Custom">
+      <MapsList :maps="customMaps" @select="(map) => (name = map)" />
+    </AccordionItem>
+  </Accordion>
 </template>
 
 <style scoped>
-.map {
-  cursor: pointer;
-}
-.map:hover {
-  background-color: rgba(0, 0, 0, 0.2);
-}
 .save {
   align-items: stretch;
-}
-.loaded {
-  color: green;
 }
 </style>

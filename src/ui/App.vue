@@ -24,6 +24,10 @@ onMounted(async () => {
   window.addEventListener(
     "contextmenu",
     (e) => {
+      const el = e.target as HTMLElement;
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        return;
+      }
       e.preventDefault();
     },
     false
