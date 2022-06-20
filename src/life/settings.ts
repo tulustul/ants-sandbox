@@ -46,19 +46,26 @@ export const defaultGardenSettings = {
   verticalMirror: false,
 };
 
+export type PheromoneVisualSettings = {
+  enabled: boolean;
+  exposure: number;
+  contrast: number;
+  intensity: number;
+};
+
+const defaultPheromoneVisualSettings: PheromoneVisualSettings = {
+  enabled: true,
+  contrast: 1,
+  exposure: 1,
+  intensity: 0.15,
+};
+
 export const defaultVisualSettings = {
-  toFoodEnabled: true,
-  toFoodMaxEnabled: true,
-  toHomeEnabled: true,
-  toHomeMaxEnabled: true,
-  toEnemyEnabled: true,
-  toEnemyMaxEnabled: true,
-  maxOpacity: 0.15,
+  toFood: { ...defaultPheromoneVisualSettings },
+  toHome: { ...defaultPheromoneVisualSettings },
+  toEnemy: { ...defaultPheromoneVisualSettings },
   antsEnabled: true,
-  shaders: {
-    pheromoneExposure: 1,
-    pheromoneContrast: 1,
-  },
+  corpsesEnabled: true,
 };
 
 export const simulationSettings = getFromStorage(
@@ -87,6 +94,7 @@ function getFromStorage<T>(key: string, default_: T): T {
 
   if (!matchObjectStructure(settings, default_)) {
     transferFields(settings, default_);
+    localStorage.removeItem(key);
   }
   return settings;
 }

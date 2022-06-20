@@ -15,17 +15,17 @@ useIntervalFn(() => {
   colonies.value = simulation.garden.colonies;
 }, 200);
 
-let tab = ref("current");
+let tab = ref("domestic");
 </script>
 
 <template>
   <RadioGroup v-model="tab">
-    <RadioOption label="Current" value="current" />
+    <RadioOption label="Domestic" value="domestic" />
     <RadioOption label="Warfare" value="warfare" />
     <RadioOption label="Total" value="total" />
   </RadioGroup>
 
-  <template v-if="tab === 'current'">
+  <template v-if="tab === 'domestic'">
     <ColoniesChart
       :colonies="colonies"
       label="Current food"

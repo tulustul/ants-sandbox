@@ -19,20 +19,45 @@ export class FieldsLayer {
   colony: Colony | null = null;
 
   constructor(public garden: Garden, public canvas: Canvas) {
-    this.toFood = new FieldGraphics(this.garden, [30, 250, 30]);
-    this.toFoodMax = new FieldGraphics(this.garden, [255, 255, 0]);
-    this.toHome = new FieldGraphics(this.garden, [30, 130, 205]);
-    this.toHomeMax = new FieldGraphics(this.garden, [0, 0, 255]);
-    this.toEnemy = new FieldGraphics(this.garden, [200, 50, 50]);
-    this.toEnemyMax = new FieldGraphics(this.garden, [255, 0, 0]);
+    this.toFood = new FieldGraphics(
+      this.garden,
+      [30, 250, 30],
+      visualSettings.toFood
+    );
+    this.toFoodMax = new FieldGraphics(
+      this.garden,
+      [255, 255, 0],
+      visualSettings.toFood
+    );
+    this.toHome = new FieldGraphics(
+      this.garden,
+      [30, 130, 205],
+      visualSettings.toHome
+    );
+    this.toHomeMax = new FieldGraphics(
+      this.garden,
+      [0, 0, 255],
+      visualSettings.toHome
+    );
+    this.toEnemy = new FieldGraphics(
+      this.garden,
+      [200, 50, 50],
+      visualSettings.toEnemy
+    );
+    this.toEnemyMax = new FieldGraphics(
+      this.garden,
+      [255, 0, 0],
+      visualSettings.toEnemy
+    );
 
     this.toFood.sprite.blendMode = BLEND_MODES.ADD;
     this.toFoodMax.sprite.blendMode = BLEND_MODES.ADD;
     this.toHome.sprite.blendMode = BLEND_MODES.ADD;
     this.toHomeMax.sprite.blendMode = BLEND_MODES.ADD;
 
-    this.toFoodMax.sprite.alpha = 0.1;
-    this.toHomeMax.sprite.alpha = 0.1;
+    this.toFoodMax.sprite.alpha = visualSettings.toFood.intensity;
+    this.toHomeMax.sprite.alpha = visualSettings.toHome.intensity;
+    this.toEnemyMax.sprite.alpha = visualSettings.toEnemy.intensity;
   }
 
   tick() {
@@ -57,16 +82,14 @@ export class FieldsLayer {
       }
     }
 
-    this.updateField(this.toFood, visualSettings.toFoodEnabled);
-    this.updateField(this.toFoodMax, visualSettings.toFoodMaxEnabled);
-    this.updateField(this.toHome, visualSettings.toHomeEnabled);
-    this.updateField(this.toHomeMax, visualSettings.toHomeMaxEnabled);
-    this.updateField(this.toEnemy, visualSettings.toEnemyEnabled);
-    this.updateField(this.toEnemyMax, visualSettings.toEnemyMaxEnabled);
+    this.updateField(this.toFood, visualSettings.toFood.enabled);
+    this.updateField(this.toFoodMax, visualSettings.toFood.enabled);
 
-    this.toFoodMax.sprite.alpha = visualSettings.maxOpacity;
-    this.toHomeMax.sprite.alpha = visualSettings.maxOpacity;
-    this.toEnemyMax.sprite.alpha = visualSettings.maxOpacity;
+    this.updateField(this.toHome, visualSettings.toHome.enabled);
+    this.updateField(this.toHomeMax, visualSettings.toHome.enabled);
+
+    this.updateField(this.toEnemy, visualSettings.toEnemy.enabled);
+    this.updateField(this.toEnemyMax, visualSettings.toEnemy.enabled);
   }
 
   updateField(fieldGraphics: FieldGraphics, isEnabled: boolean) {

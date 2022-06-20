@@ -1,21 +1,15 @@
 import { FIELD_CELL_SIZE } from "@/life/const";
 import type { Garden } from "@/life/garden";
-import { visualSettings } from "@/life/settings";
+import type { PheromoneVisualSettings } from "@/life/settings";
 import { Texture, Sprite, FORMATS, TYPES, Filter } from "pixi.js";
 
 const fShaderSrc = `
 varying vec2 vTextureCoord;
-// varying vec2 vUvs;
-// varying vec2 inputPixel;
 
 uniform sampler2D uSampler;
 uniform vec3 tint;
 uniform float exposure;
 uniform float contrast;
-
-// uniform vec4 inputSize;
-// uniform vec4 outputFrame;
-// uniform vec4 vFilterCoord;
 
 void main(void){
    float alpha = texture2D(uSampler, vTextureCoord).r;
@@ -30,7 +24,11 @@ export class FieldGraphics {
   sprite: Sprite;
   filter: Filter;
 
-  constructor(public garden: Garden, tint: [number, number, number]) {
+  constructor(
+    public garden: Garden,
+    tint: [number, number, number],
+    settings?: PheromoneVisualSettings
+  ) {
     this.texture = Texture.EMPTY;
     this.sprite = new Sprite(this.texture);
     this.sprite.scale.x = FIELD_CELL_SIZE;
@@ -42,8 +40,8 @@ export class FieldGraphics {
     arr[2] = tint[2] / 255;
     this.filter = new Filter(undefined, fShaderSrc, {
       tint: arr,
-      exposure: visualSettings.shaders.pheromoneExposure,
-      contrast: visualSettings.shaders.pheromoneContrast,
+      exposure: settings?.exposure ?? 1,
+      contrast: settings?.contrast ?? 1,
     });
     this.sprite.filters = [this.filter];
 

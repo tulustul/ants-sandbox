@@ -129,6 +129,7 @@ export class Garden {
     this.foodGraphics.texture.update();
 
     this.antsContainer.visible = visualSettings.antsEnabled;
+    this.corpsesContainer.visible = visualSettings.corpsesEnabled;
   }
 
   destroy() {

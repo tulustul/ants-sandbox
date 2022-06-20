@@ -1,6 +1,10 @@
 export function transferFields(targetObj: any, sourceObj: any) {
   for (const field of Object.keys(sourceObj)) {
-    targetObj[field] = sourceObj[field];
+    if (typeof sourceObj[field] === "object") {
+      transferFields(targetObj[field], sourceObj[field]);
+    } else {
+      targetObj[field] = sourceObj[field];
+    }
   }
 }
 

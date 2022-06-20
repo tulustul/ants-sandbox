@@ -95,13 +95,8 @@ export class Ant {
     this.sprite = new Sprite(resources.atlas!.textures[texture]);
 
     this.sprite.anchor.set(0.5);
-    // if (this.type === AntType.soldier) {
-    //   this.sprite.scale.x = 1.25;
-    //   this.sprite.scale.y = 1.25;
-    // } else {
     this.sprite.scale.x = 0.4;
     this.sprite.scale.y = 0.4;
-    // }
 
     this.sprite.x = x;
     this.sprite.y = y;

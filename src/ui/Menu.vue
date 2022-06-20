@@ -3,7 +3,7 @@ import { Tabs, Tab } from "./widgets";
 import Simulation from "./Simulation.vue";
 import Draw from "./Draw.vue";
 import Maps from "./maps/Maps.vue";
-import Visuals from "./Visuals.vue";
+import Visuals from "./visuals/Visuals.vue";
 import Colonies from "./colonies/Colonies.vue";
 import NewGarden from "./NewGarden.vue";
 import ColoniesStats from "./ColoniesStats.vue";

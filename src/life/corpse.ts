@@ -43,7 +43,7 @@ export class Corpse {
 
   tick(ticks: number) {
     this.decayTimeLeft -= ticks;
-    this.sprite.alpha = this.decayTimeLeft / this.decayTime;
+    this.sprite.alpha = 0.4 + (this.decayTimeLeft / this.decayTime) * 0.6;
     const phase = 9 - Math.ceil((this.decayTimeLeft / this.decayTime) * 8);
     if (phase !== this.phase) {
       if (phase > 2) {
