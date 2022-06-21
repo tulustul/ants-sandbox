@@ -33,24 +33,26 @@ function reset() {
 
   <FieldGroup label="Performance">
     <Slider
-      v-model="state.simulationSettings.performance.antSlowTickTimeout"
-      label="Ant tick timeout"
-      :default="defaultSimulationSettings.performance.antSlowTickTimeout"
+      v-model="state.simulationSettings.performance.antBrainTickTimeout"
+      label="Ant brain tick timeout"
+      :default="defaultSimulationSettings.performance.antBrainTickTimeout"
       :min="1"
       :max="20"
       :step="1"
     />
 
     <Slider
-      v-model="state.simulationSettings.performance.antPreciseTickTimeout"
-      label="Ant precise tick timeout"
-      :default="defaultSimulationSettings.performance.antPreciseTickTimeout"
+      v-model="state.simulationSettings.performance.antGradientCheckTickTimeout"
+      label="Ant gradient check timeout"
+      :default="
+        defaultSimulationSettings.performance.antGradientCheckTickTimeout
+      "
       :min="10"
       :max="500"
       :step="10"
     />
 
-    <FieldGroup label="Slow tick sampler">
+    <FieldGroup label="Pheromone sampler">
       <Slider
         v-model="state.simulationSettings.performance.pheromoneSampler.angle"
         label="Angle"
@@ -81,49 +83,6 @@ function reset() {
         label="Distance samples"
         :default="
           defaultSimulationSettings.performance.pheromoneSampler
-            .distanceSamplesCount
-        "
-        :min="1"
-        :max="10"
-        :step="1"
-      />
-    </FieldGroup>
-
-    <FieldGroup label="Precise tick sampler">
-      <Slider
-        v-model="
-          state.simulationSettings.performance.precisePheromoneSampler.angle
-        "
-        label="Angle"
-        :default="
-          defaultSimulationSettings.performance.precisePheromoneSampler.angle
-        "
-        :min="0.1"
-        :max="2 * Math.PI"
-        :step="0.1"
-      />
-      <Slider
-        v-model="
-          state.simulationSettings.performance.precisePheromoneSampler
-            .angleSamplesCount
-        "
-        label="Angle samples"
-        :default="
-          defaultSimulationSettings.performance.precisePheromoneSampler
-            .angleSamplesCount
-        "
-        :min="1"
-        :max="20"
-        :step="1"
-      />
-      <Slider
-        v-model="
-          state.simulationSettings.performance.precisePheromoneSampler
-            .distanceSamplesCount
-        "
-        label="Distance samples"
-        :default="
-          defaultSimulationSettings.performance.precisePheromoneSampler
             .distanceSamplesCount
         "
         :min="1"

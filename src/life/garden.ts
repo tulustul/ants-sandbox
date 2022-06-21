@@ -95,18 +95,21 @@ export class Garden {
       if (!ant.fastTick()) {
         continue;
       }
-      if ((i + this.antPreciseTickOffset) % pef.antPreciseTickTimeout === 0) {
+      if (
+        (i + this.antPreciseTickOffset) % pef.antGradientCheckTickTimeout ===
+        0
+      ) {
         ant.preciseTick();
-      } else if ((i + this.antSlowTickOffset) % pef.antSlowTickTimeout === 0) {
+      } else if ((i + this.antSlowTickOffset) % pef.antBrainTickTimeout === 0) {
         ant.slowTick();
       }
     }
 
-    if (this.antSlowTickOffset === pef.antSlowTickTimeout) {
+    if (this.antSlowTickOffset === pef.antBrainTickTimeout) {
       this.antSlowTickOffset = 0;
     }
 
-    if (this.antPreciseTickOffset === pef.antPreciseTickTimeout) {
+    if (this.antPreciseTickOffset === pef.antGradientCheckTickTimeout) {
       this.antPreciseTickOffset = 0;
     }
 
