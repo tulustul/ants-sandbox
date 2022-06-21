@@ -52,21 +52,21 @@ function reset() {
 
     <FieldGroup label="Slow tick sampler">
       <Slider
-        v-model="state.simulationSettings.performance.fastFieldSampler.angle"
+        v-model="state.simulationSettings.performance.pheromoneSampler.angle"
         label="Angle"
-        :default="defaultSimulationSettings.performance.fastFieldSampler.angle"
+        :default="defaultSimulationSettings.performance.pheromoneSampler.angle"
         :min="0.1"
         :max="2 * Math.PI"
         :step="0.1"
       />
       <Slider
         v-model="
-          state.simulationSettings.performance.fastFieldSampler
+          state.simulationSettings.performance.pheromoneSampler
             .angleSamplesCount
         "
         label="Angle samples"
         :default="
-          defaultSimulationSettings.performance.fastFieldSampler
+          defaultSimulationSettings.performance.pheromoneSampler
             .angleSamplesCount
         "
         :min="1"
@@ -75,12 +75,12 @@ function reset() {
       />
       <Slider
         v-model="
-          state.simulationSettings.performance.fastFieldSampler
+          state.simulationSettings.performance.pheromoneSampler
             .distanceSamplesCount
         "
         label="Distance samples"
         :default="
-          defaultSimulationSettings.performance.fastFieldSampler
+          defaultSimulationSettings.performance.pheromoneSampler
             .distanceSamplesCount
         "
         :min="1"
@@ -91,10 +91,12 @@ function reset() {
 
     <FieldGroup label="Precise tick sampler">
       <Slider
-        v-model="state.simulationSettings.performance.preciseFieldSampler.angle"
+        v-model="
+          state.simulationSettings.performance.precisePheromoneSampler.angle
+        "
         label="Angle"
         :default="
-          defaultSimulationSettings.performance.preciseFieldSampler.angle
+          defaultSimulationSettings.performance.precisePheromoneSampler.angle
         "
         :min="0.1"
         :max="2 * Math.PI"
@@ -102,12 +104,12 @@ function reset() {
       />
       <Slider
         v-model="
-          state.simulationSettings.performance.preciseFieldSampler
+          state.simulationSettings.performance.precisePheromoneSampler
             .angleSamplesCount
         "
         label="Angle samples"
         :default="
-          defaultSimulationSettings.performance.preciseFieldSampler
+          defaultSimulationSettings.performance.precisePheromoneSampler
             .angleSamplesCount
         "
         :min="1"
@@ -116,12 +118,12 @@ function reset() {
       />
       <Slider
         v-model="
-          state.simulationSettings.performance.preciseFieldSampler
+          state.simulationSettings.performance.precisePheromoneSampler
             .distanceSamplesCount
         "
         label="Distance samples"
         :default="
-          defaultSimulationSettings.performance.preciseFieldSampler
+          defaultSimulationSettings.performance.precisePheromoneSampler
             .distanceSamplesCount
         "
         :min="1"

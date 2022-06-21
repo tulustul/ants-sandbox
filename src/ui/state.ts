@@ -1,7 +1,7 @@
 import { reactive, watch } from "vue";
 
 import {
-  getFieldSampler,
+  getPheromoneSampler,
   simulationSettings,
   gardenSettings,
   visualSettings,
@@ -37,12 +37,12 @@ storeSettings("simulationSettings", state.simulationSettings);
 storeSettings("gardenSettings", state.gardenSettings);
 storeSettings("visualSettings", state.visualSettings);
 
-syncFieldSampler(state.simulationSettings.performance.fastFieldSampler);
-syncFieldSampler(state.simulationSettings.performance.preciseFieldSampler);
+syncFieldSampler(state.simulationSettings.performance.pheromoneSampler);
+syncFieldSampler(state.simulationSettings.performance.precisePheromoneSampler);
 
 function syncFieldSampler(sampler: FieldSampler) {
   watch(sampler, () => {
-    const newSampler = getFieldSampler(
+    const newSampler = getPheromoneSampler(
       sampler.angle,
       sampler.angleSamplesCount,
       sampler.distanceSamplesCount

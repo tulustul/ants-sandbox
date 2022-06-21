@@ -16,8 +16,8 @@ export const defaultSimulationSettings = {
   performance: {
     antSlowTickTimeout: 3,
     antPreciseTickTimeout: 180,
-    fastFieldSampler: getFieldSampler(Math.PI / 2, 3, 3),
-    preciseFieldSampler: getFieldSampler(Math.PI * 2, 20, 5),
+    pheromoneSampler: getPheromoneSampler(Math.PI / 2, 3, 3),
+    precisePheromoneSampler: getPheromoneSampler(Math.PI * 2, 20, 5),
   },
 };
 
@@ -99,7 +99,7 @@ function getFromStorage<T>(key: string, default_: T): T {
   return settings;
 }
 
-export function getFieldSampler(
+export function getPheromoneSampler(
   angle: number,
   angleSamplesCount: number,
   distanceSamplesCount: number
