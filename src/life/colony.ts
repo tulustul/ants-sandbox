@@ -126,6 +126,8 @@ export class Colony {
     });
 
     app.stage.addChild(this.sprite);
+
+    this.refreshNestPheromones();
   }
 
   setStartingAntsNumber(numberOfAnts: number) {
@@ -220,9 +222,18 @@ export class Colony {
       this.stats.food = 0;
     } else {
       if (Math.random() > 0.99) {
-        this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000, true);
+        this.refreshNestPheromones();
       }
     }
+  }
+  refreshNestPheromones() {
+    this.toHomeField.maxValues.draw(
+      this.sprite.x,
+      this.sprite.y,
+      3,
+      1000000,
+      true
+    );
   }
 
   onAntDied(ant: Ant) {

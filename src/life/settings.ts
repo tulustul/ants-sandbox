@@ -14,10 +14,10 @@ export const defaultSimulationSettings = {
   antSeekRandomness: 3,
   antsBirthRate: 1 / 60,
   performance: {
-    antSlowTickTimeout: 3,
-    antPreciseTickTimeout: 180,
-    fastFieldSampler: getFieldSampler(Math.PI / 2, 3, 3),
-    preciseFieldSampler: getFieldSampler(Math.PI * 2, 20, 5),
+    antBrainTickTimeout: 3,
+    antGradientCheckTickTimeout: 180,
+    pheromoneSampler: getPheromoneSampler(Math.PI / 2, 3, 3),
+    preciseFieldSampler: getPheromoneSampler(Math.PI * 2, 20, 5),
   },
 };
 
@@ -51,6 +51,7 @@ export type PheromoneVisualSettings = {
   exposure: number;
   contrast: number;
   intensity: number;
+  density: number;
 };
 
 const defaultPheromoneVisualSettings: PheromoneVisualSettings = {
@@ -58,6 +59,7 @@ const defaultPheromoneVisualSettings: PheromoneVisualSettings = {
   contrast: 1,
   exposure: 1,
   intensity: 0.15,
+  density: 0.5,
 };
 
 export const defaultVisualSettings = {
@@ -99,7 +101,7 @@ function getFromStorage<T>(key: string, default_: T): T {
   return settings;
 }
 
-export function getFieldSampler(
+export function getPheromoneSampler(
   angle: number,
   angleSamplesCount: number,
   distanceSamplesCount: number

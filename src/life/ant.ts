@@ -4,7 +4,7 @@ import { Sprite } from "pixi.js";
 import type { Colony } from "./colony";
 import type { PheromoneField } from "./pheromone";
 import {
-  getFieldSampler,
+  getPheromoneSampler,
   simulationSettings,
   type FieldSampler,
 } from "./settings";
@@ -24,7 +24,7 @@ export enum AntType {
   soldier,
 }
 
-const magicSampler: FieldSampler = {
+const properDirectionSampler: FieldSampler = {
   angle: Math.PI * 2,
   angleSamplesCount: 2,
   distanceSamplesCount: 5,
@@ -333,7 +333,7 @@ export class Ant {
   slowTick() {
     this.followField(
       this.pheromoneToFollow,
-      simulationSettings.performance.fastFieldSampler,
+      simulationSettings.performance.pheromoneSampler,
       false
     );
 
@@ -354,7 +354,7 @@ export class Ant {
       // The Math.random is a simple trick that allows the ants to escape dead ends quicker.
       const [sumOfValues, values] = this.sampleNeighbourhood(
         this.colony.toHomeField,
-        magicSampler
+        properDirectionSampler
       );
       if (values[1] < values[0]) {
         this.turnAround();

@@ -34,6 +34,8 @@ function applySettings(
 ) {
   field.filter.uniforms.exposure = settings.exposure;
   field.filter.uniforms.contrast = settings.contrast;
+  field.sprite.alpha = settings.density;
+
   fieldMax.filter.uniforms.exposure = settings.exposure;
   fieldMax.filter.uniforms.contrast = settings.contrast;
   fieldMax.sprite.alpha = settings.intensity;

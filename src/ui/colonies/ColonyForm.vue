@@ -149,7 +149,7 @@ function move() {
         label="Ants freedom"
         v-model="freedom"
         :min="0.0002"
-        :max="0.01"
+        :max="0.1"
         :step="0.0001"
       />
 
