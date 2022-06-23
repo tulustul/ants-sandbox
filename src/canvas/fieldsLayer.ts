@@ -55,6 +55,10 @@ export class FieldsLayer {
     this.toHome.sprite.blendMode = BLEND_MODES.ADD;
     this.toHomeMax.sprite.blendMode = BLEND_MODES.ADD;
 
+    this.toFood.sprite.alpha = visualSettings.toFood.density;
+    this.toHome.sprite.alpha = visualSettings.toHome.density;
+    this.toEnemy.sprite.alpha = visualSettings.toEnemy.density;
+
     this.toFoodMax.sprite.alpha = visualSettings.toFood.intensity;
     this.toHomeMax.sprite.alpha = visualSettings.toHome.intensity;
     this.toEnemyMax.sprite.alpha = visualSettings.toEnemy.intensity;

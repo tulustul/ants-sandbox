@@ -7,6 +7,8 @@ import { simulationSettings, type FieldSampler } from "./settings";
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
 import { FIELD_CELL_SIZE } from "./const";
+import { getAnglesDiff } from "@/utils/rotation";
+import { gaussRandom } from "@/utils/random";
 
 export enum AntMode {
   toFood,
@@ -36,8 +38,6 @@ export class Ant {
 
   healthPoints: number;
   maxHealthPoints: number;
-
-  followPoint: Vec | null = null;
 
   lastCellIndex = 0;
   lastAntCellIndex = 0;
@@ -75,6 +75,14 @@ export class Ant {
 
   isInAntsMap = false;
 
+  seesRock = false;
+
+  targetRotation: number | null = null;
+
+  // freedom: number;
+
+  rotationSpeed = Math.abs(Math.PI / gaussRandom(5, 3));
+
   constructor(
     public type: AntType,
     x: number,
@@ -109,6 +117,11 @@ export class Ant {
       this.pheromoneToFollow = colony.toEnemyField;
     }
     this.pheromoneToDrop = colony.toHomeField;
+
+    // this.freedom = Math.abs(
+    //   gaussRandom(colony.meanFreedom, colony.freedomDeviation)
+    // );
+    // this.freedom = 0.0021763591447646964;
   }
 
   destroy() {
@@ -141,6 +154,12 @@ export class Ant {
       this.die();
       this.colony.stats.starvedAnts++;
       return false;
+    }
+
+    if (this.targetRotation !== null) {
+      let diff = getAnglesDiff(this.targetRotation, this.velocity.rotation());
+      diff /= 5;
+      this.velocity.rotate(diff);
     }
 
     this.sprite.x += this.velocity.x;
@@ -329,21 +348,26 @@ export class Ant {
   slowTick() {
     this.followField(
       this.pheromoneToFollow,
-      simulationSettings.performance.pheromoneSampler,
-      false
+      simulationSettings.performance.pheromoneSampler
     );
 
     this.brainTick();
   }
 
   preciseTick() {
+    this.seesRock = false;
     const isFollowing = this.followField(
       this.pheromoneToFollow,
       simulationSettings.performance.precisePheromoneSampler,
       true
     );
 
-    if (!isFollowing && this.mode === AntMode.toFood && Math.random() > 0.5) {
+    if (
+      // !this.seesRock &&
+      !isFollowing &&
+      this.mode === AntMode.toFood &&
+      Math.random() > 0.5
+    ) {
       // If the ant goes upward the gradient of toHome then turn around.
       // This makes the ants much better at solving mazes as they penetrate it faster instead of circling around nest.
       // On the other, hand this leads to ants gathering and stucking in dead ends corridors.
@@ -485,16 +509,12 @@ export class Ant {
   followField(
     field: PheromoneField,
     sampler: FieldSampler,
-    chooseBest: boolean
+    chooseBest = false
   ) {
-    const [sumOfValues, values] = this.sampleNeighbourhood(field, sampler);
+    const [maxValue, values] = this.sampleNeighbourhood(field, sampler);
 
-    if (sumOfValues === 0) {
-      // if (this.food) {
-      // this.turnRandomly();
-      // } else {
+    if (maxValue === 0) {
       this.turnSlightly();
-      // }
       return false;
     }
 
@@ -510,20 +530,41 @@ export class Ant {
 
       if (bestIndex) {
         this.velocity.rotate(sampler.angleSamples[bestIndex]);
+        this.turnSlightly();
+        // return false;
       }
-    } else {
-      let currentValue = 0;
-      const r = Math.random() * sumOfValues;
-      for (let i = 0; i < values.length; i++) {
-        currentValue += values[i];
-        if (r <= currentValue) {
-          this.velocity.rotate(sampler.angleSamples[i]);
-          return true;
-        }
+      return false;
+    }
+
+    let sumOfValues = 0;
+    for (let i = 0; i < values.length; i++) {
+      values[i] = Math.pow(values[i], 1 / this.colony.freedom);
+      // values[i] = Math.pow(values[i] / maxValue, 1 / this.freedom);
+      sumOfValues += values[i];
+    }
+
+    // if (Math.random() < 0.001) {
+    //   console.log(maxValue, values);
+    // }
+
+    let currentValue = 0;
+    const r = Math.random() * sumOfValues;
+    for (let i = 0; i < values.length; i++) {
+      currentValue += values[i];
+      if (r <= currentValue) {
+        const angle = sampler.angleSamples[i];
+        this.velocity.rotate(angle);
+        // this.targetRotation = this.velocity.rotation() + angle;
+        // if (angle !== 0) {
+        //   let rotateBy = angle > 0 ? MAX_ROTATE_SPEED : -MAX_ROTATE_SPEED;
+        //   this.velocity.rotate(rotateBy);
+        // }
+        return true;
       }
     }
 
     this.turnSlightly();
+    this.targetRotation = null;
     return false;
   }
 
@@ -532,6 +573,7 @@ export class Ant {
     sampler: FieldSampler
   ): [number, number[]] {
     let sumOfValues = 0;
+    let maxValue = 0;
     const values: number[] = [];
 
     for (const angle of sampler.angleSamples) {
@@ -546,6 +588,7 @@ export class Ant {
 
         if (this.colony.garden.rockField.data[index]) {
           total = 0;
+          this.seesRock = true;
           break;
         }
 
@@ -557,10 +600,9 @@ export class Ant {
           break;
         }
 
-        // value = field.data[index];
         value = field.maxValues.data[index];
         if (value > 0.001) {
-          value = Math.pow(value, 1 / this.colony.freedom);
+          // value = Math.pow(value, 1 / this.colony.freedom);
           value = Math.max(0, value);
         } else {
           value = 0;
@@ -568,11 +610,19 @@ export class Ant {
 
         total += value;
       }
-      sumOfValues += total;
+      // sumOfValues += total;
       values.push(total);
+
+      if (total > maxValue) {
+        maxValue = total;
+      }
     }
 
-    return [sumOfValues, values];
+    // if (Math.random() < 0.001) {
+    //   console.log(values);
+    // }
+
+    return [maxValue, values];
   }
 
   toFood() {
@@ -648,14 +698,17 @@ export class Ant {
   }
 
   turnAround() {
+    this.targetRotation = null;
     this.velocity.rotate(Math.PI);
   }
 
   turnRandomly() {
+    this.targetRotation = null;
     this.velocity.rotate(Math.PI * 2 * Math.random());
   }
 
   turnSlightly() {
+    this.targetRotation = null;
     this.velocity.rotate(
       (Math.random() - 0.5) / simulationSettings.antSeekRandomness
     );

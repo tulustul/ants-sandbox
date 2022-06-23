@@ -71,7 +71,7 @@ function reset() {
           defaultSimulationSettings.performance.pheromoneSampler
             .angleSamplesCount
         "
-        :min="1"
+        :min="2"
         :max="20"
         :step="1"
       />

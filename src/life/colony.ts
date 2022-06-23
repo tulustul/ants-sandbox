@@ -2,6 +2,7 @@ import type { DumpedColony } from "@/types";
 import { state } from "@/ui/state";
 import { desaturateColor, getNextColor } from "@/utils/colors";
 import { getNextPrimeNumber } from "@/utils/primeNumbers";
+import { gaussRandom } from "@/utils/random";
 import { Application, Graphics } from "pixi.js";
 import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
@@ -81,7 +82,11 @@ export class Colony {
   warCoef = 0;
   cumulatedAggresiveness = 0;
 
-  freedom = 0.005 + Math.random() * 0.003;
+  // meanFreedom = gaussRandom(0.005, 0.003);
+  // freedomDeviation = gaussRandom(0.01, 0.005);
+  meanFreedom = 0.0001;
+  freedomDeviation = 0.002;
+  freedom = 0.002;
   aggresiveness = Math.random();
 
   color: number;
@@ -126,6 +131,8 @@ export class Colony {
     });
 
     app.stage.addChild(this.sprite);
+
+    this.refreshNestPheromones();
   }
 
   setStartingAntsNumber(numberOfAnts: number) {
@@ -220,9 +227,19 @@ export class Colony {
       this.stats.food = 0;
     } else {
       if (Math.random() > 0.99) {
-        this.toHomeField.draw(this.sprite.x, this.sprite.y, 3, 1000000, true);
+        this.refreshNestPheromones();
       }
     }
+  }
+
+  refreshNestPheromones() {
+    this.toHomeField.maxValues.draw(
+      this.sprite.x,
+      this.sprite.y,
+      3,
+      1000000,
+      true
+    );
   }
 
   onAntDied(ant: Ant) {

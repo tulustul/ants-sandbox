@@ -48,6 +48,14 @@ defineProps({
         :step="0.1"
       />
       <Slider
+        label="Density"
+        v-model="settings.density"
+        :default="defaults.density"
+        :min="0.0"
+        :max="1"
+        :step="0.01"
+      />
+      <Slider
         label="Intensity"
         v-model="settings.intensity"
         :default="defaults.intensity"

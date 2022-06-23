@@ -1,7 +1,10 @@
 export function getAnglesDiff(angleA: number, angleB: number) {
   const diff = angleA - angleB;
-  if (diff < Math.PI) {
-    return diff;
+  if (diff > Math.PI) {
+    return diff - Math.PI;
   }
-  return -(Math.PI - diff);
+  if (diff < -Math.PI) {
+    return diff + Math.PI;
+  }
+  return diff;
 }

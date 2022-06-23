@@ -51,13 +51,15 @@ export type PheromoneVisualSettings = {
   exposure: number;
   contrast: number;
   intensity: number;
+  density: number;
 };
 
 const defaultPheromoneVisualSettings: PheromoneVisualSettings = {
   enabled: true,
   contrast: 1,
   exposure: 1,
-  intensity: 0.15,
+  intensity: 0.3,
+  density: 0.5,
 };
 
 export const defaultVisualSettings = {
