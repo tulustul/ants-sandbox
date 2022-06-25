@@ -1,7 +1,7 @@
 import { FIELD_CELL_SIZE } from "@/life/const";
 import type { Garden } from "@/life/garden";
 import type { PheromoneVisualSettings } from "@/life/settings";
-import { Texture, Sprite, FORMATS, TYPES, Filter } from "pixi.js";
+import { Texture, Sprite, FORMATS, TYPES, Filter, Container } from "pixi.js";
 
 const fShaderSrc = `
 varying vec2 vTextureCoord;
@@ -44,8 +44,6 @@ export class FieldGraphics {
       contrast: settings?.contrast ?? 1,
     });
     this.sprite.filters = [this.filter];
-
-    garden.canvas.app.stage.addChild(this.sprite);
   }
 
   bindData(data: Float32Array) {

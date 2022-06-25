@@ -7,6 +7,9 @@ export function transferFields(targetObj: any, sourceObj: any) {
       if (targetObj[field] === undefined) {
         targetObj[field] = {};
       }
+      transferFields(targetObj[field], sourceObj[field]);
+    } else {
+      targetObj[field] = sourceObj[field];
     }
   }
 }

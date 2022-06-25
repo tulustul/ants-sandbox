@@ -62,6 +62,13 @@ export class FieldsLayer {
     this.toFoodMax.sprite.alpha = visualSettings.toFood.intensity;
     this.toHomeMax.sprite.alpha = visualSettings.toHome.intensity;
     this.toEnemyMax.sprite.alpha = visualSettings.toEnemy.intensity;
+
+    canvas.app.stage.addChild(this.toFood.sprite);
+    canvas.app.stage.addChild(this.toFoodMax.sprite);
+    canvas.app.stage.addChild(this.toHome.sprite);
+    canvas.app.stage.addChild(this.toHomeMax.sprite);
+    canvas.app.stage.addChild(this.toEnemy.sprite);
+    canvas.app.stage.addChild(this.toEnemyMax.sprite);
   }
 
   tick() {

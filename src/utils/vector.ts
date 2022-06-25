@@ -19,8 +19,10 @@ export class Vec {
 
   normalize() {
     const length = this.length;
-    this.x /= length;
-    this.y /= length;
+    if (length) {
+      this.x /= length;
+      this.y /= length;
+    }
   }
 
   get length() {

@@ -10,6 +10,7 @@ import { Field } from "./field";
 import { FoodField } from "./food";
 import { Colony } from "./colony";
 import { gardenSettings, simulationSettings, visualSettings } from "./settings";
+import { GardenLayer } from "@/canvas/gardenLayer";
 
 export class Garden {
   colonies: Colony[] = [];
@@ -20,9 +21,6 @@ export class Garden {
   rockField: Field;
   antsField: Field;
 
-  foodGraphics: FieldGraphics;
-  rockGraphics: FieldGraphics;
-
   antSlowTickOffset = 0;
   antPreciseTickOffset = 0;
 
@@ -32,6 +30,7 @@ export class Garden {
   fieldHeight: number;
 
   fieldsLayer: FieldsLayer;
+  gardenLayer: GardenLayer;
 
   antsMap: Ant[][] = [];
 
@@ -63,13 +62,8 @@ export class Garden {
       this.antsMap[i] = [];
     }
 
-    this.foodGraphics = new FieldGraphics(this, [0, 255, 0]);
-    this.foodGraphics.bindData(this.foodField.data);
-
-    this.rockGraphics = new FieldGraphics(this, [180, 180, 180]);
-    this.rockGraphics.bindData(this.rockField.data);
-
     this.fieldsLayer = new FieldsLayer(this, canvas);
+    this.gardenLayer = new GardenLayer(this, canvas);
 
     canvas.app.stage.addChild(this.corpsesContainer);
     canvas.app.stage.addChild(this.antsContainer);
@@ -129,7 +123,7 @@ export class Garden {
     }
 
     this.foodField.tick();
-    this.foodGraphics.texture.update();
+    this.gardenLayer.tick();
 
     this.antsContainer.visible = visualSettings.antsEnabled;
     this.corpsesContainer.visible = visualSettings.corpsesEnabled;
@@ -148,17 +142,11 @@ export class Garden {
       this.corpses[0].destroy();
     }
 
-    this.foodGraphics.destroy();
-    this.rockGraphics.destroy();
-
     this.fieldsLayer.destroy();
+    this.gardenLayer.destroy();
   }
 
   placeRandomColony(numberOfAnts: number) {
-    // if (gardenSettings.horizontalMirror && gardenSettings.verticalMirror) {
-
-    // }
-
     let x = 0;
     let y = 0;
 

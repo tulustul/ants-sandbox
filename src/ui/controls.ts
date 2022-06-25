@@ -48,7 +48,7 @@ export class Controls {
     this.pointers.delete(event.pointerId);
     if (this.wasDrawingRock) {
       processRock(this.garden.rockField);
-      this.garden.rockGraphics.texture.update();
+      this.garden.gardenLayer.rockGraphics.texture.update();
       this.wasDrawingRock = false;
     }
   }
@@ -118,8 +118,8 @@ export class Controls {
     if (field) {
       const intensity = state.drawing.erasing ? 0 : state.drawing.intensity;
       field.draw(x, y, state.drawing.radius, intensity);
-      this.garden.foodGraphics.texture.update();
-      this.garden.rockGraphics.texture.update();
+      this.garden.gardenLayer.foodGraphics.texture.update();
+      this.garden.gardenLayer.rockGraphics.texture.update();
     }
   }
 
