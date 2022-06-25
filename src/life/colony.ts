@@ -211,7 +211,7 @@ export class Colony {
     this.toHomeField.tick();
     this.toEnemyField.tick();
 
-    this.warCoef *= 0.9995 + 0.0005 * (1 - this.aggresiveness);
+    this.warCoef *= 0.9995 + 0.0005 * this.aggresiveness;
 
     if (totalTicks % (60 * 2) === 0) {
       this.storeStats();

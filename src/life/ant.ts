@@ -11,6 +11,7 @@ import {
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
 import { FIELD_CELL_SIZE } from "./const";
+import { getAnglesDiff } from "@/utils/rotation";
 
 export enum AntMode {
   toFood,
@@ -40,8 +41,6 @@ export class Ant {
 
   healthPoints: number;
   maxHealthPoints: number;
-
-  followPoint: Vec | null = null;
 
   lastCellIndex = 0;
   lastAntCellIndex = 0;
@@ -491,14 +490,10 @@ export class Ant {
     sampler: FieldSampler,
     chooseBest: boolean
   ) {
-    const [sumOfValues, values] = this.sampleNeighbourhood(field, sampler);
+    const [maxValue, values] = this.sampleNeighbourhood(field, sampler);
 
-    if (sumOfValues === 0) {
-      // if (this.food) {
-      // this.turnRandomly();
-      // } else {
+    if (maxValue === 0) {
       this.turnSlightly();
-      // }
       return false;
     }
 
@@ -514,16 +509,25 @@ export class Ant {
 
       if (bestIndex) {
         this.velocity.rotate(sampler.angleSamples[bestIndex]);
+        this.turnSlightly();
       }
-    } else {
-      let currentValue = 0;
-      const r = Math.random() * sumOfValues;
-      for (let i = 0; i < values.length; i++) {
-        currentValue += values[i];
-        if (r <= currentValue) {
-          this.velocity.rotate(sampler.angleSamples[i]);
-          return true;
-        }
+      return false;
+    }
+
+    let sumOfValues = 0;
+    for (let i = 0; i < values.length; i++) {
+      values[i] = Math.pow(values[i] / maxValue, 1 / this.colony.freedom);
+      sumOfValues += values[i];
+    }
+
+    let currentValue = 0;
+    const r = Math.random() * sumOfValues;
+    for (let i = 0; i < values.length; i++) {
+      currentValue += values[i];
+      if (r <= currentValue) {
+        const angle = sampler.angleSamples[i];
+        this.velocity.rotate(angle);
+        return true;
       }
     }
 
@@ -535,7 +539,7 @@ export class Ant {
     field: PheromoneField,
     sampler: FieldSampler
   ): [number, number[]] {
-    let sumOfValues = 0;
+    let maxValue = 0;
     const values: number[] = [];
 
     for (const angle of sampler.angleSamples) {
@@ -561,7 +565,6 @@ export class Ant {
           break;
         }
 
-        // value = field.data[index];
         value = field.maxValues.data[index];
         if (value > 0.001) {
           value = Math.pow(value, 1 / this.colony.freedom);
@@ -572,11 +575,13 @@ export class Ant {
 
         total += value;
       }
-      sumOfValues += total;
+      if (total > maxValue) {
+        maxValue = total;
+      }
       values.push(total);
     }
 
-    return [sumOfValues, values];
+    return [maxValue, values];
   }
 
   toFood() {
