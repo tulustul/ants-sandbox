@@ -68,6 +68,7 @@ export const defaultVisualSettings = {
   toEnemy: { ...defaultPheromoneVisualSettings },
   antsEnabled: true,
   corpsesEnabled: true,
+  mode: "raw" as "raw" | "beauty",
 };
 
 export const simulationSettings = getFromStorage(

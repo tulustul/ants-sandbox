@@ -1,7 +1,7 @@
 import { FIELD_CELL_SIZE } from "@/life/const";
 import type { Garden } from "@/life/garden";
 import type { PheromoneVisualSettings } from "@/life/settings";
-import { Texture, Sprite, FORMATS, TYPES, Filter, Container } from "pixi.js";
+import { Texture, Sprite, FORMATS, TYPES, Filter } from "pixi.js";
 
 const fShaderSrc = `
 varying vec2 vTextureCoord;

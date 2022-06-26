@@ -11,6 +11,7 @@ import { FoodField } from "./food";
 import { Colony } from "./colony";
 import { gardenSettings, simulationSettings, visualSettings } from "./settings";
 import { GardenLayer } from "@/canvas/gardenLayer";
+import { GardenBeautyLayer } from "@/canvas/gardenBeautyLayer";
 
 export class Garden {
   colonies: Colony[] = [];
@@ -31,6 +32,7 @@ export class Garden {
 
   fieldsLayer: FieldsLayer;
   gardenLayer: GardenLayer;
+  gardenBeautyLayer: GardenBeautyLayer;
 
   antsMap: Ant[][] = [];
 
@@ -62,8 +64,9 @@ export class Garden {
       this.antsMap[i] = [];
     }
 
-    this.fieldsLayer = new FieldsLayer(this, canvas);
     this.gardenLayer = new GardenLayer(this, canvas);
+    this.gardenBeautyLayer = new GardenBeautyLayer(this, canvas);
+    this.fieldsLayer = new FieldsLayer(this, canvas);
 
     canvas.app.stage.addChild(this.corpsesContainer);
     canvas.app.stage.addChild(this.antsContainer);
@@ -123,10 +126,18 @@ export class Garden {
     }
 
     this.foodField.tick();
-    this.gardenLayer.tick();
 
     this.antsContainer.visible = visualSettings.antsEnabled;
     this.corpsesContainer.visible = visualSettings.corpsesEnabled;
+
+    this.gardenLayer.container.visible = visualSettings.mode === "raw";
+    this.gardenBeautyLayer.container.visible = visualSettings.mode === "beauty";
+
+    if (visualSettings.mode === "raw") {
+      this.gardenLayer.tick();
+    } else {
+      this.gardenBeautyLayer.tick();
+    }
   }
 
   destroy() {

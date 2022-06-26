@@ -2,7 +2,7 @@
 import { inject, watch } from "vue";
 import type { Simulation } from "../simulation";
 import { state } from "../state";
-import { Checkbox } from "../forms";
+import { RadioGroup, RadioOption, Checkbox } from "@/ui/forms/";
 import { transferFields } from "@/utils/object";
 import {
   defaultVisualSettings,
@@ -47,6 +47,11 @@ function reset() {
 </script>
 
 <template>
+  <RadioGroup v-model="state.visualSettings.mode">
+    <RadioOption label="Raw view" value="raw" />
+    <RadioOption label="Beauty view" value="beauty" />
+  </RadioGroup>
+
   <PheromoneSettings
     label="To food pheromone"
     :settings="state.visualSettings.toFood"
