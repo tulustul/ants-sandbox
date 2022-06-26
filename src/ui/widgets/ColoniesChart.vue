@@ -3,6 +3,7 @@ import type { PropType } from "vue";
 
 import type { Colony, ColonyHistory } from "@/life/colony";
 import { Chart, ChartLine } from "@/ui/widgets";
+import Tooltip from "./Tooltip.vue";
 
 defineProps({
   colonies: {
@@ -17,13 +18,19 @@ defineProps({
     type: String as PropType<keyof ColonyHistory>,
     required: true,
   },
+  tooltip: String,
   yAxisPrecision: Number,
 });
 </script>
 
 <template>
   <div>
-    <h3>{{ label }}</h3>
+    <h3 class="row space-between">
+      <span>{{ label }}</span>
+      <Tooltip v-if="tooltip">
+        {{ tooltip }}
+      </Tooltip>
+    </h3>
     <Chart :yAxisPrecision="yAxisPrecision">
       <ChartLine
         v-for="colony of colonies"

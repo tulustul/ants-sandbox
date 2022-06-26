@@ -115,15 +115,17 @@ function onImageChange(event: Event) {
       :min="0.01"
       :max="1"
       :step="0.01"
+      tooltip="Overall scale of food and distance between patches."
     />
 
     <Slider
-      label="Size"
+      label="Coverage"
       v-model="state.gardenSettings.foodSize"
       :default="defaultGardenSettings.foodSize"
       :min="0.3"
       :max="0.7"
       :step="0.01"
+      tooltip="How much of the map is covered with food."
     />
 
     <Slider
@@ -133,6 +135,7 @@ function onImageChange(event: Event) {
       :min="1"
       :max="100"
       :step="1"
+      tooltip="How much units of food a single pixel holds."
     />
   </FieldGroup>
 
@@ -153,15 +156,17 @@ function onImageChange(event: Event) {
       :min="0.1"
       :max="2"
       :step="0.1"
+      tooltip="Overall scale of rocks and distance between them."
     />
 
     <Slider
-      label="Size"
+      label="Coverage"
       v-model="state.gardenSettings.rockSize"
       :default="defaultGardenSettings.rockSize"
       :min="0"
       :max="0.5"
       :step="0.01"
+      tooltip="How much of the map is covered with rocks."
     />
   </FieldGroup>
 
@@ -176,7 +181,7 @@ function onImageChange(event: Event) {
     />
   </div>
 
-  <button class="btn" :onclick="reset">Reset All</button>
+  <button class="btn" :onclick="reset">Reset to defaults</button>
 </template>
 
 <style></style>

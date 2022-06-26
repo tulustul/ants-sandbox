@@ -95,6 +95,10 @@ strong {
   gap: 10px;
 }
 
+.small-gap {
+  gap: 5px;
+}
+
 .column {
   display: flex;
   flex-direction: column;

@@ -7,6 +7,7 @@ import { FieldGroup, Slider } from "@/ui/forms";
 import { vExplode } from "@/ui/widgets";
 import { AntType } from "@/life/ant";
 import type { Simulation } from "@/ui/simulation";
+import { Tooltip } from "@/ui/widgets";
 
 const simulation = inject<Simulation>("simulation")!;
 
@@ -88,12 +89,24 @@ function move() {
 
     <FieldGroup label="Food">
       <div class="row space-between">
-        <span
-          >Current <strong>{{ stats.food.toFixed(0) }}</strong></span
-        >
-        <span
-          >Total <strong>{{ stats.totalFood.toFixed(0) }}</strong></span
-        >
+        <div class="row">
+          <Tooltip>
+            Food currently stored in the nest.<br />
+            Food is used to feed ants when they visit the nest. When enough food
+            is accumulated, a new ant is being born. When the ants cannot be
+            fed, they eventually die of hunger.
+          </Tooltip>
+          <span
+            >Stored <strong>{{ stats.food.toFixed(0) }}</strong></span
+          >
+        </div>
+
+        <div class="row">
+          <span
+            >Total <strong>{{ stats.totalFood.toFixed(0) }}</strong></span
+          >
+          <Tooltip> Total amount of food ever produced by the colony. </Tooltip>
+        </div>
       </div>
 
       <div class="row">
@@ -108,12 +121,27 @@ function move() {
 
     <FieldGroup label="Ants">
       <div class="row space-between">
-        <span
-          >Workers <strong>{{ stats.workers }}</strong></span
-        >
-        <span
-          >Soldiers <strong>{{ stats.soldiers }}</strong></span
-        >
+        <div class="row">
+          <Tooltip>
+            Workers seek for food, collect it and bring it to the nest. They
+            cannot fight with other ants. When they see the enemy they flee to
+            the nest.
+          </Tooltip>
+          <span
+            >Workers <strong>{{ stats.workers }}</strong></span
+          >
+        </div>
+
+        <div class="row">
+          <span
+            >Soldiers <strong>{{ stats.soldiers }}</strong></span
+          >
+          <Tooltip>
+            The rate of soldiers birth depends on war coefficient. They follow
+            "to enemy" pheromone and seek for enemies. Only soldiers can fight
+            other ants.
+          </Tooltip>
+        </div>
       </div>
 
       <div class="row">
@@ -146,42 +174,61 @@ function move() {
 
     <FieldGroup label="Parameters">
       <Slider
-        label="Ants freedom"
-        v-model="freedom"
-        :min="0.0002"
-        :max="0.1"
-        :step="0.0001"
-      />
-
-      <Slider
         label="Aggresiveness"
         v-model="aggresiveness"
         :min="0"
         :max="1"
         :step="0.01"
+        tooltip="The higher the value the faster war coefficient increases and the slower it decays."
       />
     </FieldGroup>
 
     <FieldGroup label="Stats">
       <div class="row space-between">
-        <span
-          >Total ants <strong>{{ stats.totalAnts }}</strong></span
-        >
-        <span
-          >Starved ants <strong>{{ stats.starvedAnts }}</strong></span
-        >
+        <div class="row">
+          <Tooltip>
+            Total number of ants in the colony that every lived.
+          </Tooltip>
+          <span
+            >Total ants <strong>{{ stats.totalAnts }}</strong></span
+          >
+        </div>
+
+        <div class="row">
+          <span
+            >Starved ants <strong>{{ stats.starvedAnts }}</strong></span
+          >
+          <Tooltip> Number of ants that died because of starvation. </Tooltip>
+        </div>
       </div>
+
       <div class="row space-between">
+        <div class="row">
+          <Tooltip>
+            Number of ants in this colony that were killed by other ants.
+          </Tooltip>
+          <span
+            >Killed <strong>{{ stats.killedAnts }}</strong></span
+          >
+        </div>
+
+        <div class="row">
+          <span
+            >Kills <strong>{{ stats.killedEnemyAnts }}</strong></span
+          >
+          <Tooltip> Number of enemy ants killed by this colony. </Tooltip>
+        </div>
+      </div>
+      <div class="row">
+        <Tooltip>
+          Increases when the ant that saw an enemy visits the nest. Higher
+          values increase the chance of a soldier being born instead of a normal
+          worker. Takes values between 0 and 1.
+        </Tooltip>
         <span
-          >Killed ants <strong>{{ stats.killedAnts }}</strong></span
-        >
-        <span
-          >Killed enemy ants <strong>{{ stats.killedEnemyAnts }}</strong></span
+          >War coefficient <strong>{{ warCoef.toFixed(3) }}</strong></span
         >
       </div>
-      <span
-        >War coefficient <strong>{{ warCoef.toFixed(3) }}</strong></span
-      >
     </FieldGroup>
   </div>
 </template>

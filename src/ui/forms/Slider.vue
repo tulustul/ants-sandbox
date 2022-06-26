@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RefreshIcon } from "@heroicons/vue/solid";
+import Tooltip from "../widgets/Tooltip.vue";
 
 const props = defineProps({
   label: String,
@@ -8,6 +9,7 @@ const props = defineProps({
   min: Number,
   max: Number,
   step: Number,
+  tooltip: String,
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -24,7 +26,7 @@ function onDefault() {
 <template>
   <label>
     <span class="label">{{ label }}</span>
-    <div class="row">
+    <div class="row small-gap">
       <input
         class="grow"
         type="range"
@@ -48,6 +50,9 @@ function onDefault() {
       >
         <RefreshIcon />
       </button>
+      <Tooltip v-if="tooltip">
+        {{ tooltip }}
+      </Tooltip>
     </div>
   </label>
 </template>

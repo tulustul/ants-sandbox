@@ -1,21 +1,26 @@
 <script setup lang="ts">
+import Tooltip from "../widgets/Tooltip.vue";
 defineProps({
   label: String,
   contentVisible: {
     type: Boolean,
     default: true,
   },
+  tooltip: String,
 });
 </script>
 
 <template>
   <div class="group">
-    <label
-      ><strong>
-        {{ label }}
-      </strong>
-      <slot name="header"></slot
-    ></label>
+    <div class="row">
+      <Tooltip v-if="tooltip">{{ tooltip }}</Tooltip>
+      <label class="grow">
+        <strong>
+          {{ label }}
+        </strong>
+        <slot name="header"></slot>
+      </label>
+    </div>
     <div class="column" v-if="contentVisible">
       <slot />
     </div>

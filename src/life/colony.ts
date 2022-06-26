@@ -81,7 +81,7 @@ export class Colony {
   warCoef = 0;
   cumulatedAggresiveness = 0;
 
-  freedom = 0.005 + Math.random() * 0.003;
+  freedom = 0.003;
   aggresiveness = Math.random();
 
   color: number;

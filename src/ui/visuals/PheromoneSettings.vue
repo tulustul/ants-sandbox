@@ -21,18 +21,26 @@ defineProps({
     type: Boolean,
     default: true,
   },
+  tooltip: {
+    type: String,
+    required: true,
+  },
 });
 </script>
 
 <template>
-  <FieldGroup :label="label" :contentVisible="settings.enabled">
+  <FieldGroup
+    :label="label"
+    :contentVisible="settings.enabled"
+    :tooltip="tooltip"
+  >
     <template v-if="toggleable" v-slot:header>
       <input type="checkbox" v-model="settings.enabled" />
     </template>
 
     <template v-if="settings.enabled">
       <Slider
-        label="Exposure"
+        label="Brightness"
         v-model="settings.exposure"
         :default="defaults.exposure"
         :min="0.2"
@@ -54,6 +62,7 @@ defineProps({
         :min="0.0"
         :max="1"
         :step="0.01"
+        tooltip="A layer showing how often the path is used. Ants don't use this information. This is purely for presentational purposes."
       />
       <Slider
         label="Intensity"
@@ -62,6 +71,7 @@ defineProps({
         :min="0.0"
         :max="1"
         :step="0.01"
+        tooltip="A layer showing the intensity of pheromone trails. This is the information used by ants to navigate. The longer the ant walks, the weaker trail it drops."
       />
     </template>
   </FieldGroup>

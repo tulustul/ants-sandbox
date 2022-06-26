@@ -6,7 +6,7 @@ import Maps from "./maps/Maps.vue";
 import Visuals from "./visuals/Visuals.vue";
 import Colonies from "./colonies/Colonies.vue";
 import NewGarden from "./NewGarden.vue";
-import ColoniesStats from "./ColoniesStats.vue";
+import Charts from "./Charts.vue";
 </script>
 
 <template>
@@ -24,8 +24,8 @@ import ColoniesStats from "./ColoniesStats.vue";
       <Tab label="Colonies">
         <Colonies />
       </Tab>
-      <Tab label="Stats">
-        <ColoniesStats />
+      <Tab label="Charts">
+        <Charts />
       </Tab>
       <Tab label="Sim">
         <Simulation />

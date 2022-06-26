@@ -92,7 +92,7 @@ function reset() {
     </FieldGroup>
   </FieldGroup>
 
-  <button class="btn" :onclick="reset">Reset All</button>
+  <button class="btn" :onclick="reset">Reset to defaults</button>
 </template>
 
 <style></style>

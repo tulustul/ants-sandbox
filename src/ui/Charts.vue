@@ -28,7 +28,7 @@ let tab = ref("domestic");
   <template v-if="tab === 'domestic'">
     <ColoniesChart
       :colonies="colonies"
-      label="Current food"
+      label="Stored food"
       field="food"
       :yAxisPrecision="0"
     />
@@ -44,13 +44,15 @@ let tab = ref("domestic");
   <template v-if="tab === 'warfare'">
     <ColoniesChart
       :colonies="colonies"
-      label="Killed ants"
+      label="Killed"
       field="killedAnts"
+      tooltip="Number of ants in this colony that were killed by other ants."
     />
     <ColoniesChart
       :colonies="colonies"
-      label="Killed enemy ants"
+      label="Kills"
       field="killedEnemyAnts"
+      tooltip="Number of enemy ants killed by this colony."
     />
     <ColoniesChart :colonies="colonies" label="Soldiers" field="soldiers" />
     <ColoniesChart
