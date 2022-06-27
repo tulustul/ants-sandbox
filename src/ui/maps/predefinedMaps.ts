@@ -1,4 +1,4 @@
-const prefix = location.host.includes("github.io") ? "/ants-life" : "";
+const prefix = location.host.includes("github.io") ? "/ants-sandbox" : "";
 
 export default {
   tutorial: {},

@@ -34,7 +34,7 @@ defineProps({
     <Chart :yAxisPrecision="yAxisPrecision">
       <ChartLine
         v-for="colony of colonies"
-        v-bind:key="colony.primeId"
+        v-bind:key="colony.bitId"
         :color="colony.color"
         :data="colony.history[field]"
       />
