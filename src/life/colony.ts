@@ -1,7 +1,6 @@
 import type { DumpedColony } from "@/types";
 import { state } from "@/ui/state";
 import { desaturateColor, getNextColor } from "@/utils/colors";
-import { getNextPrimeNumber } from "@/utils/primeNumbers";
 import { Application, Graphics } from "pixi.js";
 import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
@@ -36,6 +35,24 @@ export type ColonyHistory = {
   workers: number[];
   soldiers: number[];
 };
+
+function getFirstUnusedBitId(colonies: Colony[]): number {
+  let id = 1;
+  for (let i = 0; i < 31; i++) {
+    let isUsed = false;
+    for (const colony of colonies) {
+      if (colony.bitId === id) {
+        isUsed = true;
+        break;
+      }
+    }
+    if (!isUsed) {
+      return id;
+    }
+    id = id << 1;
+  }
+  return 0;
+}
 
 export class Colony {
   static lastId = 1;
@@ -86,7 +103,7 @@ export class Colony {
 
   color: number;
   corpseColor: number;
-  primeId: number;
+  bitId: number;
 
   toFoodField: PheromoneField;
   toHomeField: PheromoneField;
@@ -103,7 +120,7 @@ export class Colony {
     this.color = getNextColor(this.garden);
     this.corpseColor = desaturateColor(this.color, 0.6);
 
-    this.primeId = getNextPrimeNumber(this.garden);
+    this.bitId = getFirstUnusedBitId(this.garden.colonies);
 
     this.toFoodField = new PheromoneField(this.garden);
     this.toHomeField = new PheromoneField(this.garden);

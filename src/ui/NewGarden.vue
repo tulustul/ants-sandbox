@@ -77,6 +77,7 @@ function onImageChange(event: Event) {
       :min="1"
       :max="5"
       :step="1"
+      tooltip="There can be a maximum of 31 colonies on the map."
     />
 
     <Slider

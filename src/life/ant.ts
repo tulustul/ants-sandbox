@@ -123,8 +123,8 @@ export class Ant {
       }
     }
     if (this.updatedLastAntCell) {
-      this.colony.garden.antsField.data[this.lastAntCellIndex] /=
-        this.colony.primeId;
+      this.colony.garden.antsField.data[this.lastAntCellIndex] ^=
+        this.colony.bitId;
     }
 
     this.colony.onAntDied(this);
@@ -163,6 +163,7 @@ export class Ant {
     const rockField = this.colony.garden.rockField;
     let fieldIndex = rockField.getIndex(x, y);
 
+    /** Colision checking. */
     if (rockField.data[fieldIndex] > 0) {
       this.sprite.x -= this.velocity.x;
       this.sprite.y -= this.velocity.y;
@@ -182,6 +183,7 @@ export class Ant {
       return true;
     }
 
+    /** Repel timeout check. */
     if (this.repelTicksLeft) {
       this.repelTicksLeft--;
       if (this.repelTicksLeft <= 0) {
@@ -189,6 +191,7 @@ export class Ant {
       }
     }
 
+    /** Map boundaries checking. */
     if (this.sprite.x < 1) {
       this.sprite.x = 1;
       this.turnRandomly();
@@ -206,8 +209,14 @@ export class Ant {
       this.turnRandomly();
     }
 
+    /**
+     * Updating antsField with bitId.
+     * This is a mechanism of a fast enemy detection. Each colony has a bit flag (bitId) and the map is divided into cells (antsField). When the ant enters the cell, it sets the flag on the cell. When it leaves the cell, it removes it. When the ant sees a flag which doesn't match its colony, then there is an enemy nearby.
+     */
     if (antsFieldIndex !== this.lastAntCellIndex) {
+      // Changing cell.
       if (this.isInAntsMap) {
+        // Unregister from previous cell.
         const ants = this.colony.garden.antsMap[this.lastAntCellIndex];
         const index = ants.indexOf(this);
         if (index !== -1) {
@@ -217,18 +226,22 @@ export class Ant {
       }
 
       if (this.updatedLastAntCell) {
-        antsField.data[this.lastAntCellIndex] /= this.colony.primeId;
+        // Remove bitId from last cell.
+        antsField.data[this.lastAntCellIndex] ^= this.colony.bitId;
       }
 
-      if (antsField.data[antsFieldIndex] % this.colony.primeId !== 0) {
-        antsField.data[antsFieldIndex] *= this.colony.primeId;
+      // Check if flag has to be set.
+      if ((antsField.data[antsFieldIndex] & this.colony.bitId) === 0) {
+        antsField.data[antsFieldIndex] |= this.colony.bitId;
         this.updatedLastAntCell = true;
       } else {
         this.updatedLastAntCell = false;
       }
 
-      if (antsField.data[antsFieldIndex] !== this.colony.primeId) {
+      if (antsField.data[antsFieldIndex] !== this.colony.bitId) {
+        // There is an enemy nearby.
         if (this.type === AntType.worker) {
+          // Workers should just flee.
           this.enterToHomeSeeEnemy();
           this.colony.enemyHereField.data[fieldIndex] =
             this.toEnemyRepelMarkerStrength;
@@ -237,14 +250,16 @@ export class Ant {
       this.lastAntCellIndex = antsFieldIndex;
     }
 
+    /** Processing fighting mechanics.  */
     if (this.targetAnt) {
       if (this.targetAnt.healthPoints > 0 && this.targetAnt.energy > 0) {
         this.attackAnt(this.targetAnt);
       } else {
         this.targetAnt = null;
       }
-    } else if (antsField.data[antsFieldIndex] !== this.colony.primeId) {
+    } else if (antsField.data[antsFieldIndex] !== this.colony.bitId) {
       if (!this.isInAntsMap) {
+        // Add the ant to the list of ants in this cell. The soldiers use this list to query the closest enemy ant to attack. This is done only when the ant senses an enemy nearby for performance reasons.
         this.colony.garden.antsMap[antsFieldIndex].push(this);
         this.isInAntsMap = true;
       }
@@ -258,6 +273,7 @@ export class Ant {
       }
     }
 
+    /** Dropping pheromone trails. */
     if (fieldIndex !== this.lastCellIndex) {
       if (this.pheromoneToRepel) {
         if (this.repelTicksLeft < this.maxRepelTicksLeft - this.repelTimeout) {

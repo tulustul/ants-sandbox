@@ -59,7 +59,6 @@ export class Garden {
     this.antsField = new Field(this, FIELD_CELL_SIZE * 6);
 
     for (let i = 0; i < this.antsField.data.length; i++) {
-      this.antsField.data[i] = 1;
       this.antsMap[i] = [];
     }
 
@@ -148,6 +147,10 @@ export class Garden {
   }
 
   placeRandomColony(numberOfAnts: number) {
+    if (this.colonies.length >= 31) {
+      return;
+    }
+
     let x = 0;
     let y = 0;
 
