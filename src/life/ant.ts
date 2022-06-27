@@ -326,6 +326,16 @@ export class Ant {
         this.colony.stats.killedEnemyAnts++;
         ant.colony.stats.killedAnts++;
       }
+      const distanceToMove = 25 - distance;
+      const moveVec = newVel.copy();
+      moveVec.normalize();
+      moveVec.rotate(Math.PI);
+      moveVec.mulScalar(distanceToMove);
+      this.sprite.x += moveVec.x;
+      this.sprite.y += moveVec.y;
+      if (Math.random() > 0.9) {
+        this.turnStrongly(0.3);
+      }
     }
   }
 
@@ -357,7 +367,7 @@ export class Ant {
       );
       if (values[1] < values[0]) {
         this.turnAround();
-        this.turnStrongly();
+        this.turnStrongly(0.3);
       }
     }
 
@@ -670,12 +680,14 @@ export class Ant {
     );
   }
 
-  turnStrongly() {
-    const r = Math.random();
-    const c = r > 0.5 ? -Math.PI / 6 : Math.PI / 6;
+  turn() {
     this.velocity.rotate(
-      ((r - 0.5) / simulationSettings.antSeekRandomness) * 3 + c
+      (Math.random() - 0.5) / simulationSettings.antSeekRandomness
     );
+  }
+
+  turnStrongly(power: number) {
+    this.velocity.rotate((Math.random() - 0.5) * power);
   }
 
   die() {

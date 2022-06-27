@@ -38,4 +38,8 @@ export class Vec {
     this.x -= vec.x;
     this.y -= vec.y;
   }
+
+  copy() {
+    return new Vec(this.x, this.y);
+  }
 }
