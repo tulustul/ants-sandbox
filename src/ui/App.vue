@@ -58,9 +58,6 @@ async function onReady() {
     :onpointerdown="(event:PointerEvent) => controls.onPointerDown(event)"
     :onpointerup="(event:PointerEvent) => controls.onPointerUp(event)"
     :onpointermove="(event:PointerEvent) => controls.onPointerMove(event)"
-    :onpointercancel="(event:PointerEvent) => controls.onPointerCancel(event)"
-    :onpointerout="(event:PointerEvent) => controls.onPointerOut(event)"
-    :onpointerleave="(event:PointerEvent) => controls.onPointerLeave(event)"
   ></canvas>
   <Ui v-if="ready" />
 </template>

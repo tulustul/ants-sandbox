@@ -10,6 +10,8 @@ export class Controls {
 
   wasDrawingRock = false;
 
+  firstPointer: number | null = null;
+
   get camera() {
     return this.simulation!.canvas.camera;
   }
@@ -38,6 +40,9 @@ export class Controls {
   }
 
   onPointerDown(event: PointerEvent) {
+    if (this.firstPointer === null) {
+      this.firstPointer = event.pointerId;
+    }
     this.pointers.set(event.pointerId, [event.clientX, event.clientY]);
     if (state.movingColony) {
       this.moveColony(event);
@@ -45,6 +50,9 @@ export class Controls {
   }
 
   onPointerUp(event: PointerEvent) {
+    if (this.firstPointer === event.pointerId) {
+      this.firstPointer = null;
+    }
     this.pointers.delete(event.pointerId);
     if (this.wasDrawingRock) {
       processRock(this.garden.rockField);
@@ -59,7 +67,7 @@ export class Controls {
       return;
     }
 
-    if (this.pointers.has(event.pointerId)) {
+    if (event.pointerId === this.firstPointer) {
       if (state.drawing.type) {
         this.draw(event.clientX, event.clientY);
       } else {
@@ -77,18 +85,6 @@ export class Controls {
       this.camera.scaleBy(distanceChange, centerX, centerY);
       this.camera.targetScale = this.camera.transform.scale;
     }
-  }
-
-  onPointerCancel(event: PointerEvent) {
-    // console.log("onPointerCancel", event);
-  }
-
-  onPointerOut(event: PointerEvent) {
-    // console.log("onPointerOut", event);
-  }
-
-  onPointerLeave(event: PointerEvent) {
-    // console.log("onPointerLeave", event);
   }
 
   getPointersDistance() {
