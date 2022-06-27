@@ -18,6 +18,8 @@ export class FieldsLayer {
 
   colony: Colony | null = null;
 
+  updatePhase = 0;
+
   constructor(public garden: Garden, public canvas: Canvas) {
     this.toFood = new FieldGraphics(
       this.garden,
@@ -93,19 +95,51 @@ export class FieldsLayer {
       }
     }
 
-    this.updateField(this.toFood, visualSettings.toFood.enabled);
-    this.updateField(this.toFoodMax, visualSettings.toFood.enabled);
+    this.updateField(
+      this.toFood,
+      visualSettings.toFood.enabled,
+      this.updatePhase === 0
+    );
+    this.updateField(
+      this.toFoodMax,
+      visualSettings.toFood.enabled,
+      this.updatePhase === 1
+    );
 
-    this.updateField(this.toHome, visualSettings.toHome.enabled);
-    this.updateField(this.toHomeMax, visualSettings.toHome.enabled);
+    this.updateField(
+      this.toHome,
+      visualSettings.toHome.enabled,
+      this.updatePhase === 2
+    );
+    this.updateField(
+      this.toHomeMax,
+      visualSettings.toHome.enabled,
+      this.updatePhase === 3
+    );
 
-    this.updateField(this.toEnemy, visualSettings.toEnemy.enabled);
-    this.updateField(this.toEnemyMax, visualSettings.toEnemy.enabled);
+    this.updateField(
+      this.toEnemy,
+      visualSettings.toEnemy.enabled,
+      this.updatePhase === 4
+    );
+    this.updateField(
+      this.toEnemyMax,
+      visualSettings.toEnemy.enabled,
+      this.updatePhase === 5
+    );
+
+    if (++this.updatePhase === 6) {
+      this.updatePhase = 0;
+    }
   }
 
-  updateField(fieldGraphics: FieldGraphics, isEnabled: boolean) {
+  updateField(
+    fieldGraphics: FieldGraphics,
+    isEnabled: boolean,
+    update: boolean
+  ) {
     fieldGraphics.sprite.visible = isEnabled;
-    if (isEnabled) {
+    if (isEnabled && update) {
       {
         fieldGraphics.texture.update();
       }

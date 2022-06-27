@@ -55,7 +55,7 @@ function onImageChange(event: Event) {
       v-model="state.gardenSettings.width"
       :default="defaultGardenSettings.width"
       :min="1000"
-      :max="20000"
+      :max="15000"
       :step="1000"
     />
 
@@ -64,7 +64,7 @@ function onImageChange(event: Event) {
       v-model="state.gardenSettings.height"
       :default="defaultGardenSettings.height"
       :min="1000"
-      :max="20000"
+      :max="15000"
       :step="1000"
     />
   </FieldGroup>
