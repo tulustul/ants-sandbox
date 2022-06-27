@@ -54,7 +54,6 @@ async function onReady() {
   <canvas
     ref="canvasRef"
     :onwheel="(event: WheelEvent) => controls.onWheel(event)"
-    :onscroll="(event: WheelEvent) => controls.onScroll(event)"
     :onpointerdown="(event:PointerEvent) => controls.onPointerDown(event)"
     :onpointerup="(event:PointerEvent) => controls.onPointerUp(event)"
     :onpointermove="(event:PointerEvent) => controls.onPointerMove(event)"

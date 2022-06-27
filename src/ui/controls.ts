@@ -30,12 +30,7 @@ export class Controls {
   }
 
   onWheel(event: WheelEvent) {
-    const scale = event.deltaY > 0 ? 0.8 : 1.2;
-    this.camera.scaleByWithEasing(scale, event.clientX, event.clientY);
-  }
-
-  onScroll(event: any) {
-    const scale = event.deltaY > 0 ? 0.8 : 1.2;
+    const scale = 1 - event.deltaY / 200;
     this.camera.scaleByWithEasing(scale, event.clientX, event.clientY);
   }
 
