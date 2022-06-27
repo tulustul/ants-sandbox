@@ -195,14 +195,16 @@ export class Garden {
 
   getRandomColonyPosition() {
     const minimalDistanceFromOtherColony =
-      Math.min(this.width, this.height) / this.colonies.length / 2;
+      Math.min(this.width, this.height) / this.colonies.length / 1.5;
 
     let tries = 0;
-    while (tries++ < 50) {
+    let [bestX, bestY, largestEmptyArea] = [0, 0, 0];
+    while (tries++ < 20) {
       const x = Math.random() * this.width;
       const y = Math.random() * this.height;
 
-      if (this.rockField.getAt(x, y) !== 0) {
+      const index = this.rockField.getIndex(x, y);
+      if (this.rockField.data[index] !== 0) {
         continue;
       }
 
@@ -214,9 +216,21 @@ export class Garden {
         continue;
       }
 
+      if (this.rockField.emptySegmentsMap.size) {
+        const emptyArea = this.rockField.getEmptyAreaAt(index);
+        if (emptyArea < this.rockField.area / this.colonies.length / 2) {
+          if (emptyArea > largestEmptyArea) {
+            largestEmptyArea = emptyArea;
+            bestX = x;
+            bestY = y;
+          }
+          continue;
+        }
+      }
+
       return [x, y];
     }
-    return [0, 0];
+    return [bestX, bestY];
   }
 
   getClosesColonyDistance(x: number, y: number): number | null {

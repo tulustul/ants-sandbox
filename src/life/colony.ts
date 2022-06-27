@@ -226,6 +226,7 @@ export class Colony {
       }
     }
   }
+
   refreshNestPheromones() {
     this.toHomeField.maxValues.draw(
       this.sprite.x,

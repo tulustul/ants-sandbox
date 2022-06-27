@@ -9,6 +9,9 @@ export class Field {
   height: number;
   cellSize: number;
 
+  emptySegmentsMap = new Map<number, number>(); // index -> segmentId
+  emptySegmentsSizeMap = new Map<number, number>(); // segmentId -> segment area
+
   constructor(public garden: Garden, cellSize?: number) {
     if (!cellSize) {
       cellSize = FIELD_CELL_SIZE;
@@ -35,6 +38,10 @@ export class Field {
 
   getAt(x: number, y: number) {
     return this.data[this.getIndex(x, y)];
+  }
+
+  get area() {
+    return this.width * this.height;
   }
 
   draw(
@@ -89,5 +96,65 @@ export class Field {
         this.data[y * this.width + x] = value;
       }
     }
+  }
+
+  preprocessEmptyAreas() {
+    this.emptySegmentsMap.clear();
+    this.emptySegmentsSizeMap.clear();
+    for (let index = 0; index < this.data.length; index++) {
+      if (this.emptySegmentsMap.get(index) !== undefined) {
+        continue;
+      }
+      if (this.data[index] !== 0) {
+        continue;
+      }
+
+      const segmentId = this.emptySegmentsMap.size;
+
+      const visited = new Set<number>();
+      let toProcess = new Set([index]);
+
+      while (toProcess.size) {
+        const newToProcess = new Set<number>();
+        for (const index of toProcess) {
+          if (visited.has(index)) {
+            continue;
+          }
+
+          if (index < 0 || index >= this.data.length) {
+            continue;
+          }
+
+          this.emptySegmentsMap.set(index, segmentId);
+          visited.add(index);
+
+          if (this.data[index - 1] === 0) {
+            newToProcess.add(index - 1);
+          }
+
+          if (this.data[index + 1] === 0) {
+            newToProcess.add(index + 1);
+          }
+
+          if (this.data[index - this.width] === 0) {
+            newToProcess.add(index - this.width);
+          }
+
+          if (this.data[index + this.width] === 0) {
+            newToProcess.add(index + this.width);
+          }
+        }
+        toProcess = newToProcess;
+      }
+      this.emptySegmentsSizeMap.set(segmentId, visited.size);
+    }
+  }
+
+  getEmptyAreaAt(index: number) {
+    const segment = this.emptySegmentsMap.get(index);
+    if (segment === undefined) {
+      return 0;
+    }
+    return this.emptySegmentsSizeMap.get(segment) ?? 0;
   }
 }

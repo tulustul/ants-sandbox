@@ -39,6 +39,7 @@ export class Simulation {
     }
 
     if (settings.type !== "empty") {
+      this.garden.rockField.preprocessEmptyAreas();
       for (let i = 0; i < settings.numberOfColonies; i++) {
         this.garden.placeRandomColony(settings.startingAnts);
       }
