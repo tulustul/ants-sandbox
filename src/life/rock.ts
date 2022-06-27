@@ -1,4 +1,4 @@
-import type { Field } from "./field";
+import { Field } from "./field";
 
 export function processRock(rock: Field) {
   const segmentation = new Uint32Array(rock.data.length);
@@ -103,5 +103,23 @@ function segmentRock(
   for (const index of visited) {
     const val = depthData[index] / depth / 2 + 0.3;
     rock.data[index] = val + Math.random() * 0.07;
+  }
+}
+
+export class RockField extends Field {
+  protected _draw(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    value: number
+  ): void {
+    for (let x = minX; x < maxX; x++) {
+      for (let y = minY; y < maxY; y++) {
+        const index = y * this.width + x;
+        this.data[index] = value;
+        this.garden.foodField.data[index] = 0;
+      }
+    }
   }
 }

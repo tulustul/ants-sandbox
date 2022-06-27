@@ -11,6 +11,7 @@ import { FoodField } from "./food";
 import { Colony } from "./colony";
 import { gardenSettings, simulationSettings, visualSettings } from "./settings";
 import { GardenLayer } from "@/canvas/gardenLayer";
+import { RockField } from "./rock";
 
 export class Garden {
   colonies: Colony[] = [];
@@ -18,7 +19,7 @@ export class Garden {
   corpses: Corpse[] = [];
 
   foodField: FoodField;
-  rockField: Field;
+  rockField: RockField;
   antsField: Field;
 
   antSlowTickOffset = 0;
@@ -54,7 +55,7 @@ export class Garden {
     this.drawBackground();
 
     this.foodField = new FoodField(this);
-    this.rockField = new Field(this);
+    this.rockField = new RockField(this);
     this.antsField = new Field(this, FIELD_CELL_SIZE * 6);
 
     for (let i = 0; i < this.antsField.data.length; i++) {

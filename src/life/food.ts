@@ -18,4 +18,21 @@ export class FoodField extends Field {
   }
 
   tick() {}
+
+  protected _draw(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    value: number
+  ): void {
+    for (let x = minX; x < maxX; x++) {
+      for (let y = minY; y < maxY; y++) {
+        const index = y * this.width + x;
+        if (!this.garden.rockField.data[index]) {
+          this.data[index] = value;
+        }
+      }
+    }
+  }
 }

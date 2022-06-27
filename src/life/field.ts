@@ -77,7 +77,7 @@ export class Field {
     }
   }
 
-  private _draw(
+  protected _draw(
     minX: number,
     maxX: number,
     minY: number,
