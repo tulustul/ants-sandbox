@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { state, type DrawingType } from "./state";
 import { Slider, Checkbox } from "./forms";
+import { onUnmounted } from "vue";
+import { isMobile } from "@/utils/responsiveness";
+
+onUnmounted(() => {
+  if (!isMobile()) {
+    state.drawing.type = null;
+    state.drawing.erasing = false;
+  }
+});
 
 function toggleDraw(type: DrawingType) {
   if (state.drawing.type === type) {

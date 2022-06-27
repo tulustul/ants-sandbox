@@ -3,11 +3,15 @@ import Stats from "./Stats.vue";
 import Menu from "./Menu.vue";
 import Controls from "./Controls.vue";
 import Zoom from "./Zoom.vue";
+import DrawButton from "./DrawButton.vue";
 </script>
 
 <template>
   <Stats class="top-right" />
-  <Menu class="top-left" />
+  <div class="top-left">
+    <Menu />
+    <DrawButton />
+  </div>
   <Controls class="bottom-left" />
   <Zoom class="bottom-right" />
 </template>
@@ -17,6 +21,8 @@ import Zoom from "./Zoom.vue";
   position: absolute;
   left: 0;
   top: 0;
+  display: flex;
+  gap: 10px;
 }
 .top-right {
   position: absolute;
