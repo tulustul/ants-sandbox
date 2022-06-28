@@ -13,6 +13,7 @@ import {
 } from "@/utils/compression";
 import JSZip from "jszip";
 import { state } from "./state";
+import { gaussRandomWithBoundaries } from "@/utils/random";
 
 export class Simulation {
   garden!: Garden;
@@ -60,22 +61,34 @@ export class Simulation {
   }
 
   randomizeGarden() {
-    const gardenSettings = state.gardenSettings;
+    const settings = state.gardenSettings;
+    const randomFood = settings.randomizeFood;
+    const randomRocks = settings.randomizeRocks;
 
     fillGarden({
       garden: this.garden,
 
-      foodEnabled: gardenSettings.foodEnabled,
-      foodScale: gardenSettings.foodScale,
-      foodSize: gardenSettings.foodSize,
-      foodRichness: gardenSettings.foodRichness,
+      foodEnabled: settings.foodEnabled,
+      foodScale: randomFood
+        ? gaussRandomWithBoundaries(0.2, 0.15, 0.1, 0.5)
+        : settings.foodScale,
+      foodCoverage: randomFood
+        ? gaussRandomWithBoundaries(0.48, 0.1, 0.35, 0.65)
+        : settings.foodCoverage,
+      foodRichness: randomFood
+        ? gaussRandomWithBoundaries(10, 5, 1, 50)
+        : settings.foodRichness,
 
-      rockEnabled: gardenSettings.rockEnabled,
-      rockScale: gardenSettings.rockScale,
-      rockSize: gardenSettings.rockSize,
+      rockEnabled: settings.rockEnabled,
+      rockScale: randomRocks
+        ? gaussRandomWithBoundaries(0.6, 0.2, 0.1, 0.9)
+        : settings.rockScale,
+      rockCoverage: randomRocks
+        ? gaussRandomWithBoundaries(0.43, 0.1, 0.2, 0.5)
+        : settings.rockCoverage,
 
-      horizontalMirror: gardenSettings.horizontalMirror,
-      verticalMirror: gardenSettings.verticalMirror,
+      horizontalMirror: settings.horizontalMirror,
+      verticalMirror: settings.verticalMirror,
     });
   }
 

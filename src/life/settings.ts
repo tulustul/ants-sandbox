@@ -35,12 +35,14 @@ export const defaultGardenSettings = {
 
   foodEnabled: true,
   foodScale: 0.2,
-  foodSize: 0.48,
+  foodCoverage: 0.48,
   foodRichness: 10,
+  randomizeFood: false,
 
   rockEnabled: true,
   rockScale: 0.6,
-  rockSize: 0.43,
+  rockCoverage: 0.43,
+  randomizeRocks: false,
 
   horizontalMirror: false,
   verticalMirror: false,

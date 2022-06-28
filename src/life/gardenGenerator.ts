@@ -6,12 +6,12 @@ export type GardenGeneratorOptions = {
   garden: Garden;
 
   foodEnabled: boolean;
-  foodSize: number;
   foodScale: number;
+  foodCoverage: number;
   foodRichness: number;
 
   rockEnabled: boolean;
-  rockSize: number;
+  rockCoverage: number;
   rockScale: number;
 
   horizontalMirror: boolean;
@@ -53,7 +53,7 @@ function generateRocks(options: GardenGeneratorOptions) {
     for (let y = 0; y < rock.height; y++) {
       const index = rock.getIndex(x * rock.cellSize, y * rock.cellSize);
       const value = rockNoise.at(x, y);
-      if (value > 1 - options.rockSize) {
+      if (value > 1 - options.rockCoverage) {
         rock.data[index] = value;
       }
     }
@@ -88,7 +88,7 @@ function generateFood(
       } else {
         value -= 0.15;
       }
-      if (rock.data[index] === 0 && value > 1 - options.foodSize) {
+      if (rock.data[index] === 0 && value > 1 - options.foodCoverage) {
         food.data[index] = options.foodRichness;
       }
     }

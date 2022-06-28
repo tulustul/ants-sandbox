@@ -19,11 +19,11 @@ export async function makeGardenFromImage(canvas: Canvas, file: File) {
     const index = i / 4;
 
     garden.rockField.data[index] =
-      r > 255 - 255 * state.gardenSettings.rockSize ? 1 : 0;
+      r > 255 - 255 * state.gardenSettings.rockCoverage ? 1 : 0;
 
     if (!garden.rockField.data[index]) {
       garden.foodField.data[index] =
-        g > 255 - 255 * state.gardenSettings.foodSize
+        g > 255 - 255 * state.gardenSettings.foodCoverage
           ? state.gardenSettings.foodRichness
           : 0;
     }

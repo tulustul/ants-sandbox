@@ -108,36 +108,43 @@ function onImageChange(event: Event) {
       <input type="checkbox" v-model="state.gardenSettings.foodEnabled" />
     </template>
 
-    <Slider
-      label="Scale"
-      v-if="state.gardenSettings.type === 'random'"
-      v-model="state.gardenSettings.foodScale"
-      :default="defaultGardenSettings.foodScale"
-      :min="0.01"
-      :max="1"
-      :step="0.01"
-      tooltip="Overall scale of food and distance between patches."
+    <Checkbox
+      label="Randomize food"
+      v-model="state.gardenSettings.randomizeFood"
     />
 
-    <Slider
-      label="Coverage"
-      v-model="state.gardenSettings.foodSize"
-      :default="defaultGardenSettings.foodSize"
-      :min="0.3"
-      :max="0.7"
-      :step="0.01"
-      tooltip="How much of the map is covered with food."
-    />
+    <template v-if="!state.gardenSettings.randomizeFood">
+      <Slider
+        label="Scale"
+        v-if="state.gardenSettings.type === 'random'"
+        v-model="state.gardenSettings.foodScale"
+        :default="defaultGardenSettings.foodScale"
+        :min="0.01"
+        :max="1"
+        :step="0.01"
+        tooltip="Overall scale of food and distance between patches."
+      />
 
-    <Slider
-      label="Richness"
-      v-model="state.gardenSettings.foodRichness"
-      :default="defaultGardenSettings.foodRichness"
-      :min="1"
-      :max="100"
-      :step="1"
-      tooltip="How much units of food a single pixel holds."
-    />
+      <Slider
+        label="Coverage"
+        v-model="state.gardenSettings.foodCoverage"
+        :default="defaultGardenSettings.foodCoverage"
+        :min="0.3"
+        :max="0.7"
+        :step="0.01"
+        tooltip="How much of the map is covered with food."
+      />
+
+      <Slider
+        label="Richness"
+        v-model="state.gardenSettings.foodRichness"
+        :default="defaultGardenSettings.foodRichness"
+        :min="1"
+        :max="100"
+        :step="1"
+        tooltip="How much units of food a single pixel holds."
+      />
+    </template>
   </FieldGroup>
 
   <FieldGroup
@@ -149,26 +156,33 @@ function onImageChange(event: Event) {
       <input type="checkbox" v-model="state.gardenSettings.rockEnabled" />
     </template>
 
-    <Slider
-      label="Scale"
-      v-if="state.gardenSettings.type === 'random'"
-      v-model="state.gardenSettings.rockScale"
-      :default="defaultGardenSettings.rockScale"
-      :min="0.1"
-      :max="2"
-      :step="0.1"
-      tooltip="Overall scale of rocks and distance between them."
+    <Checkbox
+      label="Randomize rocks"
+      v-model="state.gardenSettings.randomizeRocks"
     />
 
-    <Slider
-      label="Coverage"
-      v-model="state.gardenSettings.rockSize"
-      :default="defaultGardenSettings.rockSize"
-      :min="0"
-      :max="0.5"
-      :step="0.01"
-      tooltip="How much of the map is covered with rocks."
-    />
+    <template v-if="!state.gardenSettings.randomizeRocks">
+      <Slider
+        label="Scale"
+        v-if="state.gardenSettings.type === 'random'"
+        v-model="state.gardenSettings.rockScale"
+        :default="defaultGardenSettings.rockScale"
+        :min="0.1"
+        :max="2"
+        :step="0.1"
+        tooltip="Overall scale of rocks and distance between them."
+      />
+
+      <Slider
+        label="Coverage"
+        v-model="state.gardenSettings.rockCoverage"
+        :default="defaultGardenSettings.rockCoverage"
+        :min="0"
+        :max="0.5"
+        :step="0.01"
+        tooltip="How much of the map is covered with rocks."
+      />
+    </template>
   </FieldGroup>
 
   <div v-if="state.gardenSettings.type === 'random'">
