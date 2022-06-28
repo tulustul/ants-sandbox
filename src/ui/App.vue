@@ -53,10 +53,10 @@ async function onReady() {
 <template>
   <canvas
     ref="canvasRef"
-    :onwheel="(event: WheelEvent) => controls.onWheel(event)"
-    :onpointerdown="(event:PointerEvent) => controls.onPointerDown(event)"
-    :onpointerup="(event:PointerEvent) => controls.onPointerUp(event)"
-    :onpointermove="(event:PointerEvent) => controls.onPointerMove(event)"
+    @wheel="(event: WheelEvent) => controls.onWheel(event)"
+    @pointerdown="(event:PointerEvent) => controls.onPointerDown(event)"
+    @pointerup="(event:PointerEvent) => controls.onPointerUp(event)"
+    @pointermove="(event:PointerEvent) => controls.onPointerMove(event)"
   ></canvas>
   <Ui v-if="ready" />
 </template>

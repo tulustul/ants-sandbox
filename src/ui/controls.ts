@@ -1,5 +1,6 @@
 import type { Field } from "@/life/field";
 import { processRock } from "@/life/rock";
+import { simulationSettings } from "@/life/settings";
 import type { Simulation } from "./simulation";
 import { state } from "./state";
 
@@ -11,6 +12,10 @@ export class Controls {
   wasDrawingRock = false;
 
   firstPointer: number | null = null;
+
+  constructor() {
+    window.addEventListener("keydown", (event) => this.onKeyDown(event));
+  }
 
   get camera() {
     return this.simulation!.canvas.camera;
@@ -79,6 +84,12 @@ export class Controls {
       const [centerX, centerY] = this.getPointersCenter();
       this.camera.scaleBy(distanceChange, centerX, centerY);
       this.camera.targetScale = this.camera.transform.scale;
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.code === "Space") {
+      state.simulationSettings.pause = !state.simulationSettings.pause;
     }
   }
 
