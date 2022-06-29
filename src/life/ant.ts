@@ -567,14 +567,17 @@ export class Ant {
   ): [number, number[]] {
     let maxValue = 0;
     const values: number[] = [];
+    const rot = this.velocity.rotation();
+    const [spriteX, spriteY] = [this.sprite.x, this.sprite.y];
 
     for (const angle of sampler.angleSamples) {
+      const vecX = -FIELD_CELL_SIZE * Math.sin(rot + angle - Math.PI / 2);
+      const vecY = FIELD_CELL_SIZE * Math.cos(rot + angle - Math.PI / 2);
+
       let total = 0;
       for (let i = 1; i <= sampler.distanceSamplesCount; i++) {
-        const vec = new Vec(0, FIELD_CELL_SIZE * i);
-        vec.rotateTo(this.velocity.rotation() + angle);
-        const x = this.sprite.x + vec.x;
-        const y = this.sprite.y + vec.y;
+        const x = spriteX + vecX * i;
+        const y = spriteY + vecY * i;
         const index = field.getIndex(x, y);
         let value = 0;
 
