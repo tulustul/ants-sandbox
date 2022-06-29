@@ -97,8 +97,6 @@ export class Simulation {
       return;
     }
 
-    const t0 = performance.now();
-
     if (simulationSettings.pause) {
       return;
     }
@@ -110,13 +108,7 @@ export class Simulation {
       this.garden.tick(this.totalTicks++);
     }
 
-    const t1 = performance.now();
-
-    // Moving average.
     simulationStats.numberOfAnts = this.garden.ants.length;
-    const dt = t1 - t0;
-    simulationStats.simulationTime =
-      (simulationStats.simulationTime * 9 + dt) / 10;
   }
 
   async dump(): Promise<string> {

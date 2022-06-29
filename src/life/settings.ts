@@ -10,6 +10,7 @@ export type FieldSampler = {
 export const defaultSimulationSettings = {
   speed: 1,
   pause: false,
+  maxSpeed: false,
   pheromoneDissipation: 1.003,
   antSeekRandomness: 3,
   antsBirthRate: 1 / 60,

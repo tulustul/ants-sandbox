@@ -7,6 +7,8 @@ import Ui from "./Ui.vue";
 import { Simulation } from "./simulation";
 import { loadResources } from "@/canvas/resources";
 import { Controls } from "./controls";
+import { PerformanceMonitor } from "@/utils/performance";
+import { state } from "./state";
 
 const canvasRef = ref();
 const ready = ref(false);
@@ -38,10 +40,23 @@ onMounted(async () => {
 });
 
 async function onReady() {
+  const simMonitor = new PerformanceMonitor();
+  const frameMonitor = new PerformanceMonitor();
+
   simulation.makeGarden();
 
+  let frameT0 = performance.now();
   canvas.app.ticker.add(() => {
+    frameMonitor.measure(frameT0);
+    state.simulationStats.fps = frameMonitor.ups;
+    state.simulationStats.ups =
+      frameMonitor.ups * state.simulationSettings.speed;
+    frameT0 = performance.now();
+
+    const simT0 = performance.now();
     simulation.tick();
+    state.simulationStats.simulationTime = simMonitor.measure(simT0);
+
     simulation.garden.fieldsLayer.tick();
     canvas.camera.update();
   });

@@ -1,6 +1,5 @@
 import type { Field } from "@/life/field";
 import { processRock } from "@/life/rock";
-import { simulationSettings } from "@/life/settings";
 import type { Simulation } from "./simulation";
 import { state } from "./state";
 

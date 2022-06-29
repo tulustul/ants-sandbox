@@ -31,7 +31,7 @@ onBeforeMount(() => {
   flex-direction: column;
   width: 350px;
   max-width: 100%;
-  max-height: calc(100vh - 130px);
+  max-height: calc(100vh - 170px);
   overflow-y: auto;
   gap: 10px;
   padding: 10px;
