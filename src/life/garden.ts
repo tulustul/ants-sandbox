@@ -43,6 +43,9 @@ export class Garden {
 
   isDestroyed = false;
 
+  pheromoneDegradationTime = 180; // in ticks
+  pheromoneDegradationPhase = 0;
+
   constructor(
     public canvas: Canvas,
     public width: number,
@@ -122,11 +125,12 @@ export class Garden {
       this.corpsesPhase = 0;
     }
 
-    this.foodField.tick();
     this.gardenLayer.tick();
 
     this.antsContainer.visible = visualSettings.antsEnabled;
     this.corpsesContainer.visible = visualSettings.corpsesEnabled;
+
+    this.degradePheromones();
   }
 
   destroy() {
@@ -252,5 +256,34 @@ export class Garden {
     }
 
     return closestDistance;
+  }
+
+  degradePheromones() {
+    // This could be a part of a PheromoneField class but it is aggregated here for all the pheromones for performance reasons.
+    const dissipation = 1 / simulationSettings.pheromoneDissipation;
+    const size = this.fieldWidth * this.fieldHeight;
+    for (
+      let i = this.pheromoneDegradationPhase++;
+      i < size;
+      i += this.pheromoneDegradationTime
+    ) {
+      for (const colony of this.colonies) {
+        if (colony.toFoodField.data[i] > 0) {
+          colony.toFoodField.data[i] *= dissipation;
+          colony.toFoodField.maxValues.data[i] *= dissipation;
+        }
+        if (colony.toHomeField.data[i] > 0) {
+          colony.toHomeField.data[i] *= dissipation;
+          colony.toHomeField.maxValues.data[i] *= dissipation;
+        }
+        if (colony.toEnemyField.data[i] > 0) {
+          colony.toEnemyField.data[i] *= dissipation;
+          colony.toEnemyField.maxValues.data[i] *= dissipation;
+        }
+      }
+    }
+    if (this.pheromoneDegradationPhase === this.pheromoneDegradationTime) {
+      this.pheromoneDegradationPhase = 0;
+    }
   }
 }

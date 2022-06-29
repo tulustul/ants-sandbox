@@ -11,14 +11,14 @@ export const defaultSimulationSettings = {
   speed: 1,
   pause: false,
   maxSpeed: false,
-  pheromoneDissipation: 1.003,
+  pheromoneDissipation: 1.009,
   antSeekRandomness: 3,
   antsBirthRate: 1 / 60,
   performance: {
     antBrainTickTimeout: 3,
     antGradientCheckTickTimeout: 180,
     pheromoneSampler: getPheromoneSampler(Math.PI / 2, 3, 3),
-    preciseFieldSampler: getPheromoneSampler(Math.PI * 2, 20, 5),
+    preciseFieldSampler: getPheromoneSampler(Math.PI * 2, 10, 4),
   },
 };
 

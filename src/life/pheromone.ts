@@ -1,10 +1,6 @@
 import { Field } from "./field";
-import { simulationSettings } from "./settings";
 
 export class PheromoneField extends Field {
-  degradationTime = 60; // in ticks
-  degradationPhase = 0;
-
   maxValues = new Field(this.garden);
 
   repelPheromone(index: number, strength: number) {
@@ -60,22 +56,5 @@ export class PheromoneField extends Field {
         this.data[index + this.height] + value / 4
       )
     );
-  }
-
-  tick() {
-    const dissipation = simulationSettings.pheromoneDissipation;
-    for (
-      let i = this.degradationPhase++;
-      i < this.data.length;
-      i += this.degradationTime
-    ) {
-      if (this.data[i] > 0) {
-        this.data[i] /= dissipation;
-        this.maxValues.data[i] /= dissipation;
-      }
-    }
-    if (this.degradationPhase === 60) {
-      this.degradationPhase = 0;
-    }
   }
 }

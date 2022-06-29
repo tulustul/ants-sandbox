@@ -17,8 +17,6 @@ export class FoodField extends Field {
     }
   }
 
-  tick() {}
-
   protected _draw(
     minX: number,
     maxX: number,
