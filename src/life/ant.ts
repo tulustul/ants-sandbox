@@ -421,9 +421,11 @@ export class Ant {
       return false;
     }
 
+    const freedom = 1 / this.colony.freedom;
+
     let sumOfValues = 0;
     for (let i = 0; i < values.length; i++) {
-      values[i] = Math.pow(values[i] / maxValue, 1 / this.colony.freedom);
+      values[i] = (values[i] / maxValue) ** freedom;
       sumOfValues += values[i];
     }
 
@@ -450,6 +452,10 @@ export class Ant {
     const values: number[] = [];
     const rot = this.velocity.rotation;
     const [spriteX, spriteY] = [this.sprite.x, this.sprite.y];
+    const rockData = this.colony.garden.rockField.data;
+    const foodData = this.colony.garden.foodField.data;
+    const fieldData = field.maxValues.data;
+    const freedom = 1 / this.colony.freedom;
 
     for (const angle of sampler.angleSamples) {
       const vecX = -FIELD_CELL_SIZE * Math.sin(rot + angle - Math.PI / 2);
@@ -460,30 +466,20 @@ export class Ant {
         const x = spriteX + vecX * i;
         const y = spriteY + vecY * i;
         const index = field.getIndex(x, y);
-        let value = 0;
 
-        if (this.colony.garden.rockField.data[index]) {
+        if (rockData[index]) {
           total = 0;
           break;
         }
 
-        if (
-          this.mode === AntMode.toFood &&
-          this.colony.garden.foodField.data[index]
-        ) {
+        if (this.mode === AntMode.toFood && foodData[index]) {
           total += 10000;
           break;
         }
 
-        value = field.maxValues.data[index];
-        if (value > 0.001) {
-          value = Math.pow(value, 1 / this.colony.freedom);
-          value = Math.max(0, value);
-        } else {
-          value = 0;
-        }
-
-        total += value;
+        // This power below is slow, 20% of simulation time :(
+        // It greatly improves ants behavior though.
+        total += fieldData[index] ** freedom;
       }
       if (total > maxValue) {
         maxValue = total;
