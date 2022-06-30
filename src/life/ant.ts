@@ -230,6 +230,14 @@ export class Ant {
       moveVec.mulScalar(distanceToMove);
       this.sprite.x += moveVec.x;
       this.sprite.y += moveVec.y;
+
+      if (this.colony.garden.rockField.getAt(this.sprite.x, this.sprite.y)) {
+        // Don't teleport ants on rocks.
+        this.sprite.x -= moveVec.x;
+        this.sprite.y -= moveVec.y;
+        return;
+      }
+
       if (Math.random() > 0.9) {
         this.turnStrongly(0.3);
       }
@@ -587,20 +595,14 @@ export class Ant {
   }
 
   processMapBoundaries() {
-    if (this.sprite.x < 1) {
-      this.sprite.x = 1;
-      this.turnRandomly();
-    }
-    if (this.sprite.x > this.colony.garden.width - 1) {
-      this.sprite.x = this.colony.garden.width - 1;
-      this.turnRandomly();
-    }
-    if (this.sprite.y < 1) {
-      this.sprite.y = 1;
-      this.turnRandomly();
-    }
-    if (this.sprite.y > this.colony.garden.height - 1) {
-      this.sprite.y = this.colony.garden.height - 1;
+    if (
+      this.sprite.x < 1 ||
+      this.sprite.x > this.colony.garden.width - 1 ||
+      this.sprite.y < 1 ||
+      this.sprite.y > this.colony.garden.height - 1
+    ) {
+      this.sprite.x -= this.velocity.x;
+      this.sprite.y -= this.velocity.y;
       this.turnRandomly();
     }
   }
