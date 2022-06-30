@@ -1,5 +1,4 @@
 import { state } from "@/ui/state";
-import { Vec } from "@/utils/vector";
 import { FIELD_CELL_SIZE } from "./const";
 import type { Garden } from "./garden";
 
@@ -23,17 +22,8 @@ export class Field {
   }
 
   getIndex(x: number, y: number) {
-    return (
-      Math.floor(y / this.cellSize) * this.width + Math.floor(x / this.cellSize)
-    );
-  }
-
-  getCoords(index: number) {
-    const x = index % this.height;
-    return new Vec(
-      x * this.cellSize,
-      ((index - x) / this.height) * this.cellSize
-    );
+    // Fast integer division.
+    return ((y / this.cellSize) >> 0) * this.width + ((x / this.cellSize) >> 0);
   }
 
   getAt(x: number, y: number) {

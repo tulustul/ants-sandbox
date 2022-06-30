@@ -1,5 +1,5 @@
 import { getDistanceBetween } from "@/utils/distance";
-import { Vec } from "@/utils/vector";
+import { Velocity, Vec } from "@/utils/vector";
 import { Sprite } from "pixi.js";
 import type { Colony } from "./colony";
 import type { PheromoneField } from "./pheromone";
@@ -34,7 +34,7 @@ const properDirectionSampler: FieldSampler = {
 
 export class Ant {
   sprite: Sprite;
-  velocity: Vec;
+  velocity: Velocity;
   maxEnergy = 10 + (Math.random() - 0.5) * 1.6;
   energy = this.maxEnergy;
   mode: AntMode = AntMode.toFood;
@@ -84,7 +84,11 @@ export class Ant {
     y: number,
     public colony: Colony
   ) {
-    this.velocity = new Vec(0, this.type === AntType.worker ? 4 : 5);
+    this.velocity = new Velocity(
+      Math.random() * Math.PI * 2,
+      this.type === AntType.worker ? 4 : 5
+    );
+
     this.maxHealthPoints =
       this.type === AntType.worker ? 30 : 200 + 100 * (Math.random() - 0.5);
     this.healthPoints = this.maxHealthPoints;
@@ -103,8 +107,6 @@ export class Ant {
     this.sprite.tint = colony.color;
 
     colony.garden.antsContainer.addChild(this.sprite);
-
-    this.velocity.rotate(Math.random() * Math.PI * 2);
 
     if (this.type === AntType.worker) {
       this.pheromoneToFollow = colony.toFoodField;
@@ -138,163 +140,42 @@ export class Ant {
     this.energy -= 0.00004;
     this.pheromoneStrength *= 0.9997;
 
-    const antsField = this.colony.garden.antsField;
-
     if (this.energy <= 0) {
       this.die();
       this.colony.stats.starvedAnts++;
       return false;
     }
 
-    this.sprite.x += this.velocity.x;
-    this.sprite.y += this.velocity.y;
-    this.sprite.rotation = this.velocity.rotation() + Math.PI / 2;
+    this.updateSprite();
 
-    const x = Math.max(
-      1,
-      Math.min(this.colony.garden.width - 1, this.sprite.x)
-    );
-    const y = Math.max(
-      1,
-      Math.min(this.colony.garden.height - 1, this.sprite.y)
-    );
+    this.processMapBoundaries();
 
-    const antsFieldIndex = antsField.getIndex(x, y);
-    const rockField = this.colony.garden.rockField;
-    let fieldIndex = rockField.getIndex(x, y);
+    const [antsFieldIndex, fieldIndex] = this.getFieldsIndices();
 
-    /** Colision checking. */
-    if (rockField.data[fieldIndex] > 0) {
-      this.sprite.x -= this.velocity.x;
-      this.sprite.y -= this.velocity.y;
+    const newFieldIndex = this.processColisions(fieldIndex);
+    this.processRepelTimeout();
+    this.updateAntsField(newFieldIndex, antsFieldIndex);
+    this.processFightMechanic(newFieldIndex, antsFieldIndex);
 
-      const x = Math.max(
-        1,
-        Math.min(this.colony.garden.width - 1, this.sprite.x)
-      );
-      const y = Math.max(
-        1,
-        Math.min(this.colony.garden.height - 1, this.sprite.y)
-      );
-
-      fieldIndex = rockField.getIndex(x, y);
-
-      this.resolveColision(fieldIndex);
-      return true;
-    }
-
-    /** Repel timeout check. */
-    if (this.repelTicksLeft) {
-      this.repelTicksLeft--;
-      if (this.repelTicksLeft <= 0) {
-        this.enterToHome();
-      }
-    }
-
-    /** Map boundaries checking. */
-    if (this.sprite.x < 1) {
-      this.sprite.x = 1;
-      this.turnRandomly();
-    }
-    if (this.sprite.x > this.colony.garden.width - 1) {
-      this.sprite.x = this.colony.garden.width - 1;
-      this.turnRandomly();
-    }
-    if (this.sprite.y < 1) {
-      this.sprite.y = 1;
-      this.turnRandomly();
-    }
-    if (this.sprite.y > this.colony.garden.height - 1) {
-      this.sprite.y = this.colony.garden.height - 1;
-      this.turnRandomly();
-    }
-
-    /**
-     * Updating antsField with bitId.
-     * This is a mechanism of a fast enemy detection. Each colony has a bit flag (bitId) and the map is divided into cells (antsField). When the ant enters the cell, it sets the flag on the cell. When it leaves the cell, it removes it. When the ant sees a flag which doesn't match its colony, then there is an enemy nearby.
-     */
-    if (antsFieldIndex !== this.lastAntCellIndex) {
-      // Changing cell.
-      if (this.isInAntsMap) {
-        // Unregister from previous cell.
-        const ants = this.colony.garden.antsMap[this.lastAntCellIndex];
-        const index = ants.indexOf(this);
-        if (index !== -1) {
-          ants.splice(index, 1);
-        }
-        this.isInAntsMap = false;
-      }
-
-      if (this.updatedLastAntCell) {
-        // Remove bitId from last cell.
-        antsField.data[this.lastAntCellIndex] ^= this.colony.bitId;
-      }
-
-      // Check if flag has to be set.
-      if ((antsField.data[antsFieldIndex] & this.colony.bitId) === 0) {
-        antsField.data[antsFieldIndex] |= this.colony.bitId;
-        this.updatedLastAntCell = true;
-      } else {
-        this.updatedLastAntCell = false;
-      }
-
-      if (antsField.data[antsFieldIndex] !== this.colony.bitId) {
-        // There is an enemy nearby.
-        if (this.type === AntType.worker) {
-          // Workers should just flee.
-          this.enterToHomeSeeEnemy();
-          this.colony.enemyHereField.data[fieldIndex] =
-            this.toEnemyRepelMarkerStrength;
-        }
-      }
-      this.lastAntCellIndex = antsFieldIndex;
-    }
-
-    /** Processing fighting mechanics.  */
-    if (this.targetAnt) {
-      if (this.targetAnt.healthPoints > 0 && this.targetAnt.energy > 0) {
-        this.attackAnt(this.targetAnt);
-      } else {
-        this.targetAnt = null;
-      }
-    } else if (antsField.data[antsFieldIndex] !== this.colony.bitId) {
-      if (!this.isInAntsMap) {
-        // Add the ant to the list of ants in this cell. The soldiers use this list to query the closest enemy ant to attack. This is done only when the ant senses an enemy nearby for performance reasons.
-        this.colony.garden.antsMap[antsFieldIndex].push(this);
-        this.isInAntsMap = true;
-      }
-
-      if (this.type === AntType.soldier) {
-        if (this.colony.enemyHereField.data[fieldIndex]) {
-          this.repelToEnemy();
-          this.colony.enemyHereField.data[fieldIndex]--;
-        }
-        this.attackClosesAnt(antsFieldIndex);
-      }
-    }
-
-    /** Dropping pheromone trails. */
-    if (fieldIndex !== this.lastCellIndex) {
-      if (this.pheromoneToRepel) {
-        if (this.repelTicksLeft < this.maxRepelTicksLeft - this.repelTimeout) {
-          this.repelPheromone(
-            fieldIndex,
-            this.pheromoneToRepel,
-            this.repelStrength
-          );
-        }
-      }
-      if (this.pheromoneToDrop) {
-        this.dropPheromone(
-          fieldIndex,
-          this.pheromoneToDrop,
-          this.pheromoneStrength
-        );
-      }
-      this.lastCellIndex = fieldIndex;
+    if (newFieldIndex !== this.lastCellIndex) {
+      this.processDroppingPheromone(newFieldIndex);
     }
 
     return true;
+  }
+
+  getFieldsIndices() {
+    const [x, y] = [this.sprite.x, this.sprite.y];
+    return [
+      this.colony.garden.antsField.getIndex(x, y),
+      this.colony.garden.rockField.getIndex(x, y),
+    ];
+  }
+
+  updateSprite() {
+    this.sprite.x += this.velocity.x;
+    this.sprite.y += this.velocity.y;
+    this.sprite.rotation = this.velocity.rotation + Math.PI / 2;
   }
 
   attackClosesAnt(antsFieldindex: number) {
@@ -326,7 +207,7 @@ export class Ant {
     newVel.sub(new Vec(this.sprite.x, this.sprite.y));
     newVel.normalize();
     newVel.mulScalar(6);
-    this.velocity = newVel;
+    this.velocity = new Velocity(newVel.rotation(), newVel.length);
 
     const distance = getDistanceBetween(
       this.sprite.x,
@@ -403,7 +284,7 @@ export class Ant {
   resolveColision(index: number) {
     const rock = this.colony.garden.rockField;
     const rockData = rock.data;
-    const rot = this.velocity.rotation();
+    const rot = this.velocity.rotation;
     const halfPi = Math.PI / 2;
 
     if (rot < -halfPi) {
@@ -567,7 +448,7 @@ export class Ant {
   ): [number, number[]] {
     let maxValue = 0;
     const values: number[] = [];
-    const rot = this.velocity.rotation();
+    const rot = this.velocity.rotation;
     const [spriteX, spriteY] = [this.sprite.x, this.sprite.y];
 
     for (const angle of sampler.angleSamples) {
@@ -699,12 +580,6 @@ export class Ant {
     );
   }
 
-  turn() {
-    this.velocity.rotate(
-      (Math.random() - 0.5) / simulationSettings.antSeekRandomness
-    );
-  }
-
   turnStrongly(power: number) {
     this.velocity.rotate((Math.random() - 0.5) * power);
   }
@@ -712,13 +587,151 @@ export class Ant {
   die() {
     const corpse = new Corpse(this);
     this.colony.garden.corpses.push(corpse);
-
-    // const index = this.colony.garden.foodField.getIndex(
-    //   this.sprite.x,
-    //   this.sprite.y
-    // );
-    // this.colony.garden.foodField.data[index] += 10;
-
     this.destroy();
+  }
+
+  processMapBoundaries() {
+    if (this.sprite.x < 1) {
+      this.sprite.x = 1;
+      this.turnRandomly();
+    }
+    if (this.sprite.x > this.colony.garden.width - 1) {
+      this.sprite.x = this.colony.garden.width - 1;
+      this.turnRandomly();
+    }
+    if (this.sprite.y < 1) {
+      this.sprite.y = 1;
+      this.turnRandomly();
+    }
+    if (this.sprite.y > this.colony.garden.height - 1) {
+      this.sprite.y = this.colony.garden.height - 1;
+      this.turnRandomly();
+    }
+  }
+
+  processRepelTimeout() {
+    if (this.repelTicksLeft) {
+      this.repelTicksLeft--;
+      if (this.repelTicksLeft <= 0) {
+        this.enterToHome();
+      }
+    }
+  }
+
+  processDroppingPheromone(fieldIndex: number) {
+    if (this.pheromoneToRepel) {
+      if (this.repelTicksLeft < this.maxRepelTicksLeft - this.repelTimeout) {
+        this.repelPheromone(
+          fieldIndex,
+          this.pheromoneToRepel,
+          this.repelStrength
+        );
+      }
+    }
+    if (this.pheromoneToDrop) {
+      this.dropPheromone(
+        fieldIndex,
+        this.pheromoneToDrop,
+        this.pheromoneStrength
+      );
+    }
+    this.lastCellIndex = fieldIndex;
+  }
+
+  processFightMechanic(fieldIndex: number, antsFieldIndex: number) {
+    if (this.targetAnt) {
+      if (this.targetAnt.healthPoints > 0 && this.targetAnt.energy > 0) {
+        this.attackAnt(this.targetAnt);
+      } else {
+        this.targetAnt = null;
+      }
+      return;
+    }
+
+    if (
+      this.colony.garden.antsField.data[antsFieldIndex] !== this.colony.bitId
+    ) {
+      if (!this.isInAntsMap) {
+        // Add the ant to the list of ants in this cell. The soldiers use this list to query the closest enemy ant to attack. This is done only when the ant senses an enemy nearby for performance reasons.
+        this.colony.garden.antsMap[antsFieldIndex].push(this);
+        this.isInAntsMap = true;
+      }
+
+      if (this.type === AntType.soldier) {
+        if (this.colony.enemyHereField.data[fieldIndex]) {
+          this.repelToEnemy();
+          this.colony.enemyHereField.data[fieldIndex]--;
+        }
+        this.attackClosesAnt(antsFieldIndex);
+      }
+    }
+  }
+
+  /**
+   * Updating antsField with bitId.
+   * This is a mechanism of a fast enemy detection. Each colony has a bit flag (bitId) and the map is divided into cells (antsField). When the ant enters the cell, it sets the flag on the cell. When it leaves the cell, it removes it. When the ant sees a flag which doesn't match its colony, then there is an enemy nearby.
+   */
+  updateAntsField(fieldIndex: number, antsFieldIndex: number) {
+    const antsField = this.colony.garden.antsField;
+
+    if (antsFieldIndex !== this.lastAntCellIndex) {
+      // Changing cell.
+      if (this.isInAntsMap) {
+        // Unregister from previous cell.
+        const ants = this.colony.garden.antsMap[this.lastAntCellIndex];
+        const index = ants.indexOf(this);
+        if (index !== -1) {
+          ants.splice(index, 1);
+        }
+        this.isInAntsMap = false;
+      }
+
+      if (this.updatedLastAntCell) {
+        // Remove bitId from last cell.
+        antsField.data[this.lastAntCellIndex] ^= this.colony.bitId;
+      }
+
+      // Check if flag has to be set.
+      if ((antsField.data[antsFieldIndex] & this.colony.bitId) === 0) {
+        antsField.data[antsFieldIndex] |= this.colony.bitId;
+        this.updatedLastAntCell = true;
+      } else {
+        this.updatedLastAntCell = false;
+      }
+
+      if (antsField.data[antsFieldIndex] !== this.colony.bitId) {
+        // There is an enemy nearby.
+        if (this.type === AntType.worker) {
+          // Workers should just flee.
+          this.enterToHomeSeeEnemy();
+          this.colony.enemyHereField.data[fieldIndex] =
+            this.toEnemyRepelMarkerStrength;
+        }
+      }
+      this.lastAntCellIndex = antsFieldIndex;
+    }
+  }
+
+  processColisions(fieldIndex: number) {
+    const rockField = this.colony.garden.rockField;
+
+    if (rockField.data[fieldIndex] > 0) {
+      this.sprite.x -= this.velocity.x;
+      this.sprite.y -= this.velocity.y;
+
+      const x = Math.max(
+        1,
+        Math.min(this.colony.garden.width - 1, this.sprite.x)
+      );
+      const y = Math.max(
+        1,
+        Math.min(this.colony.garden.height - 1, this.sprite.y)
+      );
+
+      fieldIndex = rockField.getIndex(x, y);
+
+      this.resolveColision(fieldIndex);
+    }
+    return fieldIndex;
   }
 }

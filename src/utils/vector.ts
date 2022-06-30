@@ -1,3 +1,29 @@
+export class Velocity {
+  x!: number;
+  y!: number;
+  rotation!: number;
+
+  constructor(rotation: number, public length: number) {
+    this.rotateTo(rotation);
+  }
+
+  rotate(radians: number) {
+    radians += this.rotation;
+    if (radians >= Math.PI) {
+      radians = -Math.PI * 2 + radians;
+    } else if (radians < -Math.PI) {
+      radians = Math.PI * 2 + radians;
+    }
+    this.rotateTo(radians);
+  }
+
+  rotateTo(radians: number) {
+    this.x = -this.length * Math.sin(radians - Math.PI / 2);
+    this.y = this.length * Math.cos(radians - Math.PI / 2);
+    this.rotation = radians;
+  }
+}
+
 export class Vec {
   constructor(public x: number, public y: number) {}
 
