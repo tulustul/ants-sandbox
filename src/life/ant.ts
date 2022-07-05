@@ -3,15 +3,10 @@ import { Velocity, Vec } from "@/utils/vector";
 import { Sprite } from "pixi.js";
 import type { Colony } from "./colony";
 import type { PheromoneField } from "./pheromone";
-import {
-  getPheromoneSampler,
-  simulationSettings,
-  type FieldSampler,
-} from "./settings";
+import { simulationSettings, type FieldSampler } from "./settings";
 import { resources } from "@/canvas/resources";
 import { Corpse } from "./corpse";
 import { FIELD_CELL_SIZE } from "./const";
-import { getAnglesDiff } from "@/utils/rotation";
 
 export enum AntMode {
   toFood,
@@ -77,6 +72,9 @@ export class Ant {
   targetAnt: Ant | null = null;
 
   isInAntsMap = false;
+
+  // Needed to overcome an issue with soldiers trying to attack each other while being separated by a thin wall.
+  attackAfterRockColisionTimeout = 0;
 
   constructor(
     public type: AntType,
@@ -148,7 +146,7 @@ export class Ant {
 
     this.updateSprite();
 
-    this.processMapBoundaries();
+    this.processMapBoundaries(this.velocity.x, this.velocity.y);
 
     const [antsFieldIndex, fieldIndex] = this.getFieldsIndices();
 
@@ -237,6 +235,9 @@ export class Ant {
         this.sprite.y -= moveVec.y;
         return;
       }
+
+      // Don't teleport ant beyond map.
+      this.processMapBoundaries(moveVec.x, moveVec.y);
 
       if (Math.random() > 0.9) {
         this.turnStrongly(0.3);
@@ -594,15 +595,15 @@ export class Ant {
     this.destroy();
   }
 
-  processMapBoundaries() {
+  processMapBoundaries(moveX: number, moveY: number) {
     if (
       this.sprite.x < 1 ||
       this.sprite.x > this.colony.garden.width - 1 ||
       this.sprite.y < 1 ||
       this.sprite.y > this.colony.garden.height - 1
     ) {
-      this.sprite.x -= this.velocity.x;
-      this.sprite.y -= this.velocity.y;
+      this.sprite.x -= moveX;
+      this.sprite.y -= moveY;
       this.turnRandomly();
     }
   }
@@ -656,6 +657,10 @@ export class Ant {
       }
 
       if (this.type === AntType.soldier) {
+        if (this.attackAfterRockColisionTimeout > 0) {
+          this.attackAfterRockColisionTimeout--;
+          return;
+        }
         if (this.colony.enemyHereField.data[fieldIndex]) {
           this.repelToEnemy();
           this.colony.enemyHereField.data[fieldIndex]--;
@@ -729,6 +734,10 @@ export class Ant {
       fieldIndex = rockField.getIndex(x, y);
 
       this.resolveColision(fieldIndex);
+
+      if (this.type === AntType.soldier) {
+        this.attackAfterRockColisionTimeout = 10;
+      }
     }
     return fieldIndex;
   }
