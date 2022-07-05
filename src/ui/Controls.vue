@@ -27,7 +27,7 @@ useIntervalFn(() => {
 
   const targetSimTime = 15;
   const simTime = simulationStats.simulationTime;
-  if (state.simulationSettings.maxSpeed) {
+  if (state.simulationSettings.maxSpeed && !state.simulationSettings.pause) {
     let speed = (state.simulationSettings.speed * targetSimTime) / simTime;
     state.simulationSettings.speed = Number(speed.toFixed(1));
   }

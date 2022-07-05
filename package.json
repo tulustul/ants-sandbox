@@ -1,6 +1,6 @@
 {
   "name": "ants-sandbox",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "start": "vite --host",
     "build": "vue-tsc --noEmit && vite build --base=/ants-sandbox",

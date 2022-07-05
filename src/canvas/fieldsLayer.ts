@@ -1,6 +1,6 @@
 import type { Garden } from "@/life/garden";
 import type { Colony } from "@/life/colony";
-import { visualSettings } from "@/life/settings";
+import { simulationSettings, visualSettings } from "@/life/settings";
 import { state } from "@/ui/state";
 import { BLEND_MODES } from "pixi.js";
 import type { Canvas } from "./canvas";
@@ -139,7 +139,7 @@ export class FieldsLayer {
     update: boolean
   ) {
     fieldGraphics.sprite.visible = isEnabled;
-    if (isEnabled && update) {
+    if (isEnabled && (update || simulationSettings)) {
       {
         fieldGraphics.texture.update();
       }

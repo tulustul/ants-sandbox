@@ -7,6 +7,7 @@ import Visuals from "./visuals/Visuals.vue";
 import Colonies from "./colonies/Colonies.vue";
 import NewGarden from "./NewGarden.vue";
 import Charts from "./Charts.vue";
+import About from "./About.vue";
 </script>
 
 <template>
@@ -32,6 +33,9 @@ import Charts from "./Charts.vue";
       </Tab>
       <Tab label="Visuals">
         <Visuals />
+      </Tab>
+      <Tab label="About">
+        <About />
       </Tab>
     </Tabs>
   </div>
