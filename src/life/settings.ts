@@ -78,6 +78,8 @@ export const simulationSettings = getFromStorage(
   defaultSimulationSettings
 );
 
+simulationSettings.speed = Math.min(simulationSettings.speed, 100);
+
 export const gardenSettings = getFromStorage(
   "gardenSettings",
   defaultGardenSettings
