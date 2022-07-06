@@ -1,30 +1,32 @@
 <script setup lang="ts">
 import { inject, watch } from "vue";
-import type { Simulation } from "../simulation";
-import { state } from "../state";
-import { Checkbox } from "../forms";
-import { transferFields } from "@/utils/object";
+
 import {
   defaultVisualSettings,
   type PheromoneVisualSettings,
-} from "@/life/settings";
+} from "@/simulation";
+import type { FieldGraphics } from "@/canvas";
+import { transferFields } from "@/utils";
+import type { Simulation } from "@/ui/simulation";
+import { state } from "@/ui/state";
+import { Checkbox } from "@/ui/forms";
+
 import PheromoneSettings from "./PheromoneSettings.vue";
-import type { FieldGraphics } from "@/canvas/fieldGraphics";
 
 const simulation = inject<Simulation>("simulation")!;
 
-const fieldsLayer = simulation.garden.fieldsLayer;
+const pheromonesLayer = simulation.garden.pheromonesLayer;
 
 watch(state.visualSettings.toFood, (toFood) => {
-  applySettings(fieldsLayer.toFood, fieldsLayer.toFoodMax, toFood);
+  applySettings(pheromonesLayer.toFood, pheromonesLayer.toFoodMax, toFood);
 });
 
 watch(state.visualSettings.toHome, (toHome) => {
-  applySettings(fieldsLayer.toHome, fieldsLayer.toHomeMax, toHome);
+  applySettings(pheromonesLayer.toHome, pheromonesLayer.toHomeMax, toHome);
 });
 
 watch(state.visualSettings.toEnemy, (toEnemy) => {
-  applySettings(fieldsLayer.toEnemy, fieldsLayer.toEnemyMax, toEnemy);
+  applySettings(pheromonesLayer.toEnemy, pheromonesLayer.toEnemyMax, toEnemy);
 });
 
 function applySettings(

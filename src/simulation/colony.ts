@@ -1,40 +1,45 @@
+import { Application, Graphics } from "pixi.js";
+
 import type { DumpedColony } from "@/types";
 import { state } from "@/ui/state";
-import { desaturateColor, getNextColor } from "@/utils/colors";
-import { Application, Graphics } from "pixi.js";
+import { desaturateColor, getNextColor } from "@/utils";
+
 import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
 import { PheromoneField } from "./pheromone";
-import { gardenSettings, simulationSettings } from "./settings";
+import { gardenSettings } from "./settings";
 
-export type ColonyStats = {
-  food: number;
-  totalFood: number;
+const initialColonyStats = {
+  food: 0,
+  totalFood: 0,
 
-  livingAnts: number;
-  totalAnts: number;
-  starvedAnts: number;
-  killedAnts: number;
-  killedEnemyAnts: number;
+  livingAnts: 0,
+  totalAnts: 0,
+  starvedAnts: 0,
+  killedAnts: 0,
+  killedEnemyAnts: 0,
 
-  workers: number;
-  soldiers: number;
+  workers: 0,
+  soldiers: 0,
 };
 
-export type ColonyHistory = {
-  food: number[];
-  totalFood: number[];
+// Used for charts.
+const initialColonyHistory = {
+  food: [] as number[],
+  totalFood: [] as number[],
 
-  livingAnts: number[];
-  totalAnts: number[];
-  starvedAnts: number[];
-  killedAnts: number[];
-  killedEnemyAnts: number[];
-  warCoef: number[];
+  livingAnts: [] as number[],
+  totalAnts: [] as number[],
+  starvedAnts: [] as number[],
+  killedAnts: [] as number[],
+  killedEnemyAnts: [] as number[],
+  warCoef: [] as number[],
 
-  workers: number[];
-  soldiers: number[];
+  workers: [] as number[],
+  soldiers: [] as number[],
 };
+
+export type ColonyHistory = typeof initialColonyHistory;
 
 function getFirstUnusedBitId(colonies: Colony[]): number {
   let id = 1;
@@ -54,44 +59,24 @@ function getFirstUnusedBitId(colonies: Colony[]): number {
   return 0;
 }
 
+const ANT_COST = 100;
+
 export class Colony {
   static lastId = 1;
 
   id = Colony.lastId++;
+  bitId: number;
+
   sprite: Graphics;
+
   ants: Ant[] = [];
   startingAnts = 1;
   antsToRelease = 1;
-  antCost = 20;
 
-  stats: ColonyStats = {
-    food: 0,
-    totalFood: 0,
-
-    livingAnts: 0,
-    totalAnts: 0,
-    starvedAnts: 0,
-    killedAnts: 0,
-    killedEnemyAnts: 0,
-
-    workers: 0,
-    soldiers: 0,
-  };
-
-  history: ColonyHistory = {
-    food: [],
-    totalFood: [],
-
-    livingAnts: [],
-    totalAnts: [],
-    starvedAnts: [],
-    killedAnts: [],
-    killedEnemyAnts: [],
-    warCoef: [],
-
-    workers: [],
-    soldiers: [],
-  };
+  stats = { ...initialColonyStats };
+  history = JSON.parse(
+    JSON.stringify(initialColonyHistory)
+  ) as typeof initialColonyHistory;
 
   antsLimit = gardenSettings.colonySizeLimit;
   lastAntBirth = 0;
@@ -103,7 +88,6 @@ export class Colony {
 
   color: number;
   corpseColor: number;
-  bitId: number;
 
   toFoodField: PheromoneField;
   toHomeField: PheromoneField;
@@ -148,7 +132,7 @@ export class Colony {
   }
 
   setStartingAntsNumber(numberOfAnts: number) {
-    this.stats.food = numberOfAnts * this.antCost + numberOfAnts * 10;
+    this.stats.food = numberOfAnts * ANT_COST + numberOfAnts * 10;
     this.stats.totalFood = this.stats.food;
     this.antsToRelease = numberOfAnts;
   }
@@ -212,17 +196,7 @@ export class Colony {
   }
 
   tick(totalTicks: number) {
-    if (this.antsToRelease > 0) {
-      this.releaseRandomAnt();
-      this.antsToRelease--;
-    } else if (
-      this.ants.length < this.antsLimit &&
-      this.stats.food > this.ants.length * 10 &&
-      this.lastAntBirth + 1 / simulationSettings.antsBirthRate < totalTicks
-    ) {
-      this.releaseRandomAnt();
-      this.lastAntBirth = totalTicks;
-    }
+    this.processAntBirth(totalTicks);
 
     this.warCoef *= 0.9995 + 0.0005 * this.aggresiveness;
 
@@ -230,13 +204,38 @@ export class Colony {
       this.storeStats();
     }
 
+    this.sprite.visible = !!this.ants.length;
     if (this.ants.length === 0) {
-      this.sprite.visible = false;
       this.stats.food = 0;
     } else {
       if (Math.random() > 0.99) {
         this.refreshNestPheromones();
       }
+    }
+  }
+
+  processAntBirth(totalTicks: number) {
+    if (this.antsToRelease > 0) {
+      this.releaseRandomAnt();
+      this.antsToRelease--;
+      return;
+    }
+    if (this.ants.length >= this.antsLimit) {
+      return;
+    }
+
+    const requiredFood = this.ants.length * 10;
+    const foodSurplus = this.stats.food - requiredFood;
+    if (foodSurplus <= 0) {
+      return;
+    }
+
+    const birthTimeout = Math.round(
+      50 / (foodSurplus / (this.stats.food + requiredFood)) ** 3
+    );
+    if (this.lastAntBirth + birthTimeout < totalTicks) {
+      this.releaseRandomAnt();
+      this.lastAntBirth = totalTicks;
     }
   }
 

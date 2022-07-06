@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import type { PropType } from "vue";
 
-import type { Colony, ColonyHistory } from "@/life/colony";
+import type { Colony, ColonyHistory } from "@/simulation";
 import { Chart, ChartLine } from "@/ui/widgets";
+
 import Tooltip from "./Tooltip.vue";
 
 defineProps({

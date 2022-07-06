@@ -1,7 +1,6 @@
+import { FIELD_CELL_SIZE, Garden } from "@/simulation";
 import type { Canvas } from "@/canvas";
 import { state } from "@/ui/state";
-import { FIELD_CELL_SIZE } from "./const";
-import { Garden } from "./garden";
 
 export async function makeGardenFromImage(canvas: Canvas, file: File) {
   const image = await getImageData(file);

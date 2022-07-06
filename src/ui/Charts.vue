@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
-
 import { useIntervalFn } from "@vueuse/core";
+
+import type { Colony } from "@/simulation";
 import type { Simulation } from "./simulation";
 import { RadioGroup, RadioOption } from "./forms";
 import ColoniesChart from "./widgets/ColoniesChart.vue";
-import type { Colony } from "@/life/colony";
 
 const simulation = inject<Simulation>("simulation")!;
 

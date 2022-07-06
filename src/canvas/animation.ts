@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export abstract class Animation {
   private progress = 0;
   private diff: number;
@@ -20,12 +23,6 @@ export abstract class Animation {
   }
 
   protected abstract ease(t: number): number;
-}
-
-export class AnimationEaseOutQuad extends Animation {
-  protected ease(t: number) {
-    return t * (2 - t);
-  }
 }
 
 export class AnimationEaseOutCubic extends Animation {

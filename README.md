@@ -15,7 +15,8 @@ The app is available [here](https://tulustul.github.io/ants-sandbox/).
 
 ## To build:
 
-`npm run build`
+* `npm run atlas` - generates texture atlas
+* `npm run build` - builds app
 
 ## To lint:
 

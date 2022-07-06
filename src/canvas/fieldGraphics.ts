@@ -1,7 +1,10 @@
-import { FIELD_CELL_SIZE } from "@/life/const";
-import type { Garden } from "@/life/garden";
-import type { PheromoneVisualSettings } from "@/life/settings";
-import { Texture, Sprite, FORMATS, TYPES, Filter, Container } from "pixi.js";
+import { Texture, Sprite, FORMATS, TYPES, Filter } from "pixi.js";
+
+import {
+  FIELD_CELL_SIZE,
+  type Garden,
+  type PheromoneVisualSettings,
+} from "@/simulation";
 
 const fShaderSrc = `
 varying vec2 vTextureCoord;
@@ -19,6 +22,9 @@ void main(void){
 }
 `;
 
+/**
+ * Renders fields (pheromones, food, rocks) as a single sprite.
+ */
 export class FieldGraphics {
   texture: Texture;
   sprite: Sprite;

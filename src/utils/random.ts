@@ -1,7 +1,3 @@
-export function getRandomInRange(min: number, max: number) {
-  return min + Math.random() * (max - min);
-}
-
 export function gaussRandom(mean: number, variance: number) {
   return (
     mean +

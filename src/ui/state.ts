@@ -6,9 +6,9 @@ import {
   gardenSettings,
   visualSettings,
   type FieldSampler,
-} from "@/life/settings";
-import { simulationStats } from "@/life/stats";
-import { transferFields } from "@/utils/object";
+} from "@/simulation/settings";
+import { simulationStats } from "@/ui/stats";
+import { transferFields } from "@/utils";
 
 export type DrawingType = "food" | "rock" | null;
 

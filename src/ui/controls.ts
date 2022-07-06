@@ -1,5 +1,5 @@
-import type { Field } from "@/life/field";
-import { processRock } from "@/life/rock";
+import type { Field } from "@/simulation";
+import { beautifyRocks } from "@/generator";
 import type { Simulation } from "./simulation";
 import { state } from "./state";
 
@@ -54,7 +54,7 @@ export class Controls {
     }
     this.pointers.delete(event.pointerId);
     if (this.wasDrawingRock) {
-      processRock(this.garden.rockField);
+      beautifyRocks(this.garden.rockField);
       this.garden.gardenLayer.rockGraphics.texture.update();
       this.wasDrawingRock = false;
     }

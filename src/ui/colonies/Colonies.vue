@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { inject, ref, watch } from "vue";
+
+import type { Colony } from "@/simulation";
 import type { Simulation } from "@/ui/simulation";
-import type { Colony } from "@/life/colony";
-import ColonyItem from "./ColonyItem.vue";
 import { state } from "@/ui/state";
+
+import ColonyItem from "./ColonyItem.vue";
 import ColonyForm from "./ColonyForm.vue";
 
 const simulation = inject<Simulation>("simulation")!;

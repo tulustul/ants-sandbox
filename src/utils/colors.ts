@@ -1,4 +1,4 @@
-import type { Garden } from "@/life/garden";
+import type { Garden } from "@/simulation";
 
 const COLORS = [
   0xbd7836, // brown

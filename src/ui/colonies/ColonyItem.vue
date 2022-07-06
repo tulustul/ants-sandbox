@@ -2,8 +2,8 @@
 import { ref } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
-import { Colony } from "@/life/colony";
-import { colorToHexString } from "@/utils/colors";
+import { Colony } from "@/simulation";
+import { colorToHexString } from "@/utils";
 import { state } from "@/ui/state";
 
 const props = defineProps({

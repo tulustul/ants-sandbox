@@ -1,12 +1,18 @@
-import type { Garden } from "@/life/garden";
-import type { Colony } from "@/life/colony";
-import { simulationSettings, visualSettings } from "@/life/settings";
+import {
+  type Garden,
+  type Colony,
+  simulationSettings,
+  visualSettings,
+} from "@/simulation";
 import { state } from "@/ui/state";
-import { BLEND_MODES } from "pixi.js";
+
 import type { Canvas } from "./canvas";
 import { FieldGraphics } from "./fieldGraphics";
 
-export class FieldsLayer {
+/**
+ * Renders pheromones of a tracked colony.
+ */
+export class PheromonesLayer {
   toFood: FieldGraphics;
   toFoodMax: FieldGraphics;
 
@@ -16,8 +22,9 @@ export class FieldsLayer {
   toEnemy: FieldGraphics;
   toEnemyMax: FieldGraphics;
 
-  colony: Colony | null = null;
+  trackedColony: Colony | null = null;
 
+  // Used to update only one texture per frame for better perfomance.
   updatePhase = 0;
 
   constructor(public garden: Garden, public canvas: Canvas) {
@@ -52,11 +59,6 @@ export class FieldsLayer {
       visualSettings.toEnemy
     );
 
-    this.toFood.sprite.blendMode = BLEND_MODES.ADD;
-    this.toFoodMax.sprite.blendMode = BLEND_MODES.ADD;
-    this.toHome.sprite.blendMode = BLEND_MODES.ADD;
-    this.toHomeMax.sprite.blendMode = BLEND_MODES.ADD;
-
     this.toFood.sprite.alpha = visualSettings.toFood.density;
     this.toHome.sprite.alpha = visualSettings.toHome.density;
     this.toEnemy.sprite.alpha = visualSettings.toEnemy.density;
@@ -78,20 +80,22 @@ export class FieldsLayer {
       return;
     }
 
-    if (this.colony?.id !== state.trackedColony) {
-      this.colony =
+    if (this.trackedColony?.id !== state.trackedColony) {
+      this.trackedColony =
         this.garden.colonies.find(
           (colony) => colony.id === state.trackedColony
         ) ?? null;
-      if (this.colony) {
-        this.toFood.bindData(this.colony.toFoodField.data);
-        this.toFoodMax.bindData(this.colony.toFoodField.maxValues.data);
+      if (this.trackedColony) {
+        this.toFood.bindData(this.trackedColony.toFoodField.data);
+        this.toFoodMax.bindData(this.trackedColony.toFoodField.maxValues.data);
 
-        this.toHome.bindData(this.colony.toHomeField.data);
-        this.toHomeMax.bindData(this.colony.toHomeField.maxValues.data);
+        this.toHome.bindData(this.trackedColony.toHomeField.data);
+        this.toHomeMax.bindData(this.trackedColony.toHomeField.maxValues.data);
 
-        this.toEnemy.bindData(this.colony.toEnemyField.data);
-        this.toEnemyMax.bindData(this.colony.toEnemyField.maxValues.data);
+        this.toEnemy.bindData(this.trackedColony.toEnemyField.data);
+        this.toEnemyMax.bindData(
+          this.trackedColony.toEnemyField.maxValues.data
+        );
       }
     }
 
@@ -139,10 +143,9 @@ export class FieldsLayer {
     update: boolean
   ) {
     fieldGraphics.sprite.visible = isEnabled;
-    if (isEnabled && (update || simulationSettings)) {
-      {
-        fieldGraphics.texture.update();
-      }
+    if (isEnabled && (update || simulationSettings.speed > 10)) {
+      // If speed is > 10 the updates are too slow and the animation becomes jittery. Let's always update all textures in such case.
+      fieldGraphics.texture.update();
     }
   }
 
@@ -153,16 +156,5 @@ export class FieldsLayer {
     this.toHomeMax?.destroy();
     this.toEnemy?.destroy();
     this.toEnemyMax?.destroy();
-  }
-
-  get graphics() {
-    return [
-      this.toFood,
-      this.toFoodMax,
-      this.toHome,
-      this.toHomeMax,
-      this.toEnemy,
-      this.toEnemyMax,
-    ];
   }
 }

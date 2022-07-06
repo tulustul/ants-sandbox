@@ -3,7 +3,7 @@ import { Field } from "./field";
 export class PheromoneField extends Field {
   maxValues = new Field(this.garden);
 
-  repelPheromone(index: number, strength: number) {
+  dispersePheromone(index: number, strength: number) {
     this.maxValues.data[index] = this.maxValues.data[index] / strength;
     this.data[index] = this.data[index] / strength;
 

@@ -1,10 +1,16 @@
 {
   "name": "ants-sandbox",
+  "description": "A simple and completely useless simulation of ants colony for web browsers.",
+  "author": {
+    "name": "Mateusz Tomczyk",
+    "email": "mateusz.tomczyk.tul@gmail.com"
+  },
   "version": "0.1.0",
   "scripts": {
     "start": "vite --host",
     "build": "vue-tsc --noEmit && vite build --base=/ants-sandbox",
-    "lint": "vue-tsc --noEmit && eslint . --ext .vue,.ts --fix --ignore-path .gitignore"
+    "lint": "vue-tsc --noEmit && eslint . --ext .vue,.ts --fix --ignore-path .gitignore",
+    "atlas": "./build-atlas.js"
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.6",

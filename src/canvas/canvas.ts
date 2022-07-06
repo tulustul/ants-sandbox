@@ -1,4 +1,5 @@
 import { Application } from "pixi.js";
+
 import { Camera } from ".";
 
 export class Canvas {

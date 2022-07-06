@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PropType } from "vue";
-import { Slider } from "../forms";
-import type { PheromoneVisualSettings } from "@/life/settings";
-import FieldGroup from "../forms/FieldGroup.vue";
+
+import type { PheromoneVisualSettings } from "@/simulation";
+import { Slider, FieldGroup } from "@/ui/forms";
 
 defineProps({
   label: {

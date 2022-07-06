@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { inject, ref } from "vue";
+
 import type { Simulation } from "./simulation";
-import { state } from "./state";
-import { defaultGardenSettings } from "@/life/settings";
-import { transferFields } from "@/utils/object";
+import { defaultGardenSettings } from "@/simulation";
+import { transferFields } from "@/utils";
 import {
   RadioGroup,
   RadioOption,
@@ -11,6 +11,7 @@ import {
   Checkbox,
   Slider,
 } from "@/ui/forms";
+import { state } from "./state";
 
 const simulation = inject<Simulation>("simulation")!;
 

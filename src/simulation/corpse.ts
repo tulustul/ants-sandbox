@@ -1,5 +1,7 @@
-import { resources } from "@/canvas/resources";
 import { Sprite } from "pixi.js";
+
+import { resources } from "@/canvas";
+
 import { Ant, AntType } from "./ant";
 import type { Garden } from "./garden";
 

@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { simulationStats } from "@/life/stats";
+import { ref } from "vue";
+import { useIntervalFn } from "@vueuse/core";
 import {
   PauseIcon,
   PlayIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/vue/solid";
-import { useIntervalFn } from "@vueuse/core";
-import { ref } from "vue";
+
+import { simulationStats } from "@/ui/stats";
 
 import Slider from "./forms/Slider.vue";
 import { state } from "./state";
@@ -29,7 +30,7 @@ useIntervalFn(() => {
   const simTime = simulationStats.simulationTime;
   if (state.simulationSettings.maxSpeed && !state.simulationSettings.pause) {
     let speed = (state.simulationSettings.speed * targetSimTime) / simTime;
-    state.simulationSettings.speed = Number(speed.toFixed(1));
+    state.simulationSettings.speed = Math.min(Number(speed.toFixed(1)), 500);
   }
 }, 100);
 

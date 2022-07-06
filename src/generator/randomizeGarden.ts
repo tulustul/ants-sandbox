@@ -1,8 +1,8 @@
-import type { Field } from "./field";
-import type { Garden } from "./garden";
+import type { Field, Garden } from "@/simulation";
+
 import { ComplexNoise } from "./noise";
 
-export type GardenGeneratorOptions = {
+type GardenGeneratorOptions = {
   garden: Garden;
 
   foodEnabled: boolean;
@@ -18,7 +18,7 @@ export type GardenGeneratorOptions = {
   verticalMirror: boolean;
 };
 
-export function fillGarden(options: GardenGeneratorOptions) {
+export function randomizeGarden(options: GardenGeneratorOptions) {
   let rockNoise: ComplexNoise | null = null;
   if (options.rockEnabled) {
     rockNoise = generateRocks(options);
@@ -42,11 +42,7 @@ export function fillGarden(options: GardenGeneratorOptions) {
 function generateRocks(options: GardenGeneratorOptions) {
   const rock = options.garden.rockField;
 
-  const rockScales = [
-    // [0.00262 / options.rockScale, 3],
-    // [0.0062 / options.rockScale, 2],
-    [0.0177 / options.rockScale, 1],
-  ];
+  const rockScales = [[0.0177 / options.rockScale, 1]];
   const rockNoise = new ComplexNoise(rockScales, Math.random().toString());
 
   for (let x = 0; x < rock.width; x++) {

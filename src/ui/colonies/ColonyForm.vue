@@ -2,10 +2,10 @@
 import { inject, ref, watch } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
+import { AntType } from "@/simulation";
 import { state } from "@/ui/state";
 import { FieldGroup, Slider } from "@/ui/forms";
 import { vExplode } from "@/ui/widgets";
-import { AntType } from "@/life/ant";
 import type { Simulation } from "@/ui/simulation";
 import { Tooltip } from "@/ui/widgets";
 

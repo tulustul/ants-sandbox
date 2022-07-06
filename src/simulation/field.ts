@@ -1,4 +1,5 @@
 import { state } from "@/ui/state";
+
 import { FIELD_CELL_SIZE } from "./const";
 import type { Garden } from "./garden";
 
@@ -146,5 +147,42 @@ export class Field {
       return 0;
     }
     return this.emptySegmentsSizeMap.get(segment) ?? 0;
+  }
+}
+
+export class FoodField extends Field {
+  protected _draw(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    value: number
+  ): void {
+    for (let x = minX; x < maxX; x++) {
+      for (let y = minY; y < maxY; y++) {
+        const index = y * this.width + x;
+        if (!this.garden.rockField.data[index]) {
+          this.data[index] = value;
+        }
+      }
+    }
+  }
+}
+
+export class RockField extends Field {
+  protected _draw(
+    minX: number,
+    maxX: number,
+    minY: number,
+    maxY: number,
+    value: number
+  ): void {
+    for (let x = minX; x < maxX; x++) {
+      for (let y = minY; y < maxY; y++) {
+        const index = y * this.width + x;
+        this.data[index] = value;
+        this.garden.foodField.data[index] = 0;
+      }
+    }
   }
 }

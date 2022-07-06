@@ -1,5 +1,7 @@
-import type { Garden } from "@/life/garden";
 import { Container } from "pixi.js";
+
+import type { Garden } from "@/simulation";
+
 import type { Canvas } from "./canvas";
 import { FieldGraphics } from "./fieldGraphics";
 

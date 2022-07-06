@@ -1,17 +1,14 @@
-import type { Canvas } from "@/canvas";
-import { FieldGraphics } from "@/canvas/fieldGraphics";
-import { FieldsLayer } from "@/canvas/fieldsLayer";
-import { getDistanceBetween } from "@/utils/distance";
 import { Container, Graphics } from "pixi.js";
+
+import { type Canvas, PheromonesLayer, GardenLayer } from "@/canvas";
+import { getDistanceBetween } from "@/utils";
+
 import type { Ant } from "./ant";
 import { FIELD_CELL_SIZE } from "./const";
 import type { Corpse } from "./corpse";
-import { Field } from "./field";
-import { FoodField } from "./food";
+import { Field, FoodField, RockField } from "./field";
 import { Colony } from "./colony";
 import { gardenSettings, simulationSettings, visualSettings } from "./settings";
-import { GardenLayer } from "@/canvas/gardenLayer";
-import { RockField } from "./rock";
 
 export class Garden {
   colonies: Colony[] = [];
@@ -30,7 +27,7 @@ export class Garden {
   fieldWidth: number;
   fieldHeight: number;
 
-  fieldsLayer: FieldsLayer;
+  pheromonesLayer: PheromonesLayer;
   gardenLayer: GardenLayer;
 
   antsMap: Ant[][] = [];
@@ -65,7 +62,7 @@ export class Garden {
       this.antsMap[i] = [];
     }
 
-    this.fieldsLayer = new FieldsLayer(this, canvas);
+    this.pheromonesLayer = new PheromonesLayer(this, canvas);
     this.gardenLayer = new GardenLayer(this, canvas);
 
     canvas.app.stage.addChild(this.corpsesContainer);
@@ -146,7 +143,7 @@ export class Garden {
       this.corpses[0].destroy();
     }
 
-    this.fieldsLayer.destroy();
+    this.pheromonesLayer.destroy();
     this.gardenLayer.destroy();
   }
 

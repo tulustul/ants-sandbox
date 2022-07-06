@@ -1,4 +1,5 @@
 import type { Canvas } from "@/canvas";
+
 import { Animation, AnimationEaseOutCubic } from "./animation";
 
 export interface Transform {

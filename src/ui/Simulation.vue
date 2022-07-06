@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Slider from "./forms/Slider.vue";
 import { state } from "./state";
-import { defaultSimulationSettings } from "@/life/settings";
-import { transferFields } from "@/utils/object";
+import { defaultSimulationSettings } from "@/simulation";
+import { transferFields } from "@/utils";
 import FieldGroup from "./forms/FieldGroup.vue";
 
 function reset() {
@@ -94,5 +94,3 @@ function reset() {
 
   <button class="btn" :onclick="reset">Reset to defaults</button>
 </template>
-
-<style></style>

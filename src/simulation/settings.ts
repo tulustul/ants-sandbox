@@ -1,4 +1,4 @@
-import { matchObjectStructure, transferFields } from "@/utils/object";
+import { matchObjectStructure, transferFields } from "@/utils";
 
 export type FieldSampler = {
   angle: number;
@@ -13,7 +13,6 @@ export const defaultSimulationSettings = {
   maxSpeed: false,
   pheromoneDissipation: 1.009,
   antSeekRandomness: 3,
-  antsBirthRate: 1 / 60,
   performance: {
     antBrainTickTimeout: 3,
     antGradientCheckTickTimeout: 180,

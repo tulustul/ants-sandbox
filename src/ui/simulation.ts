@@ -1,19 +1,20 @@
+import JSZip from "jszip";
+
 import type { Canvas } from "@/canvas";
-import { makeGardenFromImage } from "@/life/fromImage";
-import { Garden } from "@/life/garden";
-import { fillGarden } from "@/life/gardenGenerator";
-import { Colony } from "@/life/colony";
-import { processRock } from "@/life/rock";
-import { simulationSettings } from "@/life/settings";
-import { simulationStats } from "@/life/stats";
+import {
+  makeGardenFromImage,
+  randomizeGarden,
+  beautifyRocks,
+} from "@/generator";
+import { Garden, Colony, simulationSettings } from "@/simulation";
+import { simulationStats } from "@/ui/stats";
 import type { DumpedSimulation } from "@/types";
 import {
   compressFloat32Array,
   decompressFloat32Array,
-} from "@/utils/compression";
-import JSZip from "jszip";
+  gaussRandomWithBoundaries,
+} from "@/utils";
 import { state } from "./state";
-import { gaussRandomWithBoundaries } from "@/utils/random";
 
 export class Simulation {
   garden!: Garden;
@@ -49,7 +50,7 @@ export class Simulation {
         state.trackedColony = this.garden.colonies[0].id;
       }
 
-      processRock(this.garden.rockField);
+      beautifyRocks(this.garden.rockField);
     }
 
     this.centerCamera();
@@ -65,7 +66,7 @@ export class Simulation {
     const randomFood = settings.randomizeFood;
     const randomRocks = settings.randomizeRocks;
 
-    fillGarden({
+    randomizeGarden({
       garden: this.garden,
 
       foodEnabled: settings.foodEnabled,
@@ -149,7 +150,7 @@ export class Simulation {
     decompressFloat32Array(data.garden.foodField, this.garden.foodField.data);
     decompressFloat32Array(data.garden.rockField, this.garden.rockField.data);
 
-    processRock(this.garden.rockField);
+    beautifyRocks(this.garden.rockField);
 
     for (const colonyData of data.colonies) {
       const colony = new Colony(

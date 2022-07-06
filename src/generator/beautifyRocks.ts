@@ -1,6 +1,9 @@
-import { Field } from "./field";
+import type { Field } from "@/simulation";
 
-export function processRock(rock: Field) {
+/**
+ * Makes the rocks more appealing by drawing 3d bumps on it.
+ */
+export function beautifyRocks(rock: Field) {
   const segmentation = new Uint32Array(rock.data.length);
   let segmentId = 1;
 
@@ -8,13 +11,13 @@ export function processRock(rock: Field) {
     for (let y = 0; y < rock.height; y++) {
       const index = y * rock.width + x;
       if (rock.data[index] !== 0 && segmentation[index] === 0) {
-        segmentRock(rock, segmentation, segmentId++, index);
+        beautifyRock(rock, segmentation, segmentId++, index);
       }
     }
   }
 }
 
-function segmentRock(
+function beautifyRock(
   rock: Field,
   segmentation: Uint32Array,
   segmentId: number,
@@ -24,6 +27,7 @@ function segmentRock(
   const edges = new Set<number>();
   let toProcess = new Set([index]);
 
+  // First, segment the rock by marking all cells that belong to a single rock and find its edge.
   while (toProcess.size) {
     const newToProcess = new Set<number>();
     for (const index of toProcess) {
@@ -72,6 +76,7 @@ function segmentRock(
     toProcess = newToProcess;
   }
 
+  // Having the rock edge, make the rock brighter the closer to the rock's center the cell is.
   let depth = 0;
   visited.clear();
   toProcess = edges;
@@ -102,24 +107,7 @@ function segmentRock(
 
   for (const index of visited) {
     const val = depthData[index] / depth / 2 + 0.3;
+    // Apply some randomness to get a nice, grainy texture.
     rock.data[index] = val + Math.random() * 0.07;
-  }
-}
-
-export class RockField extends Field {
-  protected _draw(
-    minX: number,
-    maxX: number,
-    minY: number,
-    maxY: number,
-    value: number
-  ): void {
-    for (let x = minX; x < maxX; x++) {
-      for (let y = minY; y < maxY; y++) {
-        const index = y * this.width + x;
-        this.data[index] = value;
-        this.garden.foodField.data[index] = 0;
-      }
-    }
   }
 }

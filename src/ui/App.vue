@@ -57,7 +57,7 @@ async function onReady() {
     simulation.tick();
     state.simulationStats.simulationTime = simMonitor.measure(simT0);
 
-    simulation.garden.fieldsLayer.tick();
+    simulation.garden.pheromonesLayer.tick();
     canvas.camera.update();
   });
 
