@@ -48,7 +48,7 @@ export class Ant {
 
   mode: AntMode;
 
-  maxEnergy = 10 + (Math.random() - 0.5) * 1.6;
+  maxEnergy = 1 + (Math.random() - 0.5) * 1.6;
   energy = this.maxEnergy;
 
   healthPoints: number;

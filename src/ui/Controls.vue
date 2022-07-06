@@ -44,7 +44,7 @@ function toggleMaxSpeed() {
 </script>
 
 <template>
-  <div>
+  <div v-if="!state.tourMode">
     <div v-if="lowPerformance" class="performance-warning">Low perfomance</div>
 
     <div class="controls">

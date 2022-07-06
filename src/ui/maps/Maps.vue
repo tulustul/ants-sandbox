@@ -46,8 +46,8 @@ async function dump() {
   </div>
 
   <Accordion>
-    <AccordionItem label="Tutorial">
-      <MapsList :source="predefinedMaps.tutorial" />
+    <AccordionItem label="Tour">
+      <MapsList :source="predefinedMaps.tour" />
     </AccordionItem>
 
     <AccordionItem label="Mazes">

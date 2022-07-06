@@ -29,6 +29,7 @@ const _state = {
   movingColony: false,
   imageFile: null as File | null,
   loadedMap: null as string | null,
+  tourMode: false,
 };
 
 export const state = reactive(_state);

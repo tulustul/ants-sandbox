@@ -5,7 +5,7 @@ import { TrashIcon } from "@heroicons/vue/solid";
 import { Modal, Spinner } from "@/ui/widgets";
 import type { Simulation } from "../simulation";
 import { state } from "../state";
-import { saveMapsNames } from "./utils";
+import { loadMap, saveMapsNames } from "./utils";
 
 const props = defineProps({
   maps: Array as PropType<string[]>,
@@ -30,15 +30,7 @@ if (!maps && props.source) {
 async function load(name: string) {
   mapLoading.value = name;
   try {
-    let data: string;
-    if (props.source) {
-      const response = await fetch(props.source[name]);
-      data = await response.text();
-    } else {
-      data = localStorage.getItem(`map:${name}`)!;
-    }
-    state.loadedMap = name;
-    await simulation.load(data);
+    await loadMap(simulation, name, props.source);
   } finally {
     mapLoading.value = null;
   }
@@ -106,8 +98,8 @@ function cancelRemove() {
     </template>
 
     <template v-slot:actions>
-      <button class="btn btn-danger" @click="remove">Delete</button>
       <button class="btn" @click="cancelRemove">Cancel</button>
+      <button class="btn btn-danger" @click="remove">Delete</button>
     </template>
   </Modal>
 </template>

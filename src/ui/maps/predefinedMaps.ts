@@ -1,7 +1,10 @@
 const prefix = location.host.includes("github.io") ? "/ants-sandbox" : "";
 
 export default {
-  tutorial: {},
+  tour: {
+    "1: Single ant": `${prefix}/maps/tour/tour_1.map`,
+    "2: Maze": `${prefix}/maps/tour/tour_2.map`,
+  },
   mazes: {
     "Maze 1": `${prefix}/maps/mazes/maze_1.map`,
     "Maze 2": `${prefix}/maps/mazes/maze_2.map`,

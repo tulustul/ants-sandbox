@@ -4,16 +4,22 @@ import Menu from "./Menu.vue";
 import Controls from "./Controls.vue";
 import Zoom from "./Zoom.vue";
 import DrawButton from "./DrawButton.vue";
+import Tour from "./Tour.vue";
+import { state } from "./state";
 </script>
 
 <template>
+  <Tour />
   <Stats class="top-right" />
-  <div class="top-left">
-    <Menu />
-    <DrawButton />
-  </div>
   <Controls class="bottom-left" />
-  <Zoom class="bottom-right" />
+
+  <template v-if="!state.tourMode">
+    <div class="top-left">
+      <Menu />
+      <DrawButton />
+    </div>
+    <Zoom class="bottom-right" />
+  </template>
 </template>
 
 <style>
