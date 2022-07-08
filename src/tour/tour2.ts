@@ -1,9 +1,9 @@
-import type { Garden } from "@/simulation";
+import type { Simulation } from "@/ui/simulation";
 import { state } from "@/ui/state";
 import type { TourStep } from "./types";
 import { resetSettings } from "./utils";
 
-export function tour2(garden: Garden): TourStep[] {
+export function tour2(simulation: Simulation): TourStep[] {
   resetSettings();
 
   return [

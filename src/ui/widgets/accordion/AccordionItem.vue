@@ -46,6 +46,7 @@ function toggleItem() {
 .item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 18px;
   padding: 3px 10px;
   background-color: #444;
@@ -58,7 +59,7 @@ function toggleItem() {
   background-color: #555;
 }
 .item svg {
-  max-width: 25px;
+  width: 25px;
 }
 .content {
   background-color: rgba(0, 0, 0, 0.1);

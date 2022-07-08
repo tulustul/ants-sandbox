@@ -80,6 +80,9 @@ strong {
   justify-content: center;
   padding: 4px;
 }
+.btn-icon svg {
+  width: 100%;
+}
 
 .short {
   max-width: 60px;
