@@ -2,7 +2,7 @@
 import { inject, ref, watch } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 
-import { AntType } from "@/simulation";
+import { AntType, getAntMaxEnergy } from "@/simulation";
 import { state } from "@/ui/state";
 import { FieldGroup, Slider } from "@/ui/forms";
 import { vExplode } from "@/ui/widgets";
@@ -16,19 +16,32 @@ let colony = getTrackedColony()!;
 const stats = ref(colony.stats);
 const warCoef = ref(colony.warCoef);
 
-const freedom = ref(colony.freedom);
 const aggresiveness = ref(colony.aggresiveness);
+const antsMeanEnergy = ref(colony.antsMeanEnergy);
+const freedom = ref(colony.freedom);
 
 watch(state, () => {
   if (!state.trackedColony) {
     return;
   }
   colony = getTrackedColony()!;
-  freedom.value = colony.freedom;
   aggresiveness.value = colony.aggresiveness;
+  antsMeanEnergy.value = colony.antsMeanEnergy;
+  freedom.value = colony.freedom;
 });
-watch(freedom, () => (colony.freedom = freedom.value));
+
 watch(aggresiveness, () => (colony.aggresiveness = aggresiveness.value));
+
+watch(antsMeanEnergy, () => {
+  colony.antsMeanEnergy = antsMeanEnergy.value;
+  for (const ant of colony.ants) {
+    ant.maxEnergy = getAntMaxEnergy(colony);
+    ant.energy = Math.min(ant.energy, ant.maxEnergy);
+    ant.energyReturnThreshold = ant.maxEnergy / 2;
+  }
+});
+
+watch(freedom, () => (colony.freedom = freedom.value));
 
 useIntervalFn(() => {
   stats.value = { ...colony.stats };
@@ -180,6 +193,23 @@ function move() {
         :max="1"
         :step="0.01"
         tooltip="The higher the value the faster war coefficient increases and the slower it decays."
+      />
+      <Slider
+        label="Mean ant energy"
+        v-model="antsMeanEnergy"
+        :min="0.1"
+        :max="10"
+        :step="0.1"
+        tooltip="Determines how much time the ants can spend without revisiting the nest. The ants die out of starvation if their energy falls to zero. Higher values are required for solving complex mazes or bigger maps."
+      />
+      <Slider
+        label="Freedom"
+        v-model="freedom"
+        :min="0.001"
+        :max="0.1"
+        :step="0.001"
+        :default="0.003"
+        tooltip="The lower, the more chance the ant will choose the best possible path. Better don't touch it but might have to be adjusted for some scenarios."
       />
     </FieldGroup>
 

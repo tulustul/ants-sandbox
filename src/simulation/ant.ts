@@ -1,6 +1,6 @@
 import { Sprite } from "pixi.js";
 
-import { getDistanceBetween, Velocity, Vec } from "@/utils";
+import { getDistanceBetween, Velocity, Vec, gaussRandom } from "@/utils";
 import { resources } from "@/canvas";
 
 import type { Colony } from "./colony";
@@ -42,14 +42,22 @@ const SOLDIER_DISPERSE_TIMEOUT = 500;
 const SOLDER_DISPERSE_STRENGTH = 1.5;
 const TO_ENEMY_DISPERSE_MARKER_STRENGTH = 200;
 
+export function getAntMaxEnergy(colony: Colony) {
+  return (
+    colony.antsMeanEnergy + ((Math.random() - 0.5) * colony.antsMeanEnergy) / 5
+  );
+}
+
 export class Ant {
   sprite: Sprite;
   velocity: Velocity;
 
   mode: AntMode;
 
-  maxEnergy = 1 + (Math.random() - 0.5) * 1.6;
-  energy = this.maxEnergy;
+  maxEnergy: number;
+  energy: number;
+  // The level of energy at which the ant will decide to return to nest. If there is no food in the nest the level will be lowered.
+  energyReturnThreshold: number;
 
   healthPoints: number;
   maxHealthPoints: number;
@@ -90,6 +98,10 @@ export class Ant {
       Math.random() * Math.PI * 2,
       this.type === AntType.worker ? 4 : 5
     );
+
+    this.maxEnergy = getAntMaxEnergy(this.colony);
+    this.energy = this.maxEnergy;
+    this.energyReturnThreshold = this.maxEnergy / 2;
 
     this.maxHealthPoints =
       this.type === AntType.worker ? 30 : 200 + 100 * (Math.random() - 0.5);
@@ -446,7 +458,6 @@ export class Ant {
     }
 
     const freedom = 1 / this.colony.freedom;
-
     let sumOfValues = 0;
     for (let i = 0; i < values.length; i++) {
       values[i] = (values[i] / maxValue) ** freedom;
@@ -515,7 +526,7 @@ export class Ant {
   }
 
   toFood() {
-    if (this.energy <= this.maxEnergy * 0.6) {
+    if (this.energy <= this.energyReturnThreshold) {
       this.enterToHome();
       return;
     }
@@ -547,10 +558,11 @@ export class Ant {
   }
 
   toEnemy() {
-    if (this.energy <= this.maxEnergy * 0.6) {
+    if (this.energy <= this.energyReturnThreshold) {
       this.enterToHome();
       return;
     }
+
     if (
       this.disperseTicksLeft &&
       this.disperseTicksLeft < this.maxDisperseTicksLeft - this.disperseTimeout
@@ -568,7 +580,7 @@ export class Ant {
     }
     this.colony.visit(this);
     if (this.energy < this.maxEnergy) {
-      return;
+      this.energyReturnThreshold /= 2;
     }
     if (this.type === AntType.worker) {
       this.enterToFood();

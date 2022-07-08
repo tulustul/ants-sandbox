@@ -12,6 +12,7 @@ export type DumpedColony = {
   antsLimit: number;
   food: number;
   aggresiveness: number;
+  antsMeanEnergy: number;
   freedom: number;
 };
 

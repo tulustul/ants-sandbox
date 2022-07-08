@@ -83,6 +83,7 @@ export class Colony {
   warCoef = 0;
   cumulatedAggresiveness = 0;
 
+  antsMeanEnergy = 3;
   freedom = 0.003;
   aggresiveness = Math.random();
 
@@ -161,8 +162,9 @@ export class Colony {
 
   visit(ant: Ant) {
     if (this.stats.food > 0) {
-      this.stats.food -= ant.maxEnergy - ant.energy;
+      this.stats.food -= (ant.maxEnergy - ant.energy) * 10;
       ant.energy = ant.maxEnergy;
+      ant.energyReturnThreshold = ant.maxEnergy / 2;
     }
     if (ant.pheromoneToDrop === this.toEnemyField) {
       this.warCoef +=
@@ -282,6 +284,7 @@ export class Colony {
       antsToRelease: Math.max(this.antsToRelease, this.ants.length),
       food: this.stats.food,
       aggresiveness: this.aggresiveness,
+      antsMeanEnergy: this.antsMeanEnergy,
       freedom: this.freedom,
     };
   }

@@ -162,7 +162,8 @@ export class Simulation {
       colony.antsToRelease = colonyData.antsToRelease ?? 1;
       colony.antsLimit = colonyData.antsLimit ?? 1;
       colony.aggresiveness = colonyData.aggresiveness ?? 0;
-      colony.freedom = colonyData.freedom ?? 0.1;
+      colony.antsMeanEnergy = colonyData.antsMeanEnergy ?? 3;
+      colony.freedom = colonyData.freedom ?? 0.003;
       colony.stats.food = colonyData.food ?? 0;
       colony.stats.totalFood = colonyData.food ?? 0;
       this.garden.colonies.push(colony);
