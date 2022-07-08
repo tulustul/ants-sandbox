@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import FieldGroup from "./forms/FieldGroup.vue";
+import { state } from "./state";
 import Crypto from "./widgets/Crypto.vue";
+
+function showWelcome() {
+  state.tourMode = true;
+  state.isWelcomed = false;
+}
 </script>
 
 <template>
@@ -50,7 +56,9 @@ import Crypto from "./widgets/Crypto.vue";
 
     <div class="bottom">
       <span class="version">v0.1.0</span>
-      <button class="btn btn-primary">Show welcome screen</button>
+      <button class="btn btn-primary" @click="showWelcome">
+        Show welcome screen
+      </button>
     </div>
   </div>
 </template>

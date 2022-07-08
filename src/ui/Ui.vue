@@ -6,6 +6,7 @@ import Zoom from "./Zoom.vue";
 import DrawButton from "./DrawButton.vue";
 import Tour from "./Tour.vue";
 import { state } from "./state";
+import Welcome from "./Welcome.vue";
 </script>
 
 <template>
@@ -20,6 +21,8 @@ import { state } from "./state";
     </div>
     <Zoom class="bottom-right" />
   </template>
+
+  <Welcome v-if="!state.isWelcomed" />
 </template>
 
 <style>

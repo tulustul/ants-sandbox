@@ -6,7 +6,19 @@ const props = defineProps({
   header: String,
   modelValue: {
     type: Boolean,
-    required: true,
+    default: null,
+  },
+  allowClose: {
+    type: Boolean,
+    default: true,
+  },
+  showHeader: {
+    type: Boolean,
+    default: true,
+  },
+  showActions: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -22,22 +34,24 @@ function onKeyDown(event: KeyboardEvent) {
 }
 
 function close() {
-  emit("update:modelValue", false);
+  if (props.allowClose) {
+    emit("update:modelValue", false);
+  }
 }
 </script>
 
 <template>
-  <Teleport v-if="modelValue" to="body">
+  <Teleport v-if="modelValue || modelValue === null" to="body">
     <div class="backdrop" @click.self="close">
       <div class="modal">
-        <div class="header">
+        <div v-if="showHeader" class="header">
           <span>{{ header }}</span>
-          <XIcon class="close-icon" @click="close" />
+          <XIcon v-if="allowClose" class="close-icon" @click="close" />
         </div>
         <div class="content">
           <slot name="content" />
         </div>
-        <div class="actions">
+        <div v-if="showActions" class="actions">
           <slot name="actions" />
         </div>
       </div></div

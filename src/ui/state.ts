@@ -30,6 +30,7 @@ const _state = {
   imageFile: null as File | null,
   loadedMap: null as string | null,
   tourMode: false,
+  isWelcomed: false,
 };
 
 export const state = reactive(_state);
@@ -37,6 +38,9 @@ export const state = reactive(_state);
 storeSettings("simulationSettings", state.simulationSettings);
 storeSettings("gardenSettings", state.gardenSettings);
 storeSettings("visualSettings", state.visualSettings);
+
+_state.isWelcomed = !!localStorage.getItem("isWelcomed");
+_state.tourMode = !_state.isWelcomed;
 
 syncFieldSampler(state.simulationSettings.performance.pheromoneSampler);
 syncFieldSampler(state.simulationSettings.performance.preciseFieldSampler);
@@ -53,5 +57,9 @@ function syncFieldSampler(sampler: FieldSampler) {
 }
 
 function storeSettings(key: string, data: any) {
-  watch(data, () => localStorage.setItem(key, JSON.stringify(data)));
+  watch(data, () => {
+    if (!state.tourMode) {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+  });
 }
