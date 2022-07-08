@@ -12,8 +12,8 @@ export function initTracking() {
 
   (window as any).dataLayer = (window as any).dataLayer || [];
 
-  function gtag() {
-    (window as any).dataLayer.push(arguments);
+  function gtag(...args: any[]) {
+    (window as any).dataLayer.push(args);
   }
   (gtag as any)("js", new Date());
 
