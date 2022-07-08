@@ -143,7 +143,7 @@ export class PheromonesLayer {
     update: boolean
   ) {
     fieldGraphics.sprite.visible = isEnabled;
-    if (isEnabled && (update || simulationSettings.speed > 10)) {
+    if (isEnabled && (update || simulationSettings.speed > 5)) {
       // If speed is > 10 the updates are too slow and the animation becomes jittery. Let's always update all textures in such case.
       fieldGraphics.texture.update();
     }
