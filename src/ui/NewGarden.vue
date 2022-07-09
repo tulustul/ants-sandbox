@@ -46,7 +46,8 @@ function onImageChange(event: Event) {
       Red channel - rock.<br />
       Green channel - food.<br />
       <br />
-      Maximum resolution - 500x500px
+      There is no validation on image size but keep it modest i.e. below
+      1000x1000px
     </p>
   </FieldGroup>
 
@@ -111,6 +112,7 @@ function onImageChange(event: Event) {
 
     <Checkbox
       label="Randomize food"
+      v-if="state.gardenSettings.type === 'random'"
       v-model="state.gardenSettings.randomizeFood"
     />
 
@@ -159,6 +161,7 @@ function onImageChange(event: Event) {
 
     <Checkbox
       label="Randomize rocks"
+      v-if="state.gardenSettings.type === 'random'"
       v-model="state.gardenSettings.randomizeRocks"
     />
 

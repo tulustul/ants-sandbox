@@ -1,4 +1,5 @@
 import type { Canvas } from "@/canvas";
+import type { Garden } from "@/simulation";
 
 import { Animation, AnimationEaseOutCubic } from "./animation";
 
@@ -127,5 +128,13 @@ export class Camera {
     }
 
     this.updateProjectionMatrix();
+  }
+
+  fitToGarden(garden: Garden) {
+    const widthScale = window.innerWidth / garden.width;
+    const heightScale = window.innerHeight / garden.height;
+    this.transform.scale = Math.min(widthScale, heightScale) * 0.95;
+    this.centerAt(garden.width / 2, garden.height / 2);
+    this.targetScale = this.transform.scale;
   }
 }

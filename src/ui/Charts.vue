@@ -60,6 +60,7 @@ let tab = ref("domestic");
       label="War coefficient"
       field="warCoef"
       :yAxisPrecision="3"
+      tooltip="Increases when the ant that saw an enemy visits the nest. Higher values increase the chance of a soldier being born instead of a normal worker. Takes values between 0 and 1."
     />
   </template>
 

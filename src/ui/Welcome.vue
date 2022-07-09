@@ -37,7 +37,7 @@ function hideWelcome() {
       <div class="actions">
         <button class="btn btn-primary" @click="startTour">Take a tour</button>
 
-        <button class="btn" @click="skipTour">Skip tour</button>
+        <button class="btn btn-secondary" @click="skipTour">Skip tour</button>
       </div>
     </template>
   </Modal>
@@ -46,6 +46,7 @@ function hideWelcome() {
 <style scoped>
 h1 {
   text-align: center;
+  border-bottom: 5px solid #486042;
 }
 p {
   margin: 20px 0;

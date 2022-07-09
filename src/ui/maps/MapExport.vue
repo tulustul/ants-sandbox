@@ -45,13 +45,13 @@ async function copyToClipboard() {
     </template>
 
     <template v-slot:actions>
+      <button class="btn" @click="exportModalVisible = false">Close</button>
       <div v-if="isCopied" class="success" @click="() => (isCopied = false)">
         Copied
       </div>
       <button v-else class="btn btn-primary" @click="copyToClipboard">
         Copy
       </button>
-      <button class="btn" @click="exportModalVisible = false">Close</button>
     </template>
   </Modal>
 </template>

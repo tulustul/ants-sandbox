@@ -49,9 +49,9 @@ function close() {
     </template>
 
     <template v-slot:actions>
+      <button class="btn" @click="close">Cancel</button>
       <Spinner v-if="waiting" />
       <button v-else class="btn btn-primary" @click="importMap">Import</button>
-      <button class="btn" @click="close">Cancel</button>
     </template>
   </Modal>
 </template>

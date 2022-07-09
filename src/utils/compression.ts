@@ -28,6 +28,9 @@ export function compressFloat32Array(
     lastValue = v;
     reps = 1;
   }
+  result.push(lastValue);
+  result.push(reps);
+
   return result;
 }
 

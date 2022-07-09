@@ -3,6 +3,11 @@ import { state } from "@/ui/state";
 import { FIELD_CELL_SIZE } from "./const";
 import type { Garden } from "./garden";
 
+export type DrawOptions = {
+  ignoreMirroring?: boolean;
+  smooth?: boolean;
+};
+
 export class Field {
   data: Float32Array;
   width: number;
@@ -40,53 +45,59 @@ export class Field {
     atY: number,
     radius: number,
     value: number,
-    ignoreMirroring = false
+    options: DrawOptions = {}
   ) {
     atX = Math.floor(atX / this.cellSize);
     atY = Math.floor(atY / this.cellSize);
-    const halfRadius = radius / 2;
 
-    const minX = Math.round(atX - halfRadius);
-    const maxX = minX + radius;
+    this._draw(atX, atY, radius, value, options);
 
-    const minY = Math.round(atY - halfRadius);
-    const maxY = minY + radius;
-
-    this._draw(minX, maxX, minY, maxY, value);
-
-    if (ignoreMirroring) {
+    if (options.ignoreMirroring) {
       return;
     }
 
     if (state.drawing.horizontalMirror) {
-      this._draw(this.width - maxX, this.width - minX, minY, maxY, value);
+      this._draw(this.width - atX, atY, radius, value, options);
     }
     if (state.drawing.verticalMirror) {
-      this._draw(minX, maxX, this.height - maxY, this.height - minY, value);
+      this._draw(atX, this.height - atY, radius, value, options);
     }
     if (state.drawing.horizontalMirror && state.drawing.verticalMirror) {
-      this._draw(
-        this.width - maxX,
-        this.width - minX,
-        this.height - maxY,
-        this.height - minY,
-        value
-      );
+      this._draw(this.width - atX, this.height - atY, radius, value, options);
     }
   }
 
-  protected _draw(
-    minX: number,
-    maxX: number,
-    minY: number,
-    maxY: number,
-    value: number
+  private _draw(
+    atX: number,
+    atY: number,
+    diameter: number,
+    value: number,
+    options: DrawOptions
   ) {
+    const radius = diameter / 2;
+
+    const minX = Math.round(atX - radius);
+    const maxX = minX + diameter;
+
+    const minY = Math.round(atY - radius);
+    const maxY = minY + diameter;
+
     for (let x = minX; x < maxX; x++) {
       for (let y = minY; y < maxY; y++) {
-        this.data[y * this.width + x] = value;
+        const distance = Math.sqrt((atX - x) ** 2 + (atY - y) ** 2);
+        if (distance <= radius) {
+          const index = y * this.width + x;
+          const drawValue = options.smooth
+            ? value + value * (radius + 1 - distance)
+            : value;
+          this.drawPixel(index, drawValue);
+        }
       }
     }
+  }
+
+  protected drawPixel(index: number, value: number) {
+    this.data[index] = value;
   }
 
   preprocessEmptyAreas() {
@@ -151,38 +162,18 @@ export class Field {
 }
 
 export class FoodField extends Field {
-  protected _draw(
-    minX: number,
-    maxX: number,
-    minY: number,
-    maxY: number,
-    value: number
-  ): void {
-    for (let x = minX; x < maxX; x++) {
-      for (let y = minY; y < maxY; y++) {
-        const index = y * this.width + x;
-        if (!this.garden.rockField.data[index]) {
-          this.data[index] = value;
-        }
-      }
+  protected drawPixel(index: number, value: number) {
+    if (!this.garden.rockField.data[index]) {
+      this.data[index] = value;
     }
   }
 }
 
 export class RockField extends Field {
-  protected _draw(
-    minX: number,
-    maxX: number,
-    minY: number,
-    maxY: number,
-    value: number
-  ): void {
-    for (let x = minX; x < maxX; x++) {
-      for (let y = minY; y < maxY; y++) {
-        const index = y * this.width + x;
-        this.data[index] = value;
-        this.garden.foodField.data[index] = 0;
-      }
+  protected drawPixel(index: number, value: number) {
+    this.data[index] = value;
+    if (value) {
+      this.garden.foodField.data[index] = 0;
     }
   }
 }

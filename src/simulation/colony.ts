@@ -242,13 +242,10 @@ export class Colony {
   }
 
   refreshNestPheromones() {
-    this.toHomeField.maxValues.draw(
-      this.sprite.x,
-      this.sprite.y,
-      3,
-      1000000,
-      true
-    );
+    this.toHomeField.maxValues.draw(this.sprite.x, this.sprite.y, 5, 2, {
+      ignoreMirroring: true,
+      smooth: true,
+    });
   }
 
   onAntDied(ant: Ant) {

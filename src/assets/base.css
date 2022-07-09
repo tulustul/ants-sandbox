@@ -63,6 +63,14 @@ strong {
   --field-color-hover: var(--field-primary-color-hover);
 }
 
+.btn-secondary {
+  --field-color: transparent;
+  color: grey;
+}
+.btn-secondary:hover {
+  color: white;
+}
+
 .btn-danger {
   --field-color: var(--field-danger-color);
   --field-color-hover: var(--field-danger-color-hover);

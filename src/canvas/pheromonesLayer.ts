@@ -5,6 +5,7 @@ import {
   visualSettings,
 } from "@/simulation";
 import { state } from "@/ui/state";
+import { BLEND_MODES } from "pixi.js";
 
 import type { Canvas } from "./canvas";
 import { FieldGraphics } from "./fieldGraphics";
@@ -35,7 +36,7 @@ export class PheromonesLayer {
     );
     this.toFoodMax = new FieldGraphics(
       this.garden,
-      [255, 255, 0],
+      [0, 200, 0],
       visualSettings.toFood
     );
     this.toHome = new FieldGraphics(
@@ -45,7 +46,7 @@ export class PheromonesLayer {
     );
     this.toHomeMax = new FieldGraphics(
       this.garden,
-      [0, 0, 255],
+      [0, 0, 200],
       visualSettings.toHome
     );
     this.toEnemy = new FieldGraphics(

@@ -46,6 +46,9 @@ export class Controls {
     if (state.movingColony) {
       this.moveColony(event);
     }
+    if (state.drawing.type && event.buttons === 2) {
+      this.draw(event.clientX, event.clientY);
+    }
   }
 
   onPointerUp(event: PointerEvent) {
@@ -87,7 +90,7 @@ export class Controls {
   }
 
   onKeyDown(event: KeyboardEvent) {
-    if (event.code === "Space") {
+    if (event.code === "Space" && !state.tourMode) {
       state.simulationSettings.pause = !state.simulationSettings.pause;
     }
   }

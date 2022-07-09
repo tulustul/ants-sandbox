@@ -53,7 +53,9 @@ export class Simulation {
       beautifyRocks(this.garden.rockField);
     }
 
-    this.centerCamera();
+    this.canvas.camera.fitToGarden(this.garden);
+
+    this.totalTicks = 0;
   }
 
   restart() {
@@ -171,15 +173,8 @@ export class Simulation {
 
     state.trackedColony = this.garden.colonies[0].id;
 
-    this.centerCamera();
-  }
+    this.canvas.camera.fitToGarden(this.garden);
 
-  centerCamera() {
-    const camera = this.canvas.camera;
-    const widthScale = window.innerWidth / this.garden.width;
-    const heightScale = window.innerHeight / this.garden.height;
-    camera.transform.scale = Math.min(widthScale, heightScale) * 0.95;
-    camera.centerAt(this.garden.width / 2, this.garden.height / 2);
-    camera.targetScale = camera.transform.scale;
+    this.totalTicks = 0;
   }
 }

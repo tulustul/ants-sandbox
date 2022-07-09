@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 
 import type { TourStep } from "@/tour/types";
 import mapScripts from "./maps/mapScripts";
@@ -12,8 +12,17 @@ const simulation = inject<Simulation>("simulation")!;
 
 const steps = ref<TourStep[]>([]);
 const currentStep = ref<TourStep | null>(null);
+const isNextStepBtnVisible = ref(true);
 
 const isAbortModalVisible = ref(false);
+
+onMounted(() => {
+  simulation.canvas.app.ticker.add(tick);
+});
+
+onUnmounted(() => {
+  simulation.canvas.app.ticker.remove(tick);
+});
 
 watch(
   () => state.loadedMap,
@@ -58,6 +67,18 @@ function abort() {
   currentStep.value = null;
   resetSettings();
 }
+
+function tick() {
+  isNextStepBtnVisible.value = true;
+  if (currentStep.value?.tickCallback) {
+    const tickResult = currentStep.value.tickCallback();
+    if (tickResult === "hideNextBtn") {
+      isNextStepBtnVisible.value = false;
+    } else if (tickResult === "goToNextStep") {
+      nextStep();
+    }
+  }
+}
 </script>
 
 <template>
@@ -66,8 +87,14 @@ function abort() {
       {{ currentStep.description }}
     </p>
     <div class="actions">
-      <button class="btn" @click="askAbort">Abort tour</button>
-      <button class="btn btn-primary" @click="nextStep">Next</button>
+      <button class="btn btn-secondary" @click="askAbort">Abort tour</button>
+      <button
+        v-if="isNextStepBtnVisible"
+        class="btn btn-primary"
+        @click="nextStep"
+      >
+        Next
+      </button>
     </div>
   </div>
 
@@ -86,22 +113,28 @@ function abort() {
 <style scoped>
 .tour-modal {
   position: absolute;
-  max-width: 250px;
-  min-width: 250px;
+  max-width: 350px;
+  min-width: 350px;
   top: 0;
   left: 0;
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
   border-radius: 0 0 10px 0;
   border: var(--border-width) solid var(--border-color);
   border-left: 0;
   border-top: 0;
   box-shadow: 0 0 5px 0 #000000;
-  font-size: 14px;
+  font-size: 18px;
+  z-index: 10;
 }
 .actions {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 10px;
+}
+.btn-primary {
+  padding: 15px 30px;
+  font-size: 20px;
 }
 </style>
