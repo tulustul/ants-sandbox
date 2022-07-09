@@ -49,8 +49,9 @@ export function tour2(simulation: Simulation): TourStep[] {
       description: "...",
       tickCallback: () => {
         const foodField = simulation.garden.foodField;
-        const index = 8 * foodField.width + (foodField.width - 12);
-        if (foodField.data[index] === 0) {
+        const index1 = 8 * foodField.width + (foodField.width - 12);
+        const index2 = 19 * foodField.width + (foodField.width - 4);
+        if (foodField.data[index1] === 0 && foodField.data[index2] === 0) {
           state.simulationSettings.speed = 1;
           state.simulationSettings.pause = true;
           return "goToNextStep";
@@ -74,7 +75,7 @@ export function tour2(simulation: Simulation): TourStep[] {
     {
       description: `Let's see it in action.`,
       nextCallback: () => {
-        pauseAt = simulation.totalTicks + 4000;
+        pauseAt = simulation.totalTicks + 3000;
         state.simulationSettings.pause = false;
         state.simulationSettings.speed = 5;
       },
@@ -86,6 +87,7 @@ export function tour2(simulation: Simulation): TourStep[] {
           state.simulationSettings.pause = true;
           return "goToNextStep";
         }
+        return "hideNextBtn";
       },
     },
     {

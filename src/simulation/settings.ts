@@ -94,9 +94,9 @@ export const visualSettings = getFromStorage(
 );
 
 function getFromStorage<T>(key: string, default_: T): T {
-  const settings = JSON.parse(localStorage.getItem(key) ?? "null") ?? {
-    ...default_,
-  };
+  const settings = JSON.parse(
+    localStorage.getItem(key) ?? JSON.stringify(default_)
+  );
 
   if (!matchObjectStructure(settings, default_)) {
     transferFields(settings, default_);

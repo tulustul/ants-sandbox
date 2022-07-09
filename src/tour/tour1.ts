@@ -7,8 +7,6 @@ import { loadTourMap, resetSettings, trackFirstAnt } from "./utils";
 export function tour1(simulation: Simulation): TourStep[] {
   resetSettings();
 
-  state.visualSettings.toHome.intensity = 0.5;
-  state.visualSettings.toFood.intensity = 0.7;
   state.simulationSettings.performance.antBrainTickTimeout = 3;
   state.simulationSettings.performance.antGradientCheckTickTimeout = 3000;
   state.simulationSettings.performance.pheromoneSampler = getPheromoneSampler(
@@ -140,19 +138,16 @@ export function tour1(simulation: Simulation): TourStep[] {
       description: "Let's speed up the time even more.",
       nextCallback: () => {
         state.simulationSettings.maxSpeed = true;
+        pauseAt = simulation.totalTicks + 20_000;
       },
     },
     {
       description: "Now, that's more spectacular than a single ant. Isn't it?",
       tickCallback: () => {
-        if (simulation.totalTicks > 85_000) {
+        if (simulation.totalTicks >= pauseAt) {
           return "goToNextStep";
         }
         return "hideNextBtn";
-      },
-      nextCallback: () => {
-        state.simulationSettings.maxSpeed = false;
-        state.simulationSettings.speed = 1;
       },
     },
     {

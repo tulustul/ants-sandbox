@@ -46,13 +46,22 @@ syncFieldSampler(state.simulationSettings.performance.pheromoneSampler);
 syncFieldSampler(state.simulationSettings.performance.preciseFieldSampler);
 
 function syncFieldSampler(sampler: FieldSampler) {
+  let updating = false;
   watch(sampler, () => {
+    if (updating) {
+      // Prevent recursion.
+      return;
+    }
+    updating = true;
     const newSampler = getPheromoneSampler(
       sampler.angle,
       sampler.angleSamplesCount,
       sampler.distanceSamplesCount
     );
     transferFields(sampler, newSampler);
+    setTimeout(() => {
+      updating = false;
+    });
   });
 }
 

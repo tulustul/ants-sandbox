@@ -29,7 +29,7 @@ export function tour4(simulation: Simulation): TourStep[] {
       description: "...",
       tickCallback: () => {
         const colony = simulation.garden.colonies[0];
-        if (colony.stats.soldiers >= 3) {
+        if (colony.stats.soldiers >= 1) {
           state.simulationSettings.speed = 1;
           simulation.canvas.camera.transform.scale = 1.5;
           trackFirstSoldier(colony);
