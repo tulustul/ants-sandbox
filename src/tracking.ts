@@ -12,10 +12,11 @@ export function initTracking() {
 
   (window as any).dataLayer = (window as any).dataLayer || [];
 
-  function gtag(...args: any[]) {
-    (window as any).dataLayer.push(args);
+  function gtag() {
+    /* eslint-disable */
+    (window as any).dataLayer.push(arguments);
   }
   (gtag as any)("js", new Date());
 
-  (gtag as any)("config", "G-R8QD9VK8D3");
+  (gtag as any)("config", gtagId);
 }
