@@ -79,20 +79,26 @@ async function onReady() {
   ready.value = true;
 
   setTimeout(() => {
-    const pheromonesLayer = simulation.garden.pheromonesLayer;
-
     watch(state.visualSettings.toFood, (toFood) => {
-      applySettings(pheromonesLayer.toFood, pheromonesLayer.toFoodMax, toFood);
+      applySettings(
+        simulation.garden.pheromonesLayer.toFood,
+        simulation.garden.pheromonesLayer.toFoodMax,
+        toFood
+      );
     });
 
     watch(state.visualSettings.toHome, (toHome) => {
-      applySettings(pheromonesLayer.toHome, pheromonesLayer.toHomeMax, toHome);
+      applySettings(
+        simulation.garden.pheromonesLayer.toHome,
+        simulation.garden.pheromonesLayer.toHomeMax,
+        toHome
+      );
     });
 
     watch(state.visualSettings.toEnemy, (toEnemy) => {
       applySettings(
-        pheromonesLayer.toEnemy,
-        pheromonesLayer.toEnemyMax,
+        simulation.garden.pheromonesLayer.toEnemy,
+        simulation.garden.pheromonesLayer.toEnemyMax,
         toEnemy
       );
     });

@@ -5,7 +5,7 @@
     "name": "Mateusz Tomczyk",
     "email": "mateusz.tomczyk.tul@gmail.com"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "start": "vite --host",
     "build": "vue-tsc --noEmit && vite build",

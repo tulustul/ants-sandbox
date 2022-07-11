@@ -64,8 +64,3 @@ export function tour3(simulation: Simulation): TourStep[] {
     },
   ];
 }
-
-// nextCallback: () => {
-//   state.tourMode = false;
-//   resetSettings();
-// },

@@ -1,13 +1,12 @@
 import type { Simulation } from "@/ui/simulation";
 import { state } from "@/ui/state";
 import type { TourStep } from "./types";
-import { resetSettings, trackFirstAnt, trackFirstSoldier } from "./utils";
+import { resetSettings, trackFirstSoldier } from "./utils";
 
 export function tour4(simulation: Simulation): TourStep[] {
   resetSettings();
 
   state.simulationSettings.pause = true;
-  const pauseAt = 0;
 
   return [
     {

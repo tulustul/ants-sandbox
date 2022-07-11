@@ -55,7 +55,7 @@ function showWelcome() {
     </p>
 
     <div class="bottom">
-      <span class="version">v0.1.0</span>
+      <span class="version">v0.1.1</span>
       <button class="btn btn-primary" @click="showWelcome">
         Show welcome screen
       </button>
