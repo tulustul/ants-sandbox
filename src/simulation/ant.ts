@@ -39,7 +39,7 @@ const TO_FOOD_DISPERSE_MARKER_STRENGTH = 100;
 
 // Soldier pheromone disperse settings.
 const SOLDIER_DISPERSE_TIMEOUT = 500;
-const SOLDER_DISPERSE_STRENGTH = 1.5;
+const SOLDIER_DISPERSE_STRENGTH = 1.5;
 const TO_ENEMY_DISPERSE_MARKER_STRENGTH = 200;
 
 export function getAntMaxEnergy(colony: Colony) {
@@ -424,7 +424,7 @@ export class Ant {
     this.maxDisperseTicksLeft = SOLDIER_MAX_DISPERSE_TICKS;
     this.disperseTicksLeft = SOLDIER_MAX_DISPERSE_TICKS;
     this.disperseTimeout = SOLDIER_DISPERSE_TIMEOUT;
-    this.disperseStrength = SOLDER_DISPERSE_STRENGTH;
+    this.disperseStrength = SOLDIER_DISPERSE_STRENGTH;
     this.pheromoneToDisperse = this.colony.toEnemyField;
   }
 

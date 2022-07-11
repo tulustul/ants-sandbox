@@ -16,7 +16,7 @@ export function tour4(simulation: Simulation): TourStep[] {
     },
     {
       description:
-        "You will be introduced to a new kind of ants - solders, a specialized killing machine.",
+        "You will be introduced to a new kind of ants - soldiers, a specialized killing machine.",
     },
     {
       description: "Let's see how it will roll out.",
