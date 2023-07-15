@@ -4,7 +4,7 @@ This is a simple and completely useless simulation of ants colony for web browse
 
 Inspired by this [YouTube video](https://www.youtube.com/watch?v=81GQNPJip2Y).
 
-The app is available [here](https://ants-sandbox.io/).
+The app is available [here](https://ants-sandbox.vercel.app/).
 
 ![Game screenshot](/screens/screen-4.png)
 
