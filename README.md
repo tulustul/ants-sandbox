@@ -1,4 +1,4 @@
-# Ants Sandbox https://ants-sandbox.io
+# Ants Sandbox https://ants-sandbox.vercel.app/
 
 This is a simple and completely useless simulation of ants colony for web browsers.
 
